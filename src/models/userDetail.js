@@ -44,7 +44,6 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "code",
         as: "workTypeSettingData",
       });
-
       //User
       UserDetail.belongsTo(models.User, {
         foreignKey: "userId",

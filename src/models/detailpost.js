@@ -44,10 +44,10 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "code",
         as: "provincePostData",
       });
-
       // Post
-      DetailPost.hasMany(models.Post, {
-        foreignKey: "detailPostId",
+      DetailPost.belongsTo(models.Post, {
+        foreignKey: "postId",
+        targetKey: "id",
         as: "postDetailData",
       });
     }
@@ -55,16 +55,16 @@ module.exports = (sequelize, DataTypes) => {
   DetailPost.init(
     {
       name: DataTypes.STRING,
+      amount: DataTypes.INTEGER,
       description: DataTypes.TEXT("long"),
+      postId: DataTypes.INTEGER,
       categoryJobCode: DataTypes.STRING,
       addressCode: DataTypes.STRING,
       salaryJobCode: DataTypes.STRING,
-      amount: DataTypes.INTEGER,
       joblevelCode: DataTypes.STRING,
       worktypeCode: DataTypes.STRING,
       experienceJobCode: DataTypes.STRING,
       genderPostCode: DataTypes.STRING,
-      censorCode: DataTypes.STRING,
     },
     {
       sequelize,

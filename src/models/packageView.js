@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       //orderpackage
-      PackageView.hasMany(models.OrderPackageView, {
-        foreignKey: "packageViewId",
-        as: "packageOrderViewData",
-      });
+      // PackageView.hasMany(models.OrderPackageView, {
+      //   foreignKey: "packageViewId",
+      //   as: "packageOrderViewData",
+      // });
     }
   }
   PackageView.init(

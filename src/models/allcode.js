@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      //detailpost
+      //detailpost;
       Allcode.hasMany(models.DetailPost, {
         foreignKey: "categoryJobCode",
         as: "jobTypePostData",
@@ -37,11 +37,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "addressCode",
         as: "provincePostData",
       });
-
       // //userDetail
       Allcode.hasMany(models.UserDetail, {
         foreignKey: "genderCode",
-        as: "genderData",
+        as: "genderSettingData",
       });
       Allcode.hasMany(models.UserDetail, {
         foreignKey: "categoryJobCode",
@@ -67,7 +66,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "joblevelCode",
         as: "jobLevelSettingData",
       });
-
       //skill
       Allcode.hasMany(models.Skill, {
         foreignKey: "categoryJobCode",
