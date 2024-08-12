@@ -9,15 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       NopCv.belongsTo(models.Cv, {
-        foreignKey: "userId",
+        foreignKey: "cvId",
         targetKey: "id",
-        as: "userSkillData",
+        as: "userNopCvData",
       });
 
       NopCv.belongsTo(models.Post, {
-        foreignKey: "skillId",
+        foreignKey: "postId",
         targetKey: "id",
-        as: "skillData",
+        as: "postNopCvData",
       });
     }
   }

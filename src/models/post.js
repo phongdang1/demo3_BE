@@ -19,6 +19,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "postId",
         as: "postDetailData",
       });
+      //Note
+      Post.hasMany(models.Note, {
+        foreignKey: "postId",
+        as: "postNoteData",
+      });
       //NopCv
       Post.belongsToMany(models.Cv, { through: models.NopCv });
     }

@@ -3,12 +3,10 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable("NopCvs", {
-      userId: {
-        primaryKey: true,
+      postId: {
         type: Sequelize.INTEGER,
       },
-      skillId: {
-        primaryKey: true,
+      cvId: {
         type: Sequelize.INTEGER,
       },
     });
