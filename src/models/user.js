@@ -12,36 +12,29 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "companyUserData",
       });
-
       // //Cv
       User.hasMany(models.Cv, { foreignKey: "userId", as: "userCvData" });
 
-      // //Notification
-      // User.hasMany(models.Notification, { foreignKey: 'userId', as: 'userData' })
-
-      //OrderPackage
       User.hasMany(models.OrderPackagePost, {
         foreignKey: "userId",
         as: "userOrderPostData",
       });
-
       //OrderPackageCv
       User.hasMany(models.OrderPackageView, {
         foreignKey: "userId",
         as: "userOrderViewData",
       });
-
       //Post
       User.hasMany(models.Post, { foreignKey: "userId", as: "userPostData" });
-
       //UserDetail
       User.hasOne(models.UserDetail, {
         foreignKey: "userId",
-        as: "userSettingData",
+        as: "UserDetailData",
       });
-
       //UserSkill - Skill
       User.belongsToMany(models.Skill, { through: models.UserSkill });
+      //Note
+      User.hasMany(models.Note, { foreignKey: "userId", as: "userNoteData" });
     }
   }
   User.init(

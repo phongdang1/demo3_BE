@@ -8,8 +8,17 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      NopCv.belongsTo(models.Cv);
-      NopCv.belongsTo(models.Post);
+      NopCv.belongsTo(models.Cv, {
+        foreignKey: "cvId",
+        targetKey: "id",
+        as: "userNopCvData",
+      });
+
+      NopCv.belongsTo(models.Post, {
+        foreignKey: "postId",
+        targetKey: "id",
+        as: "postNopCvData",
+      });
     }
   }
   NopCv.init(

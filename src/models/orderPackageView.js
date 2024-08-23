@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         as: "userOrderCvData",
       });
-
       //PackageView
       OrderPackageView.belongsTo(models.PackageView, {
         foreignKey: "packageViewId",

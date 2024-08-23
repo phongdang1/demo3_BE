@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       //Post
       Cv.belongsToMany(models.Post, { through: models.NopCv });
-
       //User
       Cv.belongsTo(models.User, {
         foreignKey: "userId",

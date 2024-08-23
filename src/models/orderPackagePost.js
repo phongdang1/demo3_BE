@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         as: "userOrderPostData",
       });
-
       //PackagePost
       OrderPackagePost.belongsTo(models.PackagePost, {
         foreignKey: "packagePostId",

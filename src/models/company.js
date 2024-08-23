@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Company.init(
     {
+      userId: DataTypes.INTEGER,
       name: DataTypes.STRING,
       thumbnail: DataTypes.STRING,
       coverimage: DataTypes.STRING,
@@ -27,7 +28,6 @@ module.exports = (sequelize, DataTypes) => {
       phonenumber: DataTypes.STRING,
       amountEmployer: DataTypes.INTEGER,
       taxnumber: DataTypes.STRING,
-      userId: DataTypes.INTEGER,
       censorCode: DataTypes.STRING,
       file: DataTypes.BLOB("long"),
       allowPost: DataTypes.INTEGER,

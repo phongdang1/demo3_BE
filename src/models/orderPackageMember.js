@@ -8,13 +8,12 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      //User
+      //ser
       OrderPackageMember.belongsTo(models.User, {
         foreignKey: "userId",
         targetKey: "id",
         as: "userOrderCvData",
       });
-
       //PackageView
       OrderPackageMember.belongsTo(models.PackageMember, {
         foreignKey: "packageMemberId",
