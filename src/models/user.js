@@ -8,24 +8,20 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      //package
+      User.belongsToMany(models.Package, {
+        through: "UserPackage",
+        foreignKey: "userId",
+        otherKey: "packageId",
+        as: "userPackages",
+      });
+      //company
       User.hasOne(models.Company, {
         foreignKey: "userId",
         as: "companyUserData",
       });
-      // //Cv
-      User.hasMany(models.Cv, { foreignKey: "userId", as: "userCvData" });
-
-      User.hasMany(models.OrderPackagePost, {
-        foreignKey: "userId",
-        as: "userOrderPostData",
-      });
-      //OrderPackageCv
-      User.hasMany(models.OrderPackageView, {
-        foreignKey: "userId",
-        as: "userOrderViewData",
-      });
-      //Post
-      User.hasMany(models.Post, { foreignKey: "userId", as: "userPostData" });
+      //Cv_post - Post
+      User.belongsToMany(models.Post, { through: models.CvPost  });
       //UserDetail
       User.hasOne(models.UserDetail, {
         foreignKey: "userId",
@@ -45,11 +41,13 @@ module.exports = (sequelize, DataTypes) => {
       address: DataTypes.STRING,
       phoneNumber: DataTypes.STRING,
       password: DataTypes.STRING,
-      dob: DataTypes.DATE,
       image: DataTypes.STRING,
+      dob: DataTypes.DATE,
+      point: DataTypes.INTEGER,
       role: DataTypes.STRING,
       status: DataTypes.STRING,
       isUpdate: DataTypes.TINYINT,
+      isVip: DataTypes.TINYINT,
     },
     {
       sequelize,
