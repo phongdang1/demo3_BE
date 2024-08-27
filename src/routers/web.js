@@ -1,15 +1,24 @@
 import express from "express";
-import userController from "../controllers/userController";
 
-let router = express.Router();
+const router = express.Router();
 
-let initWebRoutes = (app) => {
-  router.get("/", (req, res) => {
-    return res.send("Hello World");
-  });
-  router.get("/get-all-users", userController.getAllUsers);
+/**
+ * @swagger
+ * /example:
+ *   get:
+ *     summary: Returns a list of examples
+ *     responses:
+ *       200:
+ *         description: A list of examples
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ */
+router.get("/example", (req, res) => {
+  res.json(["example1", "example2"]);
+});
 
-  return app.use("/", router);
-};
-
-module.exports = initWebRoutes;
+module.exports = router;
