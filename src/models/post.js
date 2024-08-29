@@ -8,6 +8,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      //Cv_post - Post
+      Post.belongsToMany(models.User, { through: models.CvPost });
       //User;
       Post.belongsTo(models.User, {
         foreignKey: "userId",
@@ -24,17 +26,15 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "postId",
         as: "postNoteData",
       });
-      //NopCv
-      Post.belongsToMany(models.Cv, { through: models.NopCv });
     }
   }
   Post.init(
-    {
+    { 
+      userId: DataTypes.INTEGER,
       status: DataTypes.STRING,
       timeEnd: DataTypes.STRING,
-      timePost: DataTypes.STRING,
-      userId: DataTypes.INTEGER,
       isHot: DataTypes.TINYINT,
+      timePost: DataTypes.STRING,
       note: DataTypes.STRING,
     },
     {
