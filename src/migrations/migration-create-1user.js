@@ -28,7 +28,9 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
       },
-
+      point: {
+        type: Sequelize.INTEGER,
+      },
       image: {
         type: Sequelize.STRING,
       },
@@ -42,6 +44,9 @@ module.exports = {
         type: Sequelize.STRING,
       },
       isUpdate: {
+        type: Sequelize.TINYINT,
+      },
+      isVip: {
         type: Sequelize.TINYINT,
       },
     });

@@ -29,8 +29,6 @@ module.exports = (sequelize, DataTypes) => {
       });
       //UserSkill - Skill
       User.belongsToMany(models.Skill, { through: models.UserSkill });
-      //Note
-      User.hasMany(models.Note, { foreignKey: "userId", as: "userNoteData" });
     }
   }
   User.init(
