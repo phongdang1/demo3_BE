@@ -36,28 +36,6 @@ module.exports = {
             },
             onUpdate: "CASCADE",
           });
-          
-          //Notes
-          queryInterface.addConstraint("Notes", {
-            type: "foreign key",
-            fields: ["postId"],
-            name: "FK_Notes_Posts",
-            references: {
-              table: "Posts",
-              field: "id",
-            },
-            onUpdate: "CASCADE",
-          });
-          queryInterface.addConstraint("Notes", {
-            type: "foreign key",
-            fields: ["userId"],
-            name: "FK_Notes_Users",
-            references: {
-              table: "Users",
-              field: "id",
-            },
-            onUpdate: "CASCADE",
-          });
           //UserDetails
           queryInterface.addConstraint("UserDetails", {
             type: "foreign key",
@@ -101,8 +79,6 @@ module.exports = {
           queryInterface.removeConstraint("Posts", "FK_Posts_DetailPosts");
           queryInterface.removeConstraint("Accounts", "FK_Accounts_Users");
           queryInterface.removeConstraint("Users", "FK_Users_Companies");
-          queryInterface.removeConstraint("Notes", "FK_Notes_Posts");
-          queryInterface.removeConstraint("Notes", "FK_Notes_Users");
           queryInterface.removeConstraint("UserDetails", "FK_UserDetails_Users");
         }
       }),

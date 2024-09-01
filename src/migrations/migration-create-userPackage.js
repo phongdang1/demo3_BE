@@ -46,7 +46,7 @@ module.exports = {
         allowNull: true,
       },
       vipExpiryDate: {
-        type: Sequelize.DATE,
+        type: Sequelize.DATEONLY,
         allowNull: true,
       },
       status: {
@@ -54,11 +54,6 @@ module.exports = {
         allowNull: true,
       },
       createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
-      },
-      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
