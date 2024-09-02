@@ -45,9 +45,8 @@ module.exports = (sequelize, DataTypes) => {
         as: "provincePostData",
       });
       // Post
-      DetailPost.belongsTo(models.Post, {
-        foreignKey: "postId",
-        targetKey: "id",
+      DetailPost.hasMany(models.Post, {
+        foreignKey: "detailPostId",
         as: "postDetailData",
       });
     }
@@ -57,7 +56,6 @@ module.exports = (sequelize, DataTypes) => {
       name: DataTypes.STRING,
       amount: DataTypes.INTEGER,
       description: DataTypes.TEXT("long"),
-      postId: DataTypes.INTEGER,
       categoryJobCode: DataTypes.STRING,
       addressCode: DataTypes.STRING,
       salaryJobCode: DataTypes.STRING,

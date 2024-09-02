@@ -18,6 +18,9 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
       },
+      detailPostId: {
+        type: Sequelize.INTEGER,
+      },
       isHot: {
         type: Sequelize.TINYINT,
       },

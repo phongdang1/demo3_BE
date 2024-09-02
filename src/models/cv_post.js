@@ -12,13 +12,13 @@ module.exports = (sequelize, DataTypes) => {
       // Association with User model
       CvPost.belongsTo(models.User, {
         foreignKey: "userId",
-        as: "userCvPostData",
+        as: "userCvData",
       });
 
       // Association with Post model
       CvPost.belongsTo(models.Post, {
         foreignKey: "postId",
-        as: "CvPostData",
+        as: "postCvData",
       });
     }
   }
@@ -61,8 +61,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "CvPost",
-      tableName: "CvPost",
-      timestamps: false,
     }
   );
 

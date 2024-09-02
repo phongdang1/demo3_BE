@@ -49,6 +49,9 @@ module.exports = {
       isVip: {
         type: Sequelize.TINYINT,
       },
+      companyId: {
+        type: Sequelize.INTEGER,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

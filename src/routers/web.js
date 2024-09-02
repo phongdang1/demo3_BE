@@ -1,4 +1,5 @@
 import express from "express";
+import postController from "../controllers/postController";
 
 const router = express.Router();
 
@@ -20,5 +21,6 @@ const router = express.Router();
 router.get("/example", (req, res) => {
   res.json(["example1", "example2"]);
 });
+router.get("/get-all-post-admin", postController.getAllPostByAdmin);
 
 module.exports = router;

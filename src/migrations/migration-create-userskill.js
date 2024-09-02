@@ -11,6 +11,7 @@ module.exports = {
           },
           key: "id",
         },
+        primaryKey: true,
         onUpdate: "CASCADE",
       },
       skillId: {
@@ -21,6 +22,7 @@ module.exports = {
           },
           key: "id",
         },
+        primaryKey: true,
         onUpdate: "CASCADE",
       },
     });

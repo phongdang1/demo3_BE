@@ -72,7 +72,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "UserPackage",
-      tableName: "UserPackage", // Name of the table in the database
       timestamps: false, // Adjust if you want to include createdAt and updatedAt
     }
   );

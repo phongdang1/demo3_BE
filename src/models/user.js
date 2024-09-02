@@ -20,8 +20,13 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "companyUserData",
       });
+      User.belongsTo(models.Company, {
+        foreignKey: "companyId",
+        targetKey: "id",
+        as: "userCompanyData",
+      });
       //Cv_post - Post
-      User.belongsToMany(models.Post, { through: models.CvPost  });
+      User.belongsToMany(models.Post, { through: models.CvPost });
       //UserDetail
       User.hasOne(models.UserDetail, {
         foreignKey: "userId",
@@ -42,8 +47,9 @@ module.exports = (sequelize, DataTypes) => {
       image: DataTypes.STRING,
       dob: DataTypes.DATE,
       point: DataTypes.INTEGER,
-      role: DataTypes.STRING,
-      status: DataTypes.STRING,
+      roleCode: DataTypes.STRING,
+      companyId: DataTypes.STRING,
+      statusCode: DataTypes.STRING,
       isUpdate: DataTypes.TINYINT,
       isVip: DataTypes.TINYINT,
     },

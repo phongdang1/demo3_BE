@@ -9,7 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       //Cv_post - Post
-      Post.belongsToMany(models.User, { through: models.CvPost });
+      Post.hasMany(models.CvPost, {
+        foreignKey: "postId",
+        as: "postCvData",
+      });
       //User;
       Post.belongsTo(models.User, {
         foreignKey: "userId",
@@ -17,15 +20,17 @@ module.exports = (sequelize, DataTypes) => {
         as: "userPostData",
       });
       //DetailPost
-      Post.hasOne(models.DetailPost, {
-        foreignKey: "postId",
+      Post.belongsTo(models.DetailPost, {
+        foreignKey: "detailPostId",
+        targetKey: "id",
         as: "postDetailData",
       });
     }
   }
   Post.init(
-    { 
+    {
       userId: DataTypes.INTEGER,
+      detailPostId: DataTypes.INTEGER,
       status: DataTypes.STRING,
       timeEnd: DataTypes.STRING,
       isHot: DataTypes.TINYINT,

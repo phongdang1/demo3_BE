@@ -18,9 +18,7 @@ module.exports = {
       amount: {
         type: Sequelize.INTEGER,
       },
-      postId: {
-        type: Sequelize.INTEGER,
-      },
+
       categoryJobCode: {
         type: Sequelize.STRING,
         references: {
