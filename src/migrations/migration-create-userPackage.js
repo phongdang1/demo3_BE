@@ -49,7 +49,7 @@ module.exports = {
         type: Sequelize.DATEONLY,
         allowNull: true,
       },
-      status: {
+      statusCode: {
         type: Sequelize.STRING,
         allowNull: true,
       },

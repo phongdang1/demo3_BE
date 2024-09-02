@@ -9,7 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      status: {
+      statusCode: {
         type: Sequelize.STRING,
       },
       timeEnd: {

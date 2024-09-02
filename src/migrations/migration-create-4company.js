@@ -47,6 +47,9 @@ module.exports = {
       censorCode: {
         type: Sequelize.STRING,
       },
+      statusCode: {
+        type: Sequelize.STRING,
+      },
       file: {
         type: Sequelize.BLOB("long"),
       },

@@ -37,10 +37,10 @@ module.exports = {
       dob: {
         type: Sequelize.STRING,
       },
-      role: {
+      roleCode: {
         type: Sequelize.STRING,
       },
-      status: {
+      statusCode: {
         type: Sequelize.STRING,
       },
       isUpdate: {
