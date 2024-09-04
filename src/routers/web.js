@@ -1,5 +1,6 @@
 import express from "express";
 import postController from "../controllers/postController";
+import companyController from "../controllers/companyController";
 
 const router = express.Router();
 
@@ -22,5 +23,7 @@ router.get("/example", (req, res) => {
   res.json(["example1", "example2"]);
 });
 router.get("/get-all-post-admin", postController.getAllPostByAdmin);
+router.get("/get-all-companies", companyController.getAllCompanies);
+router.get("/get-company/:id", companyController.getCompanyById);
 
 module.exports = router;

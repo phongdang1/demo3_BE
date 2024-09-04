@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       censorCode: DataTypes.STRING,
       statusCode: DataTypes.STRING,
       file: DataTypes.BLOB("long"),
+      allowPost: DataTypes.INTEGER,
       allowHotPost: DataTypes.INTEGER,
       allowCvFree: DataTypes.INTEGER,
       allowCv: DataTypes.INTEGER,

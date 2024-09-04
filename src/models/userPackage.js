@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "Packages", // Name of the Package table
+          model: "Packages",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "Users", // Name of the User table
+          model: "Users",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -72,7 +72,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "UserPackage",
-      timestamps: false, // Adjust if you want to include createdAt and updatedAt
+      timestamps: false,
     }
   );
   return UserPackage;
