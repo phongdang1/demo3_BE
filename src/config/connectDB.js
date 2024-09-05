@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 
 // Option 2: Passing parameters separately (other dialects)
-const sequelize = new Sequelize("jobtest", "springstudent", "springstudent", {
+const sequelize = new Sequelize("jobtest", "root", "1234", {
   host: "localhost",
   dialect: "mysql",
   logging: false,

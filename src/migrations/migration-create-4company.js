@@ -40,6 +40,9 @@ module.exports = {
       censorCode: {
         type: Sequelize.STRING,
       },
+      statusCode: {
+        type: Sequelize.STRING,
+      },
       userId: {
         type: Sequelize.INTEGER,
         unique: true,
