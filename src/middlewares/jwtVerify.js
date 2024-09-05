@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 import db from "../models/index";
 require("dotenv").config();
-
 const secretString = process.env.SECRET_STRING;
-const middleware = async (req, res, next) => {
-  (jwt.verifyTokenUser = (req, res, next) => {
+
+const middlewareControllers = {
+  verifyTokenUser: (req, res, next) => {
     const token = req.headers.authorization;
     if (token) {
       const accessToken = token.split(" ")[1];
@@ -12,14 +12,12 @@ const middleware = async (req, res, next) => {
         if (err) {
           return res.status(403).json({
             status: false,
-            errorMessage: "Token is invalid",
+            errMessage: "Token is not valid!",
             refresh: true,
           });
         }
         const user = await db.User.findOne({
-          where: {
-            id: payload.sub,
-          },
+          where: { id: payload.sub },
           attributes: {
             exclude: ["userId"],
           },
@@ -27,7 +25,7 @@ const middleware = async (req, res, next) => {
         if (!user) {
           return res.status(404).json({
             status: false,
-            errorMessage: "User not found",
+            errMessage: "User is not exits",
             refresh: true,
           });
         }
@@ -35,60 +33,58 @@ const middleware = async (req, res, next) => {
         next();
       });
     } else {
-      return res.status(403).json({
+      return res.status(401).json({
         status: false,
-        errorMessage: "Token is required",
+        message: "You're not authentication!",
         refresh: true,
       });
     }
-  }),
-    (verifyTokenAdmin = (req, res, next) => {
-      const token = req.headers.authorization;
-      if (token) {
-        const accessToken = token.split(" ")[1];
-        jwt.verify(accessToken, secretString, async (err, payload) => {
-          if (err) {
-            return res.status(403).json({
-              status: false,
-              errorMessage: "Token is invalid",
-              refresh: true,
-            });
-          }
-          const user = await db.User.findOne({
-            where: {
-              id: payload.sub,
-            },
-            attributes: {
-              exclude: ["userId"],
-            },
-            raw: true,
-            nest: true,
+  },
+  verifyTokenAdmin: (req, res, next) => {
+    const token = req.headers.authorization;
+    if (token) {
+      const accessToken = token.split(" ")[1];
+      jwt.verify(accessToken, secretString, async (err, payload) => {
+        if (err) {
+          return res.status(403).json({
+            status: false,
+            errMessage: "Token is not valid!",
+            refresh: true,
           });
-          if (!user) {
-            return res.status(404).json({
-              status: false,
-              errorMessage: "User not found",
-              refresh: true,
-            });
-          }
-          if (user.role !== "ADMIN") {
-            return res.status(403).json({
-              status: false,
-              errorMessage: "You are not authorized to perform this action",
-              refresh: true,
-            });
-          }
-          req.user = user;
-          next();
+        }
+        const user = await db.User.findOne({
+          where: { id: payload.sub },
+          attributes: {
+            exclude: ["userId"],
+          },
+          raw: true,
+          nest: true,
         });
-      } else {
-        return res.status(401).json({
-          status: false,
-          errorMessage: "You're not authentication!",
-          refresh: true,
-        });
-      }
-    });
+        if (!user) {
+          return res.status(404).json({
+            status: false,
+            errMessage: "User is not exits",
+            refresh: true,
+          });
+        }
+        if (user && user.roleCode !== "ADMIN") {
+          return res.status(404).json({
+            status: false,
+            errMessage: "Permission denied",
+            refresh: true,
+          });
+        }
+        req.user = user;
+        next();
+      });
+    } else {
+      return res.status(401).json({
+        status: false,
+        errMessage: "You're not authentication!",
+        refresh: true,
+      });
+    }
+  },
 };
 
-module.exports = middleware;
+module.exports = middlewareControllers;

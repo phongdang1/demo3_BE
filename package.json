@@ -16,10 +16,16 @@
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
+    "keyword-extractor": "^0.0.28",
     "mysql2": "^3.11.0",
+    "node-schedule": "^2.1.1",
+    "nodemailer": "^6.9.15",
+    "pdf.js-extract": "^0.2.1",
+    "pdfjs-dist": "^4.6.82",
     "sequelize": "^6.37.3",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

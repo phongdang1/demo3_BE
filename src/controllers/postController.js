@@ -1,8 +1,8 @@
 import postService from "../services/postService";
 
-let getAllPostByAdmin = async (req, res) => {
+let getAllPost = async (req, res) => {
   try {
-    let data = await postService.getAllPostByAdmin(req.query);
+    let data = await postService.getAllPost(req.query);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -13,5 +13,5 @@ let getAllPostByAdmin = async (req, res) => {
   }
 };
 module.exports = {
-  getAllPostByAdmin: getAllPostByAdmin,
+  getAllPost: getAllPost,
 };

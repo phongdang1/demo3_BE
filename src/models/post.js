@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       userId: DataTypes.INTEGER,
       detailPostId: DataTypes.INTEGER,
-      status: DataTypes.STRING,
+      statusCode: DataTypes.STRING,
       timeEnd: DataTypes.STRING,
       isHot: DataTypes.TINYINT,
       timePost: DataTypes.STRING,
