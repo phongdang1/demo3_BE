@@ -3,6 +3,7 @@ import postController from "../controllers/postController";
 import middlewareControllers from "../middlewares/jwtVerify";
 import userController from "../controllers/userController";
 import companyController from "../controllers/companyController";
+import passport from "passport";
 
 const router = express.Router();
 
@@ -35,7 +36,19 @@ let initWebRoutes = (app) => {
   router.post("/login", userController.handleLogin);
 
   //===================API ALLCODE========================//
+  router.get(
+    "/auth/google",
+    passport.authenticate("google", { scope: ["profile", "email"] })
+  );
 
+  router.get(
+    "/auth/google/callback",
+    passport.authenticate("google", { failureRedirect: "/login" }),
+    function (req, res) {
+      // Successful authentication, redirect home.
+      res.redirect("/");
+    }
+  );
   //==================API POST==========================//
   router.get("/get-all-post", postController.getAllPost);
 
