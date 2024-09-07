@@ -13,6 +13,19 @@ let getAllUsers = async (req, res) => {
     });
   }
 };
+let getUsersById = async (req, res) => {
+  try {
+    let data = await userService.getUsersById(req.query.id);
+    console.log(data);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get user by id failed",
+      errorCode: -1,
+    });
+  }
+};
 //create user
 let handleCreateNewUser = async (req, res) => {
   try {
@@ -43,6 +56,7 @@ let handleLogin = async (req, res) => {
 
 module.exports = {
   getAllUsers: getAllUsers,
+  getUsersById: getUsersById,
   handleCreateNewUser: handleCreateNewUser,
   handleLogin: handleLogin,
 };
