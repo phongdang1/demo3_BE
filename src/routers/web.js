@@ -26,12 +26,14 @@ let initWebRoutes = (app) => {
   router.get("/example", (req, res) => {
     res.json(["example1", "example2"]);
   });
-
+  //===================API USER========================//
   router.get(
     "/get-all-users",
     middlewareControllers.verifyTokenAdmin,
     userController.getAllUsers
   );
+  router.get("/get-user-by-id", userController.getUsersById);
+
   router.post("/create-new-user", userController.handleCreateNewUser);
   router.post("/login", userController.handleLogin);
 
