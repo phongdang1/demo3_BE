@@ -80,7 +80,18 @@ let getUsersById = async (userId) => {
           raw: true,
           nest: true,
         });
-        resolve(data);
+        if (!data) {
+          resolve({
+            errCode: 2,
+            errMessage: "User is not exist",
+          });
+        } else {
+          resolve({
+            errCode: 0,
+            errMessage: "Get user by Id succeed",
+            data: data,
+          });
+        }
       }
     } catch (error) {
       reject(error);
