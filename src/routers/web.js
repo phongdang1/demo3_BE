@@ -8,24 +8,6 @@ import passport from "passport";
 const router = express.Router();
 
 let initWebRoutes = (app) => {
-  /**
-   * @swagger
-   * /example:
-   *   get:
-   *     summary: Returns a list of examples
-   *     responses:
-   *       200:
-   *         description: A list of examples
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: array
-   *               items:
-   *                 type: string
-   */
-  router.get("/example", (req, res) => {
-    res.json(["example1", "example2"]);
-  });
   //===================API USER========================//
   router.get("/get-all-users", userController.getAllUsers);
   router.get("/get-user-by-id", userController.getUsersById);
