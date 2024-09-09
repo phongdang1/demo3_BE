@@ -2,7 +2,6 @@ import e from "express";
 import db from "../models/index";
 import bcrypt from "bcryptjs";
 import CommonUtils from "../utils/CommonUtils";
-import { raw } from "body-parser";
 const salt = bcrypt.genSaltSync(10);
 require("dotenv").config();
 const { Op } = require("sequelize");
@@ -44,27 +43,18 @@ let handleHashUserPassword = (password) => {
   });
 };
 
-let getAllUsers = async () => {
+let getAllUsers = async (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let data = await db.User.findAll();
-      resolve(data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-let getUsersById = async (userId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!userId) {
+      if (!data.limit || !data.offset) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
         });
       } else {
-        let data = await db.User.findOne({
-          where: { id: userId, statusCode: "ACTIVE" },
+        let objectQuery = {
+          limit: +data.limit,
+          offset: +data.offset,
           attributes: {
             exclude: ["password"],
           },
@@ -79,19 +69,84 @@ let getUsersById = async (userId) => {
           ],
           raw: true,
           nest: true,
-        });
-        if (!data) {
-          resolve({
-            errCode: 2,
-            errMessage: "User is not exist",
-          });
-        } else {
-          resolve({
-            errCode: 0,
-            errMessage: "Get user by Id succeed",
-            data: data,
-          });
+        };
+        if (data.searchKey) {
+          objectQuery.where = {
+            [Op.or]: [
+              { firstName: { [Op.like]: `%${data.searchKey}%` } },
+              { lastName: { [Op.like]: `%${data.searchKey}%` } },
+              { phoneNumber: { [Op.like]: `%${data.searchKey}%` } },
+            ],
+          };
         }
+        let result = await db.User.findAndCountAll(objectQuery);
+        resolve({
+          errCode: 0,
+          errMessage: "Get all users succeed",
+          data: result.rows ? result.rows : [],
+          count: result.count ? result.count : 0,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let getUsersById = async (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!userId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let result = await db.User.findOne({
+          where: { id: userId, statusCode: "ACTIVE" },
+          attributes: {
+            exclude: ["password"],
+          },
+          include: [
+            {
+              model: db.UserDetail,
+              as: "UserDetailData",
+              attributes: {
+                exclude: ["userId"],
+              },
+            },
+          ],
+          raw: true,
+          nest: true,
+        });
+        if (result.UserDetailData.file) {
+          result.UserDetailData.file = new Buffer.from(
+            result.UserDetailData.file,
+            "base64"
+          ).toString("binary");
+        }
+        let listSkill = await db.UserSkill.findAll({
+          where: { userId: userId },
+          attributes: {
+            exclude: ["UserId", "SkillId", "createdAt", "updatedAt"],
+          },
+          include: [
+            {
+              model: db.Skill,
+              as: "skillData",
+              attributes: {
+                exclude: ["createdAt", "updatedAt", "id"],
+              },
+            },
+          ],
+          raw: false,
+        });
+        result.listSkill = listSkill;
+        resolve({
+          errCode: 0,
+          errMessage: "Get user by id succeed",
+          data: result,
+        });
       }
     } catch (error) {
       reject(error);

@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "jobTypePostData",
       });
       DetailPost.belongsTo(models.Allcode, {
-        foreignKey: "worktypeCode",
+        foreignKey: "workTypeCode",
         targetKey: "code",
         as: "workTypePostData",
       });
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "salaryTypePostData",
       });
       DetailPost.belongsTo(models.Allcode, {
-        foreignKey: "joblevelCode",
+        foreignKey: "jobLevelCode",
         targetKey: "code",
         as: "jobLevelPostData",
       });
@@ -59,8 +59,8 @@ module.exports = (sequelize, DataTypes) => {
       categoryJobCode: DataTypes.STRING,
       addressCode: DataTypes.STRING,
       salaryJobCode: DataTypes.STRING,
-      joblevelCode: DataTypes.STRING,
-      worktypeCode: DataTypes.STRING,
+      jobLevelCode: DataTypes.STRING,
+      workTypeCode: DataTypes.STRING,
       experienceJobCode: DataTypes.STRING,
       genderPostCode: DataTypes.STRING,
     },

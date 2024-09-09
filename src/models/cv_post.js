@@ -61,6 +61,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "CvPost",
+      timestamps: false,
     }
   );
 

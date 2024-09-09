@@ -9,13 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-        //package
-        Package.belongsToMany(models.User, {
-            through: "UserPackage",
-            foreignKey: "packageId",
-            otherKey: "userId",
-            as: "packageUsers",
-          });
+      //package
+      Package.belongsToMany(models.User, {
+        through: "UserPackage",
+        foreignKey: "packageId",
+        otherKey: "userId",
+        as: "packageUsers",
+      });
     }
   }
   Package.init(
@@ -36,8 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Package",
-      tableName: "Packages", 
-      timestamps: false, 
+      timestamps: false,
     }
   );
   return Package;

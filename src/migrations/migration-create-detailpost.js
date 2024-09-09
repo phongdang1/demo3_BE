@@ -51,7 +51,7 @@ module.exports = {
         onUpdate: "CASCADE",
       },
 
-      joblevelCode: {
+      jobLevelCode: {
         type: Sequelize.STRING,
         references: {
           model: {
@@ -61,7 +61,7 @@ module.exports = {
         },
         onUpdate: "CASCADE",
       },
-      worktypeCode: {
+      workTypeCode: {
         type: Sequelize.STRING,
         references: {
           model: {
