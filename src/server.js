@@ -6,6 +6,7 @@ import connectDB from "./config/connectDB";
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpecs = require("./utils/swaggerConfig");
 const initWebRoutes = require("./routers/web");
+const session = require("express-session");
 
 require("dotenv").config();
 
@@ -34,6 +35,14 @@ app.use(function (req, res, next) {
   // Pass to next layer of middleware
   next();
 });
+
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

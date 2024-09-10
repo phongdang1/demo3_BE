@@ -1,11 +1,19 @@
 require("dotenv").config();
 import passport from "passport";
 import db from "../models/index";
-import { raw } from "body-parser";
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const doLoginWithGoogle = () => {
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser((id, done) => {
+    User.findById(id).then((user) => {
+      done(null, user);
+    });
+  });
   passport.use(
     new GoogleStrategy(
       {

@@ -2,6 +2,7 @@ import express from "express";
 import postController from "../controllers/postController";
 import middlewareControllers from "../middlewares/jwtVerify";
 import userController from "../controllers/userController";
+import CommonUtils from "../utils/CommonUtils";
 import companyController from "../controllers/companyController";
 import passport from "passport";
 
@@ -23,10 +24,28 @@ let initWebRoutes = (app) => {
 
   router.get(
     "/auth/google/callback",
-    passport.authenticate("google", { failureRedirect: "/login" }),
-    function (req, res) {
-      // Successful authentication, redirect home.
-      res.redirect("/");
+    passport.authenticate("google", {
+      failureRedirect: "/login",
+    }),
+    async function (req, res) {
+      try {
+        if (req.user) {
+          const token = await CommonUtils.encodeToken(req.user.id);
+          console.log("token", token);
+          console.log("req.user", req.user);
+          return res.status(200).json({
+            errCode: 0,
+            errMessage: "Login succeed",
+            user: req.user,
+            token,
+          });
+        }
+      } catch (error) {
+        return res.status(200).json({
+          errCode: -1,
+          errMessage: "Error from server",
+        });
+      }
     }
   );
   //==================API POST==========================//
