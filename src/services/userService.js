@@ -2,9 +2,38 @@ import e from "express";
 import db from "../models/index";
 import bcrypt from "bcryptjs";
 import CommonUtils from "../utils/CommonUtils";
+const cloudinary = require("../utils/cloudinary");
 const salt = bcrypt.genSaltSync(10);
 require("dotenv").config();
 const { Op } = require("sequelize");
+let nodemailer = require("nodemailer");
+let sendMailToUser = (note, userMail, link = null) => {
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
+
+  let mailOptions = {
+    from: process.env.EMAIL_APP,
+    to: userMail,
+    subject: "Thông báo từ trang Job Finder",
+    html: note,
+  };
+  if (link) {
+    mailOptions.html =
+      note +
+      ` xem thông tin <a href='${process.env.URL_REACT}/${link}'>Tại đây</a> `;
+  }
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error.message);
+    } else {
+    }
+  });
+};
 
 let checkUserPhoneNumber = async (userPhoneNumber) => {
   return new Promise(async (resolve, reject) => {
@@ -120,10 +149,15 @@ let getUsersById = async (userId) => {
           nest: true,
         });
         if (result.UserDetailData.file) {
-          result.UserDetailData.file = new Buffer.from(
-            result.UserDetailData.file,
-            "base64"
-          ).toString("binary");
+          try {
+            result.UserDetailData.file = Buffer.from(
+              result.UserDetailData.file,
+              "base64"
+            ).toString("binary");
+          } catch (error) {
+            console.log("Error decoding base64 file: ", error);
+            result.UserDetailData.file = null;
+          }
         }
         let listSkill = await db.UserSkill.findAll({
           where: { userId: userId },
@@ -169,16 +203,28 @@ let handleCreateNewUser = async (data) => {
             errMessage: "User's phone already exist",
           });
         } else {
+          let imageUrl = "";
+          let isHavePassword = true;
+          if (!data.password) {
+            data.password = `${new Date().getTime().toString()}@jobfinder`;
+            isHavePassword = false;
+          }
           let hashPassword = await handleHashUserPassword(data.password);
+          if (data.image) {
+            let uploadResponse = await cloudinary.uploader.upload(data.image, {
+              upload_preset: "jobfinder",
+            });
+            imageUrl = uploadResponse.url;
+          }
           await db.User.create({
-            phoneNumber: data.phoneNumber ? data.phoneNumber : null,
+            phoneNumber: data.phoneNumber,
             password: hashPassword,
             email: data.email ? data.email : null,
             firstName: data.firstName ? data.firstName : null,
             lastName: data.lastName ? data.lastName : null,
             address: data.address ? data.address : null,
             point: data.point ? data.point : 0,
-            image: data.image ? data.image : null,
+            image: imageUrl ? imageUrl : null,
             dob: data.dob ? data.dob : null,
             roleCode: data.roleCode ? data.roleCode : "CANDIDATE",
             statusCode: data.statusCode ? data.statusCode : "INACTIVE",
@@ -186,6 +232,13 @@ let handleCreateNewUser = async (data) => {
             isVip: data.isVip ? data.isVip : 0,
             companyId: data.companyId ? data.companyId : null,
           });
+          if (!isHavePassword) {
+            let note = `<h3>Tài khoản đã tạo thành công</h3>
+                                    <p>Tài khoản: ${data.phonenumber}</p>
+                                    <p>Mật khẩu: ${data.password}</p>
+                        `;
+            sendMailToUser(note, data.email);
+          }
           resolve({
             errCode: 0,
             errMessage: "Create user succeed",
