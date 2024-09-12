@@ -7,6 +7,7 @@ const salt = bcrypt.genSaltSync(10);
 require("dotenv").config();
 const { Op } = require("sequelize");
 let nodemailer = require("nodemailer");
+
 let sendMailToUser = (note, userMail, link = null) => {
   let transporter = nodemailer.createTransport({
     service: "gmail",
@@ -35,7 +36,7 @@ let sendMailToUser = (note, userMail, link = null) => {
   });
 };
 
-let checkUserPhoneNumber = async (userPhoneNumber) => {
+let checkUserPhoneNumber = (userPhoneNumber) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!userPhoneNumber) {
@@ -72,7 +73,7 @@ let handleHashUserPassword = (password) => {
   });
 };
 
-let getAllUsers = async (data) => {
+let getAllUsers = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.limit || !data.offset) {
@@ -122,7 +123,7 @@ let getAllUsers = async (data) => {
   });
 };
 
-let getUsersById = async (userId) => {
+let getUsersById = (userId) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!userId) {
@@ -187,7 +188,7 @@ let getUsersById = async (userId) => {
     }
   });
 };
-let handleCreateNewUser = async (data) => {
+let handleCreateNewUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.phoneNumber || !data.password) {
@@ -212,7 +213,7 @@ let handleCreateNewUser = async (data) => {
           let hashPassword = await handleHashUserPassword(data.password);
           if (data.image) {
             let uploadResponse = await cloudinary.uploader.upload(data.image, {
-              upload_preset: "jobfinder",
+              upload_preset: "ml_default",
             });
             imageUrl = uploadResponse.url;
           }
@@ -252,7 +253,7 @@ let handleCreateNewUser = async (data) => {
   });
 };
 //handle login
-let handleLogin = async (data) => {
+let handleLogin = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.phoneNumber || !data.password) {
