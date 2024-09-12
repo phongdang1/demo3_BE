@@ -1,7 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
 import viewEngine from "./config/viewEngine";
-import doLoginWithGoogle from "./utils/passportConfig";
 import connectDB from "./config/connectDB";
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpecs = require("./utils/swaggerConfig");

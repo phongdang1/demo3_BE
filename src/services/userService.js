@@ -216,7 +216,7 @@ let handleCreateNewUser = async (data) => {
             });
             imageUrl = uploadResponse.url;
           }
-          await db.User.create({
+          let newUser = await db.User.create({
             phoneNumber: data.phoneNumber,
             password: hashPassword,
             email: data.email ? data.email : null,
@@ -227,7 +227,7 @@ let handleCreateNewUser = async (data) => {
             image: imageUrl ? imageUrl : null,
             dob: data.dob ? data.dob : null,
             roleCode: data.roleCode ? data.roleCode : "CANDIDATE",
-            statusCode: data.statusCode ? data.statusCode : "INACTIVE",
+            statusCode: data.statusCode ? data.statusCode : "ACTIVE",
             isUpdate: data.isUpdate ? data.isUpdate : 0,
             isVip: data.isVip ? data.isVip : 0,
             companyId: data.companyId ? data.companyId : null,
@@ -242,6 +242,7 @@ let handleCreateNewUser = async (data) => {
           resolve({
             errCode: 0,
             errMessage: "Create user succeed",
+            data: newUser,
           });
         }
       }
