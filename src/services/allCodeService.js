@@ -1,0 +1,64 @@
+import db from "../models/index";
+const { Op } = require("sequelize");
+
+let handleCreateNewAllCode = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.type || !data.code || !data.value) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let checkExit = await db.Allcode.findOne({
+          where: { code: data.code },
+        });
+        if (checkExit) {
+          resolve({
+            errCode: 2,
+            errMessage: "Allcode is exist",
+          });
+        } else {
+          await db.Allcode.create({
+            type: data.type,
+            code: data.code,
+            value: data.value,
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "Create allcode success",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let getAllCode = (typeInput) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!typeInput) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let allcode = await db.Allcode.findAll({
+          where: { type: typeInput },
+        });
+        resolve({
+          errCode: 0,
+          data: allcode,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+module.exports = {
+  handleCreateNewAllCode: handleCreateNewAllCode,
+  getAllCode: getAllCode,
+};

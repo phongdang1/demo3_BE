@@ -133,7 +133,7 @@ let getUsersById = (userId) => {
         });
       } else {
         let result = await db.User.findOne({
-          where: { id: userId, statusCode: "ACTIVE" },
+          where: { id: userId },
           attributes: {
             exclude: ["password"],
           },
@@ -163,7 +163,7 @@ let getUsersById = (userId) => {
         let listSkill = await db.UserSkill.findAll({
           where: { userId: userId },
           attributes: {
-            exclude: ["UserId", "SkillId", "createdAt", "updatedAt"],
+            exclude: ["UserId", "userId", "SkillId", "createdAt", "updatedAt"],
           },
           include: [
             {
