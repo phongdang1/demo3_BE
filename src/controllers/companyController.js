@@ -50,10 +50,76 @@ let getCompanyById = async (req, res) => {
     });
   }
 };
+let handleUpdateCompany = async (req, res) => {
+  try {
+    let data = await companyService.handleUpdateCompany(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Update company failed",
+      errorCode: -1,
+    });
+  }
+};
+let handleBanCompany = async (req, res) => {
+  try {
+    let data = await companyService.handleBanCompany(req.query.id);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Ban company failed",
+      errorCode: -1,
+    });
+  }
+};
+let handleUnBanCompany = async (req, res) => {
+  try {
+    let data = await companyService.handleUnBanCompany(req.query.id);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Unban company failed",
+      errorCode: -1,
+    });
+  }
+};
+
+let getCompanyByUserId = async (req, res) => {
+  try {
+    let data = await companyService.getCompanyByUserId(req.query.id);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get company by user id failed",
+      errorCode: -1,
+    });
+  }
+};
+let getAllUserOfCompany = async (req, res) => {
+  try {
+    let data = await companyService.getAllUserOfCompany(req.query.id);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get all user of company failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   getAllCompanies: getAllCompanies,
   handleCreateNewCompany: handleCreateNewCompany,
   handleAddUserToCompany: handleAddUserToCompany,
   getCompanyById: getCompanyById,
+  handleUpdateCompany: handleUpdateCompany,
+  handleBanCompany: handleBanCompany,
+  handleUnBanCompany: handleUnBanCompany,
+  getCompanyByUserId: getCompanyByUserId,
+  getAllUserOfCompany: getAllUserOfCompany,
 };

@@ -22,12 +22,22 @@ let initWebRoutes = (app) => {
   router.get("/getAllPost", postController.getAllPost);
   router.post("/createNewPost", postController.handleCreateNewPost);
   router.get("/getDetailPostById", postController.getDetailPostById);
+  router.post("/updatePost", postController.handleUpdatePost);
+  router.post("/banPost", postController.handleBanPost);
+  router.post("unBanPost", postController.handleUnBanPost);
+  router.post("/approvePost", postController.handleApprovePost);
+  router.post("/reupPost", postController.handleReupPost);
 
   //==================API COMPANY==========================//
   router.get("/getAllCompanies", companyController.getAllCompanies);
   router.post("/createNewCompany", companyController.handleCreateNewCompany);
   router.post("/addUserToCompany", companyController.handleAddUserToCompany);
   router.get("/getCompanyById", companyController.getCompanyById);
+  router.post("/updateCompany", companyController.handleUpdateCompany);
+  router.post("/banCompany", companyController.handleBanCompany);
+  router.post("/unBanCompany", companyController.handleUnBanCompany);
+  router.get("/getCompanyByUserId", companyController.getCompanyByUserId);
+  router.get("/getAllUserOfCompany", companyController.getAllUserOfCompany);
 
   //===================API GOOGLE========================//
   router.get("/auth/google", authController.googleAuthenticate);

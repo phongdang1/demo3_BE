@@ -356,9 +356,260 @@ let getCompanyById = (id) => {
   });
 };
 
+let handleUpdateCompany = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (
+        !data.id ||
+        !data.name ||
+        !data.address ||
+        !data.description ||
+        !data.phonenumber ||
+        !data.amountEmployer ||
+        !data.userId
+      ) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let company = await db.Company.findOne({
+          where: { id: data.id },
+        });
+        if (!company) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          if (await checkCompany(data.name, data.id)) {
+            resolve({
+              errCode: 3,
+              errMessage: "Company is exist",
+            });
+          } else {
+            if (company.statusCode === "ACTIVE") {
+              let thumbnailUrl = "";
+              let coverImageUrl = "";
+              if (data.thumbnail) {
+                const uploadedThumbnailResponse =
+                  await cloudinary.uploader.upload(data.thumbnail, {
+                    upload_preset: "ml_default",
+                  });
+                thumbnailUrl = uploadedThumbnailResponse.url;
+              }
+              if (data.coverimage) {
+                const uploadedCoverImageResponse =
+                  await cloudinary.uploader.upload(data.coverimage, {
+                    upload_preset: "ml_default",
+                  });
+                coverImageUrl = uploadedCoverImageResponse.url;
+              }
+              company.name = data.name;
+              company.thumbnail = thumbnailUrl;
+              company.coverimage = coverImageUrl;
+              company.description = data.description;
+              company.website = data.website;
+              company.address = data.address;
+              company.phonenumber = data.phonenumber;
+              company.amountEmployer = data.amountEmployer;
+              company.taxnumber = data.taxnumber;
+              company.censorCode = data.censorCode;
+              company.file = data.file ? data.file : null;
+              company.allowPost = data.allowPost;
+              company.allowHotPost = data.allowHotPost;
+              company.allowCvFree = data.allowCvFree;
+              company.allowCv = data.allowCv;
+              company.updatedAt = new Date();
+              await company.save({ silent: true });
+              resolve({
+                errCode: 0,
+                errMessage: "Update company succeed",
+                data: company,
+              });
+            } else {
+              resolve({
+                errCode: 4,
+                errMessage: "Company is not active. Cannot update",
+              });
+            }
+          }
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let handleBanCompany = (companyId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!companyId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let foundCompany = await db.Company.findOne({
+          where: { id: companyId },
+        });
+        if (!foundCompany) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          foundCompany.statusCode = "BANNED";
+          await foundCompany.save({ silent: true });
+          let user = await db.User.findOne({
+            where: { id: foundCompany.userId },
+            raw: false,
+            attributes: {
+              exclude: ["password", "image", "userId"],
+            },
+          });
+          sendmail(
+            "Công ty của bạn đã bị khóa. Vui lòng liên hệ với quản trị viên để biết thêm chi tiết",
+            user.email,
+            `company/${foundCompany.id}`
+          );
+          resolve({
+            errCode: 0,
+            errMessage: "Ban company succeed",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let handleUnBanCompany = (companyId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!companyId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let foundCompany = await db.Company.findOne({
+          where: { id: companyId },
+        });
+        if (!foundCompany) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          foundCompany.statusCode = "ACTIVE";
+          await foundCompany.save({ silent: true });
+          let user = await db.User.findOne({
+            where: { id: foundCompany.userId },
+            raw: false,
+            attributes: {
+              exclude: ["password", "image", "userId"],
+            },
+          });
+          sendmail(
+            "Công ty của bạn đã được mở khóa. Bạn có thể sử dụng dịch vụ bình thường",
+            user.email,
+            `company/${foundCompany.id}`
+          );
+
+          resolve({
+            errCode: 0,
+            errMessage: "Unban company succeed",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let getCompanyByUserId = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!userId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let company = await db.Company.findOne({
+          where: { userId: userId },
+        });
+        if (!company) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          if (company.file) {
+            company.file = Buffer.from(company.file, "base64").toString(
+              "binary"
+            );
+          }
+          resolve({
+            errCode: 0,
+            errMessage: "Get company succeed",
+            data: company,
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let getAllUserOfCompany = (companyId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!companyId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let company = await db.Company.findOne({
+          where: { id: companyId },
+        });
+        if (!company) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          let listUserOfCompany = await db.User.findAndCountAll({
+            where: { companyId: company.id },
+            attributes: ["id", "phoneNumber", "lastName", "firstName"],
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "Get all user of company succeed",
+            data: listUserOfCompany.rows,
+            count: listUserOfCompany.count,
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getAllCompanies: getAllCompanies,
   handleCreateNewCompany: handleCreateNewCompany,
   handleAddUserToCompany: handleAddUserToCompany,
   getCompanyById: getCompanyById,
+  handleUpdateCompany: handleUpdateCompany,
+  handleBanCompany: handleBanCompany,
+  handleUnBanCompany: handleUnBanCompany,
+  getCompanyByUserId: getCompanyByUserId,
+  getAllUserOfCompany: getAllUserOfCompany,
 };
