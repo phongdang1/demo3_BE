@@ -40,7 +40,7 @@ let handleAddUserToCompany = async (req, res) => {
 
 let getCompanyById = async (req, res) => {
   try {
-    let data = await companyService.getCompanyById(req.query);
+    let data = await companyService.getCompanyById(req.query.id);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);

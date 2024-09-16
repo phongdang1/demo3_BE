@@ -58,8 +58,7 @@ let handleCreateNewPost = (data) => {
         !data.workTypeCode ||
         !data.experienceJobCode ||
         !data.genderPostCode ||
-        !data.description ||
-        data.isHot === ""
+        !data.description
       ) {
         resolve({
           errCode: 1,
@@ -72,18 +71,21 @@ let handleCreateNewPost = (data) => {
             exclude: ["password", "userId", "image"],
           },
         });
+        console.log(data.isHot);
+        console.log(user);
         let company = await db.Company.findOne({
-          where: { userId: user.companyId },
-          raw: false,
+          where: { id: user.companyId },
+          raw: true,
         });
+        console.log(company.allowHotPost);
         if (!company) {
           resolve({
             errCode: 2,
             errMessage: "User is not company",
           });
         } else {
-          if (company.status === "Active") {
-            if (data.isHot === 1) {
+          if (company.statusCode === "ACTIVE") {
+            if (data.isHot === "1") {
               if (company.allowHotPost > 0) {
                 company.allowHotPost -= 1;
                 await company.save({ silent: true });
@@ -150,6 +152,7 @@ let getDetailPostById = (id) => {
           errMessage: "Missing required fields",
         });
       } else {
+        console.log(id);
         let post = await db.Post.findOne({
           where: { id: id },
           attributes: {
@@ -209,6 +212,7 @@ let getDetailPostById = (id) => {
               exclude: ["password", "userId", "image"],
             },
           });
+          console.log(user);
           let company = await db.Company.findOne({
             where: { id: user.companyId },
           });

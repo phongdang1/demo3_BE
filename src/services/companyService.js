@@ -2,6 +2,35 @@ import e from "express";
 import db from "../models/index";
 import { Op, where } from "sequelize";
 const cloudinary = require("../utils/cloudinary");
+var nodemailer = require("nodemailer");
+let sendmail = (note, userMail, link = null) => {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
+
+  var mailOptions = {
+    from: process.env.EMAIL_APP,
+    to: userMail,
+    subject: "Thông báo từ trang Job Finder",
+    html: note,
+  };
+  if (link) {
+    mailOptions.html =
+      note +
+      ` <br>
+      xem thông tin công ty <a href='${process.env.URL_REACT}/${link}'>Tại đây</a> `;
+  }
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+    } else {
+    }
+  });
+};
 
 let checkCompany = (name, id) => {
   return new Promise(async (resolve, reject) => {
@@ -95,20 +124,24 @@ let handleCreateNewCompany = (data) => {
         } else {
           let thumbnailUrl = "";
           let coverImageUrl = "";
-          if (data.thumbnail && data.coverimage) {
+
+          console.log(createAt1);
+          if (data.thumbnail) {
             const uploadedThumbnailResponse = await cloudinary.uploader.upload(
               data.thumbnail,
               {
                 upload_preset: "ml_default",
               }
             );
+            thumbnailUrl = uploadedThumbnailResponse.url;
+          }
+          if (data.coverimage) {
             const uploadedCoverImageResponse = await cloudinary.uploader.upload(
               data.coverimage,
               {
                 upload_preset: "ml_default",
               }
             );
-            thumbnailUrl = uploadedThumbnailResponse.url;
             coverImageUrl = uploadedCoverImageResponse.url;
           }
           let company = await db.Company.create({
@@ -124,11 +157,13 @@ let handleCreateNewCompany = (data) => {
             taxnumber: data.taxnumber,
             censorCode: data.censorCode,
             statusCode: "ACTIVE",
-            file: data.file ? data.file : "",
+            file: data.file ? data.file : null,
             allowPost: data.allowPost,
             allowHotPost: data.allowHotPost,
             allowCvFree: data.allowCvFree,
             allowCv: data.allowCv,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           });
           let user = await db.User.findOne({
             where: { id: data.userId },
@@ -236,13 +271,15 @@ let getCompanyById = (id) => {
         } else {
           let listUserOfCompany = await db.User.findAll({
             where: { companyId: company.id },
-            attributes: ["id"],
+            attributes: ["id", "phoneNumber"],
           });
+          company.userData = listUserOfCompany;
           listUserOfCompany = listUserOfCompany.map((item) => {
             return {
               userId: item.id,
             };
           });
+
           company.postData = await db.Post.findAll({
             where: {
               [Op.and]: [
