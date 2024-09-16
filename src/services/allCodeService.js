@@ -58,7 +58,48 @@ let getAllCode = (typeInput) => {
   });
 };
 
+let handleUpdateAllCode = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.type || !data.code || !data.value) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let allCodeRes = await db.Allcode.findOne({
+          where: { code: data.code },
+        });
+        if (allCodeRes) {
+          allCodeRes.value = data.value;
+          allCodeRes.code = data.code;
+          allCodeRes = await allCodeRes.save();
+          if (allCodeRes) {
+            resolve({
+              errCode: 0,
+              errMessage: "Update allcode success",
+            });
+          } else {
+            resolve({
+              errCode: 2,
+              errMessage: "Update allcode failed",
+            });
+          }
+        } else {
+          resolve({
+            errCode: 3,
+            errMessage: "Allcode not found",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   handleCreateNewAllCode: handleCreateNewAllCode,
   getAllCode: getAllCode,
+  handleUpdateAllCode: handleUpdateAllCode,
 };

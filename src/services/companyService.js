@@ -602,6 +602,69 @@ let getAllUserOfCompany = (companyId) => {
   });
 };
 
+let handleApproveCompany = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.companyId || !data.userId || !data.statusCode) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      }
+      let company = await db.Company.findOne({
+        where: { id: data.companyId },
+      });
+      if (!company) {
+        resolve({
+          errCode: 2,
+          errMessage: "Cannot find company",
+        });
+      }
+      if (data.statusCode === "ACTIVE") {
+        company.statusCode = "ACTIVE";
+        await company.save({ silent: true });
+        let user = await db.User.findOne({
+          where: { id: company.userId },
+          raw: false,
+          attributes: {
+            exclude: ["password", "image", "userId"],
+          },
+        });
+        sendmail(
+          "Công ty của bạn đã được duyệt. Mời bạn sử dụng dịch vụ",
+          user.email,
+          `company/${company.id}`
+        );
+        resolve({
+          errCode: 0,
+          errMessage: "Approve company succeed",
+        });
+      } else {
+        company.statusCode = "INACTIVE";
+        await company.save({ silent: true });
+        let user = await db.User.findOne({
+          where: { id: company.userId },
+          raw: false,
+          attributes: {
+            exclude: ["password", "image", "userId"],
+          },
+        });
+        sendmail(
+          "Công ty của bạn hiện tại không đủ điều kiện sử dụng dịch vụ. Vui lòng liên hệ với quản trị viên để biết thêm chi tiết",
+          user.email,
+          `company/${company.id}`
+        );
+        resolve({
+          errCode: 0,
+          errMessage: "Reject company succeed",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getAllCompanies: getAllCompanies,
   handleCreateNewCompany: handleCreateNewCompany,
@@ -612,4 +675,5 @@ module.exports = {
   handleUnBanCompany: handleUnBanCompany,
   getCompanyByUserId: getCompanyByUserId,
   getAllUserOfCompany: getAllUserOfCompany,
+  handleApproveCompany: handleApproveCompany,
 };

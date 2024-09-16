@@ -4,6 +4,7 @@ import userController from "../controllers/userController";
 import companyController from "../controllers/companyController";
 import authController from "../controllers/authController";
 import allCodeController from "../controllers/allCodeController";
+import skillController from "../controllers/skillController";
 
 const router = express.Router();
 
@@ -17,6 +18,14 @@ let initWebRoutes = (app) => {
   //===================API AllCode========================//
   router.get("/getAllCode", allCodeController.getAllCode);
   router.post("/createNewCode", allCodeController.handleCreateNewAllCode);
+  router.post("/updateCode", allCodeController.handleUpdateAllCode);
+
+  //===================API SKILL========================//
+  router.post("/createNewSkill", skillController.handleCreateNewSkill);
+  router.post("/deleteSkill", skillController.handleDeleteSkill);
+  router.get("/getAllSkillByCategory", skillController.getAllSkillByCategory);
+  router.get("/getSkillById", skillController.getSkillById);
+  router.post("/updateSkill", skillController.handleUpdateSkill);
 
   //==================API POST==========================//
   router.get("/getAllPost", postController.getAllPost);

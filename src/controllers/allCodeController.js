@@ -24,8 +24,21 @@ let handleCreateNewAllCode = async (req, res) => {
     });
   }
 };
+let handleUpdateAllCode = async (req, res) => {
+  try {
+    let data = await allCodeService.handleUpdateAllCode(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Update allcode failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   getAllCode: getAllCode,
   handleCreateNewAllCode: handleCreateNewAllCode,
+  handleUpdateAllCode: handleUpdateAllCode,
 };

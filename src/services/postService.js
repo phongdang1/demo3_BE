@@ -35,42 +35,105 @@ let sendmail = (note, userMail, link = null) => {
 const { Op, where } = require("sequelize");
 
 // Get all post with user and detail post
-let getAllPost = (query) => {
+let getAllPost = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let post = await db.Post.findAll({
-        where: {
-          statusCode: "Active",
-          timeEnd: {
-            [Op.gte]: new Date().getTime(),
-          },
+      if (!data.limit || !data.offset) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      }
+      let objectQuery = {
+        limit: +data.limit,
+        offset: +data.offset,
+        attributes: {
+          exclude: ["detailPostId"],
         },
+        nest: true,
+        raw: true,
         include: [
+          {
+            model: db.DetailPost,
+            as: "postDetailData",
+            attributes: ["id", "name", "description", "amount"],
+            include: [
+              {
+                model: db.Allcode,
+                as: "jobTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "workTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "salaryTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "jobLevelPostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "expTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "genderPostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "provincePostData",
+                attributes: ["value", "code"],
+              },
+            ],
+          },
           {
             model: db.User,
             as: "userPostData",
             attributes: {
-              exclude: ["password"],
+              exclude: ["password", "userId", "image"],
             },
-          },
-          {
-            model: db.DetailPost,
-            as: "postDetailData",
+            include: [
+              {
+                model: db.Company,
+                as: "userCompanyData",
+              },
+            ],
           },
         ],
-        order: [["timePost", "DESC"]],
-        limit: query.limit,
-        offset: query.offset,
-      });
-
-      if (post) {
-        resolve(post);
-      } else {
-        resolve([]);
+      };
+      if (data.searchKey) {
+        objectQuery.where = {
+          ...objectQuery.where,
+          [Op.or]: [
+            db.Sequelize.where(db.Sequelize.col("postDetailData.name"), {
+              [Op.like]: `%${data.searchKey}%`,
+            }),
+            {
+              id: {
+                [Op.like]: `%${data.searchKey}%`,
+              },
+            },
+          ],
+        };
       }
-    } catch (e) {
-      reject(e);
-    }
+      let post = await db.Post.findAndCountAll(objectQuery);
+      if (post) {
+        resolve({
+          errCode: 0,
+          data: post.rows,
+          count: post.count,
+        });
+      }
+    } catch (e) {}
   });
 };
 let handleCreateNewPost = (data) => {

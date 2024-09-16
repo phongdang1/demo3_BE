@@ -111,6 +111,18 @@ let getAllUserOfCompany = async (req, res) => {
     });
   }
 };
+let handleApproveCompany = async (req, res) => {
+  try {
+    let data = await companyService.handleApproveCompany(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Approve company failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   getAllCompanies: getAllCompanies,
@@ -122,4 +134,5 @@ module.exports = {
   handleUnBanCompany: handleUnBanCompany,
   getCompanyByUserId: getCompanyByUserId,
   getAllUserOfCompany: getAllUserOfCompany,
+  handleApproveCompany: handleApproveCompany,
 };
