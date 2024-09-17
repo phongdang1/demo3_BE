@@ -64,7 +64,7 @@ let handleUpdateCompany = async (req, res) => {
 };
 let handleBanCompany = async (req, res) => {
   try {
-    let data = await companyService.handleBanCompany(req.query.id);
+    let data = await companyService.handleBanCompany(req.body);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -76,7 +76,7 @@ let handleBanCompany = async (req, res) => {
 };
 let handleUnBanCompany = async (req, res) => {
   try {
-    let data = await companyService.handleUnBanCompany(req.query.id);
+    let data = await companyService.handleUnBanCompany(req.body);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);

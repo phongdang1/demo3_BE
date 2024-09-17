@@ -88,7 +88,7 @@ let getAllSkillByCategory = (categoryJobCode) => {
           errMessage: "Missing required parameter",
         });
       } else {
-        let skills = await db.Skills.findAll({
+        let skills = await db.Skill.findAll({
           where: { categoryJobCode: categoryJobCode },
         });
         resolve({
@@ -111,15 +111,8 @@ let getSkillById = (skillId) => {
           errMessage: "Missing required parameter",
         });
       } else {
-        let skill = await db.Skills.findOne({
+        let skill = await db.Skill.findOne({
           where: { id: skillId },
-          include: {
-            model: db.AllCode,
-            as: "jobTypeSkillData",
-            attributes: ["value", "code"],
-          },
-          raw: true,
-          nest: true,
         });
         if (!skill) {
           resolve({
