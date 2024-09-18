@@ -103,6 +103,7 @@ let getAllCompanies = (data) => {
         };
         if (data.searchKey) {
           objectQuery.where = {
+            ...objectQuery.where,
             [Op.or]: [
               { name: { [Op.like]: `%${data.searchKey}%` } },
               { address: { [Op.like]: `%${data.searchKey}%` } },
