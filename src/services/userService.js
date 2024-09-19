@@ -326,126 +326,84 @@ let handleSetDataUserDetail = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.userId || !data.data) {
-        resolve({
+        return resolve({
           errCode: 1,
           errMessage: "Missing required fields",
         });
-      } else {
-        let user = await db.User.findOne({
-          where: { id: data.userId },
-          attributes: {
-            exclude: ["password"],
-          },
-          raw: false,
-        });
-        if (user) {
-          if (
-            data.image ||
-            data.dob ||
-            data.firstName ||
-            data.lastName ||
-            data.address ||
-            data.phoneNumber
-          ) {
-            if (data.image) {
-              let uploadResponse = await cloudinary.uploader.upload(
-                data.image,
-                {
-                  upload_preset: "ml_default",
-                }
-              );
-              user.image = uploadResponse.url;
-            }
-            if (data.dob) {
-              user.dob = data.dob;
-            }
-            if (data.firstName) {
-              user.firstName = data.firstName;
-            }
-            if (data.lastName) {
-              user.lastName = data.lastName;
-            }
-            if (data.address) {
-              user.address = data.address;
-            }
-            if (data.phoneNumber) {
-              user.phoneNumber = data.phoneNumber;
-            }
-            await user.save();
-          }
-          let userDetail = await db.UserDetail.findOne({
-            where: { userId: user.id },
-            raw: false,
-          });
-          if (userDetail) {
-            userDetail.addressCode = data.data.addressCode
-              ? data.data.addressCode
-              : null;
-            userDetail.salaryJobCode = data.data.salaryJobCode
-              ? data.data.salaryJobCode
-              : null;
-            userDetail.experienceJobCode = data.data.experienceJobCode
-              ? data.data.experienceJobCode
-              : null;
-            userDetail.genderCode = data.data.genderCode
-              ? data.data.genderCode
-              : null;
-            userDetail.categoryJobCode = data.data.categoryJobCode;
-            userDetail.jobLevelCode = data.data.jobLevelCode
-              ? data.data.jobLevelCode
-              : null;
-            userDetail.workTypeCode = data.data.workTypeCode
-              ? data.data.workTypeCode
-              : null;
-            userDetail.isTakeMail = data.data.isTakeMail
-              ? data.data.isTakeMail
-              : 0;
-            userDetail.isFindJob = data.data.isFindJob
-              ? data.data.isFindJob
-              : 0;
-            userDetail.file = data.data.file ? data.data.file : null;
-            await userDetail.save();
-          } else {
-            let params = {
-              userId: user.id,
-              addressCode: data.data.addressCode ? data.data.addressCode : null,
-              salaryJobCode: data.data.salaryJobCode
-                ? data.data.salaryJobCode
-                : null,
-              experienceJobCode: data.data.experienceJobCode
-                ? data.data.experienceJobCode
-                : null,
-              genderCode: data.data.genderCode ? data.data.genderCode : null,
-              categoryJobCode: data.data.categoryJobCode
-                ? data.data.categoryJobCode
-                : null,
-              jobLevelCode: data.data.jobLevelCode
-                ? data.data.jobLevelCode
-                : null,
-              workTypeCode: data.data.workTypeCode
-                ? data.data.workTypeCode
-                : null,
-              isTakeMail: data.data.isTakeMail ? data.data.isTakeMail : 0,
-              isFindJob: data.data.isFindJob ? data.data.isFindJob : 0,
-              file: data.data.file ? data.data.file : null,
-            };
-            await db.UserDetail.create(params);
-          }
-          user.isUpdate = 1;
-          await user.save();
-          resolve({
-            errCode: 0,
-            errMessage: "Set data user detail succeed",
-            user: user,
-            data: data.data,
-          });
-        } else {
-          resolve({
-            errCode: 3,
-            errMessage: "User is not exist",
-          });
-        }
       }
+
+      let user = await db.User.findOne({
+        where: { id: data.userId },
+        attributes: { exclude: ["password"] },
+        raw: false,
+      });
+
+      if (!user) {
+        return resolve({
+          errCode: 3,
+          errMessage: "User does not exist",
+        });
+      }
+
+      // Update user information if provided
+      if (
+        data.image ||
+        data.dob ||
+        data.firstName ||
+        data.lastName ||
+        data.address ||
+        data.phoneNumber
+      ) {
+        if (data.image) {
+          let uploadResponse = await cloudinary.uploader.upload(data.image, {
+            upload_preset: "ml_default",
+          });
+          user.image = uploadResponse.url;
+        }
+
+        user.dob = data.dob || user.dob;
+        user.firstName = data.firstName || user.firstName;
+        user.lastName = data.lastName || user.lastName;
+        user.address = data.address || user.address;
+        user.phoneNumber = data.phoneNumber || user.phoneNumber;
+
+        await user.save();
+      }
+
+      // Handle UserDetail update or create
+      let userDetail = await db.UserDetail.findOne({
+        where: { userId: user.id },
+        raw: false,
+      });
+
+      let userDetailData = {
+        addressCode: data.data.addressCode || null,
+        salaryJobCode: data.data.salaryJobCode || null,
+        experienceJobCode: data.data.experienceJobCode || null,
+        genderCode: data.data.genderCode || null,
+        categoryJobCode: data.data.categoryJobCode || null,
+        jobLevelCode: data.data.jobLevelCode || null,
+        workTypeCode: data.data.workTypeCode || null,
+        isTakeMail: data.data.isTakeMail || 0,
+        isFindJob: data.data.isFindJob || 0,
+        file: data.data.file || null,
+      };
+
+      if (userDetail) {
+        // Update existing user detail
+        Object.assign(userDetail, userDetailData);
+        await userDetail.save();
+      } else {
+        // Create new user detail
+        await db.UserDetail.create({ userId: user.id, ...userDetailData });
+      }
+
+      resolve({
+        errCode: 0,
+        errMessage: "Set data user detail succeeded",
+        user: user,
+        data: data.data,
+      });
     } catch (error) {
       reject(error);
     }
