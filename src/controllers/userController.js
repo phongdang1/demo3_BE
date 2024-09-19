@@ -54,9 +54,23 @@ let handleLogin = async (req, res) => {
   }
 };
 
+let handleSetDataUserDetail = async (req, res) => {
+  try {
+    let data = await userService.handleSetDataUserDetail(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server",
+    });
+  }
+};
+
 module.exports = {
   getAllUsers: getAllUsers,
   getUsersById: getUsersById,
   handleCreateNewUser: handleCreateNewUser,
   handleLogin: handleLogin,
+  handleSetDataUserDetail: handleSetDataUserDetail,
 };

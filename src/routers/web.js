@@ -14,6 +14,7 @@ let initWebRoutes = (app) => {
   router.get("/getUserById", userController.getUsersById);
   router.post("/createNewUser", userController.handleCreateNewUser);
   router.post("/login", userController.handleLogin);
+  router.post("/setDataUserDetail", userController.handleSetDataUserDetail);
 
   //===================API AllCode========================//
   router.get("/getAllCode", allCodeController.getAllCode);
