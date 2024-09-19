@@ -50,6 +50,8 @@ module.exports = (sequelize, DataTypes) => {
       roleCode: DataTypes.STRING,
       companyId: DataTypes.STRING,
       statusCode: DataTypes.STRING,
+      typeLogin: DataTypes.STRING,
+      isVerify: DataTypes.TINYINT,
       isUpdate: DataTypes.TINYINT,
       isVip: DataTypes.TINYINT,
     },

@@ -47,7 +47,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         unique: true,
       },
-      censorCode: {
+      typeCompany: {
         type: Sequelize.STRING,
       },
       statusCode: {
@@ -56,17 +56,9 @@ module.exports = {
       file: {
         type: Sequelize.BLOB("long"),
       },
-      allowPost: {
-        type: Sequelize.INTEGER,
-        defaultValue: 5,
-      },
       allowHotPost: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
-      },
-      allowCvFree: {
-        type: Sequelize.INTEGER,
-        defaultValue: 5,
       },
       allowCV: {
         type: Sequelize.INTEGER,

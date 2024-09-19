@@ -133,6 +133,7 @@ let handleCreateNewCompany = (data) => {
         !data.description ||
         !data.phonenumber ||
         !data.amountEmployer ||
+        !data.typeCompany ||
         !data.userId
       ) {
         resolve({
@@ -179,12 +180,10 @@ let handleCreateNewCompany = (data) => {
             phonenumber: data.phonenumber,
             amountEmployer: data.amountEmployer,
             taxnumber: data.taxnumber,
-            censorCode: data.censorCode,
             statusCode: "ACTIVE",
+            typeCompany: data.typeCompany,
             file: data.file ? data.file : null,
-            allowPost: data.allowPost,
             allowHotPost: data.allowHotPost,
-            allowCvFree: data.allowCvFree,
             allowCv: data.allowCv,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -222,7 +221,7 @@ let handleCreateNewCompany = (data) => {
 let handleAddUserToCompany = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.phoneNumber || !data.companyId) {
+      if (!data.email || !data.companyId) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
@@ -233,7 +232,7 @@ let handleAddUserToCompany = (data) => {
         });
         if (company) {
           let isExist = await db.User.findOne({
-            where: { phoneNumber: data.phoneNumber },
+            where: { email: data.email },
           });
           if (isExist) {
             if (isExist.roleCode !== "EMPLOYER") {
@@ -295,7 +294,7 @@ let getCompanyById = (id) => {
         } else {
           let listUserOfCompany = await db.User.findAll({
             where: { companyId: company.id },
-            attributes: ["id", "phoneNumber"],
+            attributes: ["id", "email", "firstName", "lastName"],
           });
           company.userData = listUserOfCompany;
           listUserOfCompany = listUserOfCompany.map((item) => {
@@ -438,11 +437,11 @@ let handleUpdateCompany = (data) => {
               company.phonenumber = data.phonenumber;
               company.amountEmployer = data.amountEmployer;
               company.taxnumber = data.taxnumber;
-              company.censorCode = data.censorCode;
+              company.typeCompany = data.typeCompany;
               company.file = data.file ? data.file : null;
-              company.allowPost = data.allowPost;
+
               company.allowHotPost = data.allowHotPost;
-              company.allowCvFree = data.allowCvFree;
+
               company.allowCv = data.allowCv;
               company.updatedAt = new Date();
               await company.save({ silent: true });
@@ -616,7 +615,7 @@ let getAllUserOfCompany = (companyId) => {
         } else {
           let listUserOfCompany = await db.User.findAndCountAll({
             where: { companyId: company.id },
-            attributes: ["id", "phoneNumber", "lastName", "firstName"],
+            attributes: ["id", "email", "lastName", "firstName"],
           });
           resolve({
             errCode: 0,

@@ -17,13 +17,13 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
+        unique: true,
       },
       address: {
         type: Sequelize.STRING,
       },
       phoneNumber: {
         type: Sequelize.STRING,
-        unique: true,
       },
       password: {
         type: Sequelize.STRING,
@@ -43,6 +43,13 @@ module.exports = {
       statusCode: {
         type: Sequelize.STRING,
       },
+      typeLogin: {
+        type: Sequelize.STRING,
+      },
+      isVerify: {
+        type: Sequelize.TINYINT,
+      },
+
       isUpdate: {
         type: Sequelize.TINYINT,
       },

@@ -59,6 +59,29 @@ let checkUserPhoneNumber = (userPhoneNumber) => {
     }
   });
 };
+let checkUserEmail = (userEmail) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!userEmail) {
+        resolve({
+          errCode: 2,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let user = await db.User.findOne({
+          where: { email: userEmail },
+        });
+        if (user) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 let handleHashUserPassword = (password) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -191,17 +214,17 @@ let getUsersById = (userId) => {
 let handleCreateNewUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.phoneNumber || !data.password) {
+      if (!data.email || !data.password) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
         });
       } else {
-        let checkExist = await checkUserPhoneNumber(data.phoneNumber);
+        let checkExist = await checkUserEmail(data.email);
         if (checkExist) {
           resolve({
             errCode: 2,
-            errMessage: "User's phone already exist",
+            errMessage: "User's email already exist",
           });
         } else {
           let imageUrl = "";
@@ -218,17 +241,19 @@ let handleCreateNewUser = (data) => {
             imageUrl = uploadResponse.url;
           }
           let newUser = await db.User.create({
-            phoneNumber: data.phoneNumber,
+            phoneNumber: data.phoneNumber ? data.phoneNumber : null,
             password: hashPassword,
-            email: data.email ? data.email : null,
+            email: data.email,
             firstName: data.firstName ? data.firstName : null,
             lastName: data.lastName ? data.lastName : null,
             address: data.address ? data.address : null,
             point: data.point ? data.point : 0,
             image: imageUrl ? imageUrl : null,
             dob: data.dob ? data.dob : null,
-            roleCode: data.roleCode ? data.roleCode : "CANDIDATE",
+            roleCode: data.roleCode ? data.roleCode : "USER",
             statusCode: data.statusCode ? data.statusCode : "ACTIVE",
+            typeLogin: data.typeLogin ? data.typeLogin : "LOCAL",
+            isVerify: data.isVerify ? data.isVerify : 0,
             isUpdate: data.isUpdate ? data.isUpdate : 0,
             isVip: data.isVip ? data.isVip : 0,
             companyId: data.companyId ? data.companyId : null,
@@ -256,7 +281,7 @@ let handleCreateNewUser = (data) => {
 let handleLogin = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.phoneNumber || !data.password) {
+      if (!data.email || !data.password) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
@@ -265,7 +290,7 @@ let handleLogin = (data) => {
         let userData = {};
         let user = await db.User.findOne({
           where: {
-            phoneNumber: data.phoneNumber,
+            email: data.email,
           },
         });
         if (user) {
@@ -281,7 +306,7 @@ let handleLogin = (data) => {
               userData.errCode = 3;
             }
           } else {
-            userData.errMessage = "Password or PhoneNumber is incorrect";
+            userData.errMessage = "Password or Email is incorrect";
             userData.errCode = 2;
           }
         } else {
