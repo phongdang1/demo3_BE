@@ -339,7 +339,14 @@ let handleSetDataUserDetail = (data) => {
           raw: false,
         });
         if (user) {
-          if (data.image || data.dob) {
+          if (
+            data.image ||
+            data.dob ||
+            data.firstName ||
+            data.lastName ||
+            data.address ||
+            data.phoneNumber
+          ) {
             if (data.image) {
               let uploadResponse = await cloudinary.uploader.upload(
                 data.image,
@@ -352,7 +359,19 @@ let handleSetDataUserDetail = (data) => {
             if (data.dob) {
               user.dob = data.dob;
             }
-            await user.save({ fields: ["image", "dob"] });
+            if (data.firstName) {
+              user.firstName = data.firstName;
+            }
+            if (data.lastName) {
+              user.lastName = data.lastName;
+            }
+            if (data.address) {
+              user.address = data.address;
+            }
+            if (data.phoneNumber) {
+              user.phoneNumber = data.phoneNumber;
+            }
+            await user.save();
           }
           let userDetail = await db.UserDetail.findOne({
             where: { userId: user.id },
@@ -412,6 +431,8 @@ let handleSetDataUserDetail = (data) => {
             };
             await db.UserDetail.create(params);
           }
+          user.isUpdate = 1;
+          await user.save();
           resolve({
             errCode: 0,
             errMessage: "Set data user detail succeed",
