@@ -369,8 +369,6 @@ let handleSetDataUserDetail = (data) => {
 
         await user.save();
       }
-
-      // Handle UserDetail update or create
       let userDetail = await db.UserDetail.findOne({
         where: { userId: user.id },
         raw: false,
@@ -390,11 +388,9 @@ let handleSetDataUserDetail = (data) => {
       };
 
       if (userDetail) {
-        // Update existing user detail
         Object.assign(userDetail, userDetailData);
         await userDetail.save();
       } else {
-        // Create new user detail
         await db.UserDetail.create({ userId: user.id, ...userDetailData });
       }
 
