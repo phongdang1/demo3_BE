@@ -85,7 +85,7 @@ let checkCompany = (name, id) => {
     }
   });
 };
-let getAllCompanies = (data) => {
+let getAllCompaniesWithLimit = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.limit || !data.offset) {
@@ -118,6 +118,32 @@ let getAllCompanies = (data) => {
           count: result.count ? result.count : 0,
         });
       }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let getAllCompanies = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let objectQuery = {
+        where: { statusCode: "ACTIVE" },
+      };
+      if (data.searchKey) {
+        objectQuery.where = {
+          ...objectQuery.where,
+          [Op.or]: [
+            { name: { [Op.like]: `%${data.searchKey}%` } },
+            { address: { [Op.like]: `%${data.searchKey}%` } },
+          ],
+        };
+      }
+      let result = await db.Company.findAll(objectQuery);
+      resolve({
+        errCode: 0,
+        errMessage: "Get all companies succeed",
+        data: result ? result : [],
+      });
     } catch (error) {
       reject(error);
     }
@@ -695,6 +721,7 @@ let handleApproveCompany = (data) => {
 };
 
 module.exports = {
+  getAllCompaniesWithLimit: getAllCompaniesWithLimit,
   getAllCompanies: getAllCompanies,
   handleCreateNewCompany: handleCreateNewCompany,
   handleAddUserToCompany: handleAddUserToCompany,

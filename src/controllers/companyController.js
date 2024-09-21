@@ -1,5 +1,18 @@
 import companyService from "../services/companyService";
 
+let getAllCompaniesWithLimit = async (req, res) => {
+  try {
+    let data = await companyService.getAllCompaniesWithLimit(req.query);
+    console.log(data);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get all companys failed",
+      errorCode: -1,
+    });
+  }
+};
 let getAllCompanies = async (req, res) => {
   try {
     let data = await companyService.getAllCompanies(req.query);
@@ -125,6 +138,7 @@ let handleApproveCompany = async (req, res) => {
 };
 
 module.exports = {
+  getAllCompaniesWithLimit: getAllCompaniesWithLimit,
   getAllCompanies: getAllCompanies,
   handleCreateNewCompany: handleCreateNewCompany,
   handleAddUserToCompany: handleAddUserToCompany,

@@ -1,6 +1,7 @@
 import e from "express";
 import db from "../models/index";
 import { raw } from "body-parser";
+const { Op, where } = require("sequelize");
 require("dotenv").config();
 var nodemailer = require("nodemailer");
 let sendmail = (note, userMail, link = null) => {
@@ -32,10 +33,7 @@ let sendmail = (note, userMail, link = null) => {
   });
 };
 
-const { Op, where } = require("sequelize");
-
-// Get all post with user and detail post
-let getAllPost = (data) => {
+let getAllPostWithLimit = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.limit || !data.offset) {
@@ -133,9 +131,106 @@ let getAllPost = (data) => {
           count: post.count,
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      reject(e);
+    }
   });
 };
+
+let getAllPost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let objectQuery = {
+        attributes: { exclude: ["detailPostId"] },
+        nest: true,
+        raw: true,
+        include: [
+          {
+            model: db.DetailPost,
+            as: "postDetailData",
+            attributes: ["id", "name", "description", "amount"],
+            include: [
+              {
+                model: db.Allcode,
+                as: "jobTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "workTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "salaryTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "jobLevelPostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "expTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "genderPostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "provincePostData",
+                attributes: ["value", "code"],
+              },
+            ],
+          },
+          {
+            model: db.User,
+            as: "userPostData",
+            attributes: {
+              exclude: ["password", "userId", "image"],
+            },
+            include: [
+              {
+                model: db.Company,
+                as: "userCompanyData",
+              },
+            ],
+          },
+        ],
+      };
+      if (data.searchKey) {
+        objectQuery.where = {
+          ...objectQuery.where,
+          [Op.or]: [
+            db.Sequelize.where(db.Sequelize.col("postDetailData.name"), {
+              [Op.like]: `%${data.searchKey}%`,
+            }),
+            {
+              id: {
+                [Op.like]: `%${data.searchKey}%`,
+              },
+            },
+          ],
+        };
+      }
+      let post = await db.Post.findAll(objectQuery);
+      if (post) {
+        resolve({
+          errCode: 0,
+          message: "Get all post success",
+          data: post,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 let handleCreateNewPost = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -619,6 +714,7 @@ let handleReupPost = (data) => {
 
 module.exports = {
   getAllPost: getAllPost,
+  getAllPostWithLimit: getAllPostWithLimit,
   handleCreateNewPost: handleCreateNewPost,
   getDetailPostById: getDetailPostById,
   handleUpdatePost: handleUpdatePost,

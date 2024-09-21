@@ -13,6 +13,19 @@ let getAllUsers = async (req, res) => {
     });
   }
 };
+let getAllUsersWithLimit = async (req, res) => {
+  try {
+    let data = await userService.getAllUsersWithLimit(req.query);
+    console.log(data);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get all users failed",
+      errorCode: -1,
+    });
+  }
+};
 let getUsersById = async (req, res) => {
   try {
     let data = await userService.getUsersById(req.query.id);
@@ -69,6 +82,7 @@ let handleSetDataUserDetail = async (req, res) => {
 
 module.exports = {
   getAllUsers: getAllUsers,
+  getAllUsersWithLimit: getAllUsersWithLimit,
   getUsersById: getUsersById,
   handleCreateNewUser: handleCreateNewUser,
   handleLogin: handleLogin,

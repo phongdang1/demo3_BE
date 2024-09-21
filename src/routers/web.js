@@ -11,6 +11,7 @@ const router = express.Router();
 let initWebRoutes = (app) => {
   //===================API USER========================//
   router.get("/getAllUsers", userController.getAllUsers);
+  router.get("/getAllUsersWithLimit", userController.getAllUsersWithLimit);
   router.get("/getUserById", userController.getUsersById);
   router.post("/createNewUser", userController.handleCreateNewUser);
   router.post("/login", userController.handleLogin);
@@ -29,6 +30,7 @@ let initWebRoutes = (app) => {
   router.post("/updateSkill", skillController.handleUpdateSkill);
 
   //==================API POST==========================//
+  router.get("/getAllPostWithLimit", postController.getAllPostWithLimit);
   router.get("/getAllPost", postController.getAllPost);
   router.post("/createNewPost", postController.handleCreateNewPost);
   router.get("/getDetailPostById", postController.getDetailPostById);
@@ -39,6 +41,10 @@ let initWebRoutes = (app) => {
   router.post("/reupPost", postController.handleReupPost);
 
   //==================API COMPANY==========================//
+  router.get(
+    "/getAllCompaniesWithLimit",
+    companyController.getAllCompaniesWithLimit
+  );
   router.get("/getAllCompanies", companyController.getAllCompanies);
   router.post("/createNewCompany", companyController.handleCreateNewCompany);
   router.post("/addUserToCompany", companyController.handleAddUserToCompany);

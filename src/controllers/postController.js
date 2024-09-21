@@ -12,6 +12,18 @@ let getAllPost = async (req, res) => {
     });
   }
 };
+let getAllPostWithLimit = async (req, res) => {
+  try {
+    let data = await postService.getAllPostWithLimit(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server",
+    });
+  }
+};
 let handleCreateNewPost = async (req, res) => {
   try {
     let data = await postService.handleCreateNewPost(req.body);
@@ -102,6 +114,7 @@ let handleReupPost = async (req, res) => {
 
 module.exports = {
   getAllPost: getAllPost,
+  getAllPostWithLimit: getAllPostWithLimit,
   handleCreateNewPost: handleCreateNewPost,
   getDetailPostById: getDetailPostById,
   handleUpdatePost: handleUpdatePost,

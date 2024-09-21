@@ -96,7 +96,7 @@ let handleHashUserPassword = (password) => {
   });
 };
 
-let getAllUsers = (data) => {
+let getAllUsersWithLimit = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.limit || !data.offset) {
@@ -140,6 +140,46 @@ let getAllUsers = (data) => {
           count: result.count ? result.count : 0,
         });
       }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let getAllUsers = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let objectQuery = {
+        attributes: {
+          exclude: ["password"],
+        },
+        include: [
+          {
+            model: db.UserDetail,
+            as: "UserDetailData",
+            attributes: {
+              exclude: ["userId", "createdAt", "updatedAt"],
+            },
+          },
+        ],
+        raw: true,
+        nest: true,
+      };
+      if (data.searchKey) {
+        objectQuery.where = {
+          ...objectQuery.where,
+          [Op.or]: [
+            { firstName: { [Op.like]: `%${data.searchKey}%` } },
+            { lastName: { [Op.like]: `%${data.searchKey}%` } },
+            { phoneNumber: { [Op.like]: `%${data.searchKey}%` } },
+          ],
+        };
+      }
+      let result = await db.User.findAll(objectQuery);
+      resolve({
+        errCode: 0,
+        errMessage: "Get all users succeed",
+        data: result,
+      });
     } catch (error) {
       reject(error);
     }
@@ -344,8 +384,6 @@ let handleSetDataUserDetail = (data) => {
           errMessage: "User does not exist",
         });
       }
-
-      // Update user information if provided
       if (
         data.image ||
         data.dob ||
@@ -407,6 +445,7 @@ let handleSetDataUserDetail = (data) => {
 };
 
 module.exports = {
+  getAllUsersWithLimit: getAllUsersWithLimit,
   getAllUsers: getAllUsers,
   handleCreateNewUser: handleCreateNewUser,
   handleLogin: handleLogin,
