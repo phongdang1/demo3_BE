@@ -62,6 +62,9 @@ let initWebRoutes = (app) => {
     "/auth/google/callback",
     authController.googleAuthenticateCallback
   );
+  //===================API OTP========================//
+  router.post("/sendOtp", authController.handleSendOtp);
+  router.post("/verifyOtp", authController.handleVerifyOtp);
 
   return app.use("/", router);
 };
