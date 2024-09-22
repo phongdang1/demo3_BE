@@ -431,7 +431,13 @@ let handleSetDataUserDetail = (data) => {
       } else {
         await db.UserDetail.create({ userId: user.id, ...userDetailData });
       }
-
+      if (data.data.listSkills && Array.isArray(data.data.listSkills)) {
+        await db.UserSkill.destroy({ where: { userId: user.id } });
+        let objUserSkill = data.data.listSkills.map((item) => {
+          return { userId: user.id, skillId: item };
+        });
+        await db.UserSkill.bulkCreate(objUserSkill);
+      }
       resolve({
         errCode: 0,
         errMessage: "Set data user detail succeeded",
