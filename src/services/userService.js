@@ -8,7 +8,7 @@ require("dotenv").config();
 const { Op } = require("sequelize");
 let nodemailer = require("nodemailer");
 
-let sendMailToUser = (note, userMail, link = null) => {
+let sendMailToUser = (note, userMail = null) => {
   let transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -16,18 +16,38 @@ let sendMailToUser = (note, userMail, link = null) => {
       pass: process.env.EMAIL_APP_PASSWORD,
     },
   });
-
-  let mailOptions = {
+  const mailOptions = {
     from: process.env.EMAIL_APP,
-    to: userMail,
-    subject: "Thông báo từ trang Job Finder",
-    html: note,
+    to: userMail, // Địa chỉ email người nhận
+    subject: "Khôi phục mật khẩu từ Job Finder",
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Khôi phục mật khẩu</title>
+      </head>
+      <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
+        <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
+          <div style="background-color: #0056b3; color: #ffffff; padding: 20px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
+          </div>
+          <div style="padding: 20px; line-height: 1.6;">
+            <p>Xin chào,</p>
+            <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+            <p>Mật khẩu mới của bạn là: <strong>${note}</strong></p>
+            <p>Hãy sử dụng mật khẩu này để đăng nhập và vui lòng thay đổi mật khẩu ngay sau khi đăng nhập lần đầu.</p>
+          </div>
+          <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
+            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
+            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
   };
-  if (link) {
-    mailOptions.html =
-      note +
-      ` xem thông tin <a href='${process.env.URL_REACT}/${link}'>Tại đây</a> `;
-  }
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error.message);
@@ -449,6 +469,42 @@ let handleSetDataUserDetail = (data) => {
     }
   });
 };
+let handleForgotPassword = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.email) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let user = await db.User.findOne({
+          where: { email: data.email },
+          raw: false,
+        });
+        if (!user) {
+          resolve({
+            errCode: 2,
+            errMessage: "User's email does not exist. Please check again",
+          });
+        } else {
+          let newPassword = `${new Date().getTime().toString()}@jobfinder`;
+          let hashPassword = await handleHashUserPassword(newPassword);
+          user.password = hashPassword;
+          await user.save();
+          let note = newPassword;
+          sendMailToUser(note, data.email);
+          resolve({
+            errCode: 0,
+            errMessage: "Reset password succeed",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 module.exports = {
   getAllUsersWithLimit: getAllUsersWithLimit,
@@ -457,4 +513,5 @@ module.exports = {
   handleLogin: handleLogin,
   getUsersById: getUsersById,
   handleSetDataUserDetail: handleSetDataUserDetail,
+  handleForgotPassword: handleForgotPassword,
 };
