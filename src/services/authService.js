@@ -14,7 +14,7 @@ let sendmail = (note, userMail = null) => {
   });
   const mailOptions = {
     from: process.env.EMAIL_APP,
-    to: userMail, // Địa chỉ email người nhận
+    to: userMail,
     subject: "Mã xác thực OTP từ Job Finder",
     html: `
       <!DOCTYPE html>
@@ -71,60 +71,49 @@ let handleVerifyOtp = (email, otp) => {
   return new Promise(async (resolve, reject) => {
     try {
       const otpInfo = otps[email];
-
-      // OTP không tồn tại
       if (!otpInfo) {
         return resolve({
           errCode: -1,
-          errMessage: "OTP không tồn tại hoặc đã hết hạn",
+          errMessage: "OTP does not exist",
         });
       }
-
-      // OTP đã hết hạn
       if (isOtpExpired(otpInfo.expirationTime)) {
-        delete otps[email]; // Xóa OTP đã hết hạn
+        delete otps[email];
         return resolve({
           errCode: -1,
-          errMessage: "OTP đã hết hạn",
+          errMessage: "OTP is expired",
         });
       }
 
-      // OTP không chính xác
       if (otpInfo.otp !== otp) {
         return resolve({
           errCode: -1,
-          errMessage: "OTP không chính xác",
+          errMessage: "OTP is incorrect",
         });
       }
-
-      // OTP đúng, cập nhật trạng thái xác thực của người dùng
-      delete otps[email]; // Xóa OTP sau khi xác thực thành công
-
-      // Tìm kiếm người dùng trong cơ sở dữ liệu
+      delete otps[email];
       let user = await db.User.findOne({
         where: { email: email },
         attributes: { exclude: ["userId"] },
         raw: false,
       });
-
-      // Cập nhật trạng thái xác thực
       if (user) {
         user.isVerify = 1;
         await user.save();
         return resolve({
           errCode: 0,
-          errMessage: "Xác thực OTP thành công",
+          errMessage: "Verify OTP successfully",
         });
       } else {
         return resolve({
           errCode: -1,
-          errMessage: "Người dùng không tồn tại",
+          errMessage: "User does not exist",
         });
       }
     } catch (error) {
       reject({
         errCode: -2,
-        errMessage: "Có lỗi xảy ra khi xử lý OTP",
+        errMessage: "Error from server",
         error: error.message,
       });
     }
