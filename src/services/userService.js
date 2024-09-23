@@ -458,6 +458,8 @@ let handleSetDataUserDetail = (data) => {
         });
         await db.UserSkill.bulkCreate(objUserSkill);
       }
+      user.isUpdate = 1;
+      await user.save();
       resolve({
         errCode: 0,
         errMessage: "Set data user detail succeeded",

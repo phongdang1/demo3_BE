@@ -2,7 +2,7 @@ import allCodeService from "../services/allCodeService";
 
 let getAllCode = async (req, res) => {
   try {
-    let data = await allCodeService.getAllCode(req.query);
+    let data = await allCodeService.getAllCode(req.query.type);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
