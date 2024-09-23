@@ -19,6 +19,7 @@ let initWebRoutes = (app) => {
   router.post("/forgotPassword", userController.handleForgotPassword);
 
   //===================API AllCode========================//
+  router.get("/getAllCodeByType", allCodeController.getAllCodeByType);
   router.get("/getAllCode", allCodeController.getAllCode);
   router.post("/createNewCode", allCodeController.handleCreateNewAllCode);
   router.post("/updateCode", allCodeController.handleUpdateAllCode);

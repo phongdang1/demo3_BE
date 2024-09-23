@@ -35,7 +35,7 @@ let handleCreateNewAllCode = (data) => {
     }
   });
 };
-let getAllCode = (typeInput) => {
+let getAllCodeByType = (typeInput) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!typeInput) {
@@ -52,6 +52,19 @@ let getAllCode = (typeInput) => {
           data: allcode,
         });
       }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let getAllCode = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let allcode = await db.Allcode.findAll();
+      resolve({
+        errCode: 0,
+        data: allcode,
+      });
     } catch (error) {
       reject(error);
     }
@@ -100,6 +113,7 @@ let handleUpdateAllCode = (data) => {
 
 module.exports = {
   handleCreateNewAllCode: handleCreateNewAllCode,
+  getAllCodeByType: getAllCodeByType,
   getAllCode: getAllCode,
   handleUpdateAllCode: handleUpdateAllCode,
 };
