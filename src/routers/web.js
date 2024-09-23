@@ -5,6 +5,7 @@ import companyController from "../controllers/companyController";
 import authController from "../controllers/authController";
 import allCodeController from "../controllers/allCodeController";
 import skillController from "../controllers/skillController";
+import cvPostController from "../controllers/cvPostController";
 
 const router = express.Router();
 
@@ -41,6 +42,11 @@ let initWebRoutes = (app) => {
   router.post("unBanPost", postController.handleUnBanPost);
   router.post("/approvePost", postController.handleApprovePost);
   router.post("/reupPost", postController.handleReupPost);
+
+  //==================API CV_POST==========================//
+  router.post("/applyJob", cvPostController.handleApplyJob);
+  router.get("/getAllListCvByPost", cvPostController.getAllListCvByPost);
+  router.get("/getDetailCvPostById", cvPostController.getDetailCvPostById);
 
   //==================API COMPANY==========================//
   router.get(
