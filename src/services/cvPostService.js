@@ -4,6 +4,28 @@ import CommonUtils from "../utils/CommonUtils";
 import { raw } from "body-parser";
 const { Op, and } = require("sequelize");
 
+let caculateMatchUserWithFilter = async (userData, listSkillRequired) => {
+  let match = 0;
+  let myListSkillRequired = new Map();
+  listSkillRequired.forEach((item) => {
+    myListSkillRequired.set(item.id, item.name);
+  });
+  let userskill = await db.UserSkill.findAll({
+    where: { userId: userData.userId },
+  });
+  for (let key of myListSkillRequired.keys()) {
+    let temp = [...userskill];
+    temp.forEach((item, index) => {
+      if (item.SkillId === key) {
+        userskill.splice(index, 1);
+        match++;
+      }
+    });
+  }
+  let matchFromCV = await caculateMatchCv(userData.file, myListSkillRequired);
+  return match + matchFromCV;
+};
+
 let handleApplyJob = (data) => {
   return new Promise(async (resolve, reject) => {
     try {

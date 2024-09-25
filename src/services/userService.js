@@ -433,16 +433,19 @@ let handleSetDataUserDetail = (data) => {
       });
 
       let userDetailData = {
-        addressCode: data.data.addressCode || null,
-        salaryJobCode: data.data.salaryJobCode || null,
-        experienceJobCode: data.data.experienceJobCode || null,
-        genderCode: data.data.genderCode || null,
-        categoryJobCode: data.data.categoryJobCode || null,
-        jobLevelCode: data.data.jobLevelCode || null,
-        workTypeCode: data.data.workTypeCode || null,
+        addressCode: data.data.addressCode || userDetail.addressCode || null,
+        salaryJobCode:
+          data.data.salaryJobCode || userDetail.salaryJobCode || null,
+        experienceJobCode:
+          data.data.experienceJobCode || userDetail.experienceJobCode || null,
+        genderCode: data.data.genderCode || userDetail.genderCode || null,
+        categoryJobCode:
+          data.data.categoryJobCode || userDetail.categoryJobCode || null,
+        jobLevelCode: data.data.jobLevelCode || userDetail.jobLevelCode || null,
+        workTypeCode: data.data.workTypeCode || userDetail.workTypeCode || null,
         isTakeMail: data.data.isTakeMail || 0,
         isFindJob: data.data.isFindJob || 0,
-        file: data.data.file || null,
+        file: data.data.file || userDetail.file || null,
       };
 
       if (userDetail) {
