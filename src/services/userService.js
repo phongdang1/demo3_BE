@@ -145,6 +145,7 @@ let getAllUsersWithLimit = (data) => {
         };
         if (data.searchKey) {
           objectQuery.where = {
+            ...objectQuery.where,
             [Op.or]: [
               { firstName: { [Op.like]: `%${data.searchKey}%` } },
               { lastName: { [Op.like]: `%${data.searchKey}%` } },
@@ -457,7 +458,7 @@ let handleSetDataUserDetail = (data) => {
       if (data.data.listSkills && Array.isArray(data.data.listSkills)) {
         await db.UserSkill.destroy({ where: { userId: user.id } });
         let objUserSkill = data.data.listSkills.map((item) => {
-          return { userId: user.id, skillId: item };
+          return { UserId: user.id, SkillId: item };
         });
         await db.UserSkill.bulkCreate(objUserSkill);
       }
