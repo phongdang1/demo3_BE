@@ -56,6 +56,55 @@ let sendMailToUser = (note, userMail = null) => {
   });
 };
 
+let sendMailBanUser = (note, userMail = null) => {
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
+  const mailOptions = {
+    from: process.env.EMAIL_APP,
+    to: userMail, // Địa chỉ email người nhận
+    subject: "Thông báo từ Job Finder",
+    html: `
+
+      <!DOCTYPE html>
+      <html>
+      <head>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+        <title>Thông báo</title>
+      </head>
+      <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
+        <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
+          <div style="background-color: #0056b3; color: #ffffff; padding: 20px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
+          </div>
+          <div style="padding: 20px; line-height: 1.6;">
+            <p>Xin chào,</p>
+            <p>${note}</p>
+            <p>Vui lòng liên hệ với chúng tôi để biết thêm chi tiết.</p>
+          </div>
+          <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
+            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
+            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error.message);
+    } else {
+    }
+  });
+};
+
 let checkUserPhoneNumber = (userPhoneNumber) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -551,6 +600,78 @@ let handleChangePassword = (data) => {
   });
 };
 
+let handleBanUser = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.userId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let user = await db.User.findOne({
+          where: { id: data.userId },
+          raw: false,
+        });
+        if (!user) {
+          resolve({
+            errCode: 2,
+            errMessage: "User does not exist",
+          });
+        } else {
+          user.statusCode = "BANNED";
+          await user.save();
+          let note =
+            "Tài khoản của bạn đã vi phạm chính sách của chúng tôi và đã bị khóa";
+          sendMailBanUser(note, user.email);
+          resolve({
+            errCode: 0,
+            errMessage: "Ban user succeed",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let handleUnbanUser = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.userId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let user = await db.User.findOne({
+          where: { id: data.userId },
+          raw: false,
+        });
+        if (!user) {
+          resolve({
+            errCode: 2,
+            errMessage: "User does not exist",
+          });
+        } else {
+          user.statusCode = "ACTIVE";
+          await user.save();
+          let note =
+            "Tài khoản của bạn đã được mở khóa. Bạn có thể sử dụng lại tài khoản của mình tại Job Finder";
+          sendMailBanUser(note, user.email);
+          resolve({
+            errCode: 0,
+            errMessage: "Unban user succeed",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getAllUsersWithLimit: getAllUsersWithLimit,
   getAllUsers: getAllUsers,
@@ -560,4 +681,6 @@ module.exports = {
   handleSetDataUserDetail: handleSetDataUserDetail,
   handleForgotPassword: handleForgotPassword,
   handleChangePassword: handleChangePassword,
+  handleBanUser: handleBanUser,
+  handleUnbanUser: handleUnbanUser,
 };

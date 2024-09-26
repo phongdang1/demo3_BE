@@ -18,6 +18,7 @@ let initWebRoutes = (app) => {
   router.post("/login", userController.handleLogin);
   router.post("/setDataUserDetail", userController.handleSetDataUserDetail);
   router.post("/forgotPassword", userController.handleForgotPassword);
+  router.post("/changePassword", userController.handleChangePassword);
 
   //===================API AllCode========================//
   router.get("/getAllCodeByType", allCodeController.getAllCodeByType);
@@ -29,6 +30,7 @@ let initWebRoutes = (app) => {
   router.post("/createNewSkill", skillController.handleCreateNewSkill);
   router.post("/deleteSkill", skillController.handleDeleteSkill);
   router.get("/getAllSkillByCategory", skillController.getAllSkillByCategory);
+  router.get("/getAllSkillWithLimit", skillController.getAllSkillWithLimit);
   router.get("/getSkillById", skillController.getSkillById);
   router.post("/updateSkill", skillController.handleUpdateSkill);
 

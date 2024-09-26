@@ -7,6 +7,8 @@ module.exports = {
         id: 10,
         name: "Frontend Developer",
         description: "Develop and maintain the front-end of web applications.",
+        requirement: "HTML, CSS, JavaScript, ReactJS",
+        benefit: "Attractive salary, bonus, insurance, etc.",
         amount: 3,
         categoryJobCode: "congNgheThongTin", // Category Job
         addressCode: "HCM", // Address
@@ -20,6 +22,8 @@ module.exports = {
         id: 11,
         name: "Backend Developer",
         description: "Create and manage server-side application logic.",
+        requirement: "NodeJS, Express, MongoDB, etc.",
+        benefit: "Attractive salary, bonus, insurance, etc.",
         amount: 2,
         categoryJobCode: "congNgheThongTin",
         addressCode: "DaNang",
@@ -33,6 +37,8 @@ module.exports = {
         id: 12,
         name: "Project Manager",
         description: "Oversee and manage project development and teams.",
+        requirement: "Leadership, project management, communication, etc.",
+        benefit: "Attractive salary, bonus, insurance, etc.",
         amount: 1,
         categoryJobCode: "quanLyNhanSu",
         addressCode: "HaNoi",

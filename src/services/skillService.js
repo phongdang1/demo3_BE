@@ -1,3 +1,4 @@
+import { raw } from "body-parser";
 import db from "../models/index";
 const { Op } = require("sequelize");
 
@@ -165,10 +166,62 @@ let handleUpdateSkill = (data) => {
   });
 };
 
+let getAllSkillWithLimit = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.limit || !data.offset) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let objectQuery = {
+          limit: +data.limit,
+          offset: +data.offset,
+          include: [
+            {
+              model: db.AllCode,
+              as: "jobTypeSkillData",
+              attributes: ["value", "code"],
+            },
+          ],
+          raw: true,
+          nest: true,
+        };
+        if (data.searchKey) {
+          objectQuery.where = {
+            ...objectQuery.where,
+            name: { [Op.like]: `%${data.searchKey}%` },
+          };
+        }
+        if (data.categoryJobCode) {
+          objectQuery.where = {
+            ...objectQuery.where,
+            [Op.and]: [
+              db.Sequelize.where(db.Sequelize.col("jobTypeSkillData.code"), {
+                [Op.eq]: data.categoryJobCode,
+              }),
+            ],
+          };
+        }
+        let skills = await db.Skills.findAndCountAll(objectQuery);
+        resolve({
+          errCode: 0,
+          data: skills.rows,
+          count: skills.count,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   handleCreateNewSkill: handleCreateNewSkill,
   handleDetelteSkill: handleDetelteSkill,
   getAllSkillByCategory: getAllSkillByCategory,
   getSkillById: getSkillById,
   handleUpdateSkill: handleUpdateSkill,
+  getAllSkillWithLimit: getAllSkillWithLimit,
 };

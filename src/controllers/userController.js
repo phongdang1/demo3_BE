@@ -91,6 +91,44 @@ let handleForgotPassword = async (req, res) => {
     });
   }
 };
+let handleChangePassword = async (req, res) => {
+  try {
+    let data = await userService.handleChangePassword(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server",
+    });
+  }
+};
+
+let handleBanUser = async (req, res) => {
+  try {
+    let data = await userService.handleBanUser(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server",
+    });
+  }
+};
+
+let handleUnBanUser = async (req, res) => {
+  try {
+    let data = await userService.handleUnBanUser(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server",
+    });
+  }
+};
 
 module.exports = {
   getAllUsers: getAllUsers,
@@ -100,4 +138,7 @@ module.exports = {
   handleLogin: handleLogin,
   handleSetDataUserDetail: handleSetDataUserDetail,
   handleForgotPassword: handleForgotPassword,
+  handleChangePassword: handleChangePassword,
+  handleBanUser: handleBanUser,
+  handleUnBanUser: handleUnBanUser,
 };
