@@ -56,6 +56,8 @@ module.exports = (sequelize, DataTypes) => {
       name: DataTypes.STRING,
       amount: DataTypes.INTEGER,
       description: DataTypes.TEXT("long"),
+      requirement: DataTypes.TEXT("long"),
+      benefit: DataTypes.TEXT("long"),
       categoryJobCode: DataTypes.STRING,
       addressCode: DataTypes.STRING,
       salaryJobCode: DataTypes.STRING,

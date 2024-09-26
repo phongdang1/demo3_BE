@@ -15,6 +15,12 @@ module.exports = {
       description: {
         type: Sequelize.TEXT("long"),
       },
+      requirement: {
+        type: Sequelize.TEXT("long"),
+      },
+      benefit: {
+        type: Sequelize.TEXT("long"),
+      },
       amount: {
         type: Sequelize.INTEGER,
       },

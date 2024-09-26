@@ -21,6 +21,10 @@ module.exports = {
         type: Sequelize.DOUBLE,
         allowNull: false,
       },
+      statusCode: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
     });
   },
 

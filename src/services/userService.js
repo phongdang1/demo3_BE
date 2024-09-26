@@ -509,6 +509,48 @@ let handleForgotPassword = (data) => {
   });
 };
 
+let handleChangePassword = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.userId || !data.oldPassword || !data.newPassword) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let user = await db.User.findOne({
+          where: { id: data.userId },
+          raw: false,
+        });
+        if (!user) {
+          resolve({
+            errCode: 2,
+            errMessage: "User does not exist",
+          });
+        } else {
+          let check = await bcrypt.compareSync(data.oldPassword, user.password);
+          if (check) {
+            let hashPassword = await handleHashUserPassword(data.newPassword);
+            user.password = hashPassword;
+            await user.save();
+            resolve({
+              errCode: 0,
+              errMessage: "Change password succeed",
+            });
+          } else {
+            resolve({
+              errCode: 3,
+              errMessage: "Old password is incorrect",
+            });
+          }
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getAllUsersWithLimit: getAllUsersWithLimit,
   getAllUsers: getAllUsers,
@@ -517,4 +559,5 @@ module.exports = {
   getUsersById: getUsersById,
   handleSetDataUserDetail: handleSetDataUserDetail,
   handleForgotPassword: handleForgotPassword,
+  handleChangePassword: handleChangePassword,
 };
