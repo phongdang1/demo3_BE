@@ -209,20 +209,34 @@ let getAllPost = (data) => {
             db.Sequelize.where(db.Sequelize.col("postDetailData.name"), {
               [Op.like]: `%${data.searchKey}%`,
             }),
-            {
-              id: {
+            db.Sequelize.where(
+              db.Sequelize.col("postDetailData.categoryJobCode"),
+              {
                 [Op.like]: `%${data.searchKey}%`,
-              },
-            },
+              }
+            ),
+            // db.Sequelize.where(
+            //   db.Sequelize.col("postDetailData.salaryJobCode"),
+            //   {
+            //     [Op.like]: `%${data.searchKey}%`,
+            //   }
+            // ),
+            // db.Sequelize.where(
+            //   db.Sequelize.col("postDetailData.workTypeCode"),
+            //   {
+            //     [Op.like]: `%${data.searchKey}%`,
+            //   }
+            // ),
           ],
         };
       }
-      let post = await db.Post.findAll(objectQuery);
+      let post = await db.Post.findAndCountAll(objectQuery);
       if (post) {
         resolve({
           errCode: 0,
           message: "Get all post success",
-          data: post,
+          data: post.rows,
+          count: post.count,
         });
       }
     } catch (error) {
