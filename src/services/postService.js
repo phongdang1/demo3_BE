@@ -215,18 +215,21 @@ let getAllPost = (data) => {
                 [Op.like]: `%${data.searchKey}%`,
               }
             ),
-            // db.Sequelize.where(
-            //   db.Sequelize.col("postDetailData.salaryJobCode"),
-            //   {
-            //     [Op.like]: `%${data.searchKey}%`,
-            //   }
-            // ),
-            // db.Sequelize.where(
-            //   db.Sequelize.col("postDetailData.workTypeCode"),
-            //   {
-            //     [Op.like]: `%${data.searchKey}%`,
-            //   }
-            // ),
+            db.Sequelize.where(
+              db.Sequelize.col("postDetailData.salaryJobCode"),
+              {
+                [Op.like]: `%${data.searchKey}%`,
+              }
+            ),
+            db.Sequelize.where(
+              db.Sequelize.col("postDetailData.experienceJobCode"),
+              {
+                [Op.like]: `%${data.searchKey}%`,
+              }
+            ),
+            db.Sequelize.where(db.Sequelize.col("postDetailData.addressCode"), {
+              [Op.like]: `%${data.searchKey}%`,
+            }),
           ],
         };
       }
