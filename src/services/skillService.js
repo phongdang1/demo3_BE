@@ -11,7 +11,7 @@ let handleCreateNewSkill = (data) => {
           errMessage: "Missing required parameter",
         });
       } else {
-        let checkExit = await db.Skills.findOne({
+        let checkExit = await db.Skill.findOne({
           where: { name: data.name, categoryJobCode: data.categoryJobCode },
         });
         if (checkExit) {
@@ -20,7 +20,7 @@ let handleCreateNewSkill = (data) => {
             errMessage: "Skill is exist",
           });
         } else {
-          await db.Skills.create({
+          await db.Skill.create({
             skillName: data.skillName,
             skillDescription: data.skillDescription,
           });
@@ -36,7 +36,7 @@ let handleCreateNewSkill = (data) => {
   });
 };
 
-let handleDetelteSkill = (skillId) => {
+let handleDeleteSkill = (skillId) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!skillId) {
@@ -45,7 +45,7 @@ let handleDetelteSkill = (skillId) => {
           errMessage: "Missing required parameter",
         });
       } else {
-        let skill = await db.Skills.findOne({
+        let skill = await db.Skill.findOne({
           where: { id: skillId },
         });
         if (!skill) {
@@ -54,7 +54,7 @@ let handleDetelteSkill = (skillId) => {
             errMessage: "Skill is not exist",
           });
         } else {
-          let isSkillUser = await db.UserSkills.findOne({
+          let isSkillUser = await db.UserSkill.findOne({
             where: { skillId: skillId },
           });
           if (isSkillUser) {
@@ -64,7 +64,7 @@ let handleDetelteSkill = (skillId) => {
                 "Cannot delete this skill. This skill is being used by user",
             });
           } else {
-            await db.Skills.destroy({
+            await db.Skill.destroy({
               where: { id: skillId },
             });
             resolve({
@@ -142,8 +142,9 @@ let handleUpdateSkill = (data) => {
           errMessage: "Missing required parameter",
         });
       } else {
-        let skill = await db.Skills.findOne({
+        let skill = await db.Skill.findOne({
           where: { id: data.id },
+          raw: false,
         });
         if (!skill) {
           resolve({
@@ -178,33 +179,20 @@ let getAllSkillWithLimit = (data) => {
         let objectQuery = {
           limit: +data.limit,
           offset: +data.offset,
-          include: [
-            {
-              model: db.AllCode,
-              as: "jobTypeSkillData",
-              attributes: ["value", "code"],
-            },
-          ],
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
           raw: true,
           nest: true,
         };
+        console.log(objectQuery);
         if (data.searchKey) {
           objectQuery.where = {
             ...objectQuery.where,
             name: { [Op.like]: `%${data.searchKey}%` },
           };
         }
-        if (data.categoryJobCode) {
-          objectQuery.where = {
-            ...objectQuery.where,
-            [Op.and]: [
-              db.Sequelize.where(db.Sequelize.col("jobTypeSkillData.code"), {
-                [Op.eq]: data.categoryJobCode,
-              }),
-            ],
-          };
-        }
-        let skills = await db.Skills.findAndCountAll(objectQuery);
+        let skills = await db.Skill.findAndCountAll(objectQuery);
         resolve({
           errCode: 0,
           data: skills.rows,
@@ -219,7 +207,7 @@ let getAllSkillWithLimit = (data) => {
 
 module.exports = {
   handleCreateNewSkill: handleCreateNewSkill,
-  handleDetelteSkill: handleDetelteSkill,
+  handleDeleteSkill: handleDeleteSkill,
   getAllSkillByCategory: getAllSkillByCategory,
   getSkillById: getSkillById,
   handleUpdateSkill: handleUpdateSkill,
