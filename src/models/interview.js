@@ -17,30 +17,37 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Interview.init({
-    interviewDate: {
-      type: DataTypes.DATE,
-    },
-    interviewLocation: {
-      type: DataTypes.STRING,
-    },
-    interviewNote: {
-      type: DataTypes.STRING,
-    },
-    statusCode: {
-      type: DataTypes.STRING,
-    },
-    cvPostId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "CvPosts",
-        key: "id",
+  Interview.init(
+    {
+      interviewDate: {
+        type: DataTypes.DATE,
       },
-      onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      interviewLocation: {
+        type: DataTypes.STRING,
+      },
+      interviewNote: {
+        type: DataTypes.STRING,
+      },
+      statusCode: {
+        type: DataTypes.STRING,
+      },
+      cvPostId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "CvPosts",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
     },
-  });
+    {
+      sequelize,
+      modelName: "Interview",
+      timestamps: false,
+    }
+  );
 
   return Interview;
 };
