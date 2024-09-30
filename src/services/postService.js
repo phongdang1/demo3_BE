@@ -45,8 +45,12 @@ let getAllPostWithLimit = (data) => {
       let objectQuery = {
         limit: +data.limit,
         offset: +data.offset,
+
         attributes: {
           exclude: ["detailPostId"],
+        },
+        where: {
+          statusCode: "ACTIVE",
         },
         nest: true,
         raw: true,
@@ -115,11 +119,45 @@ let getAllPostWithLimit = (data) => {
             db.Sequelize.where(db.Sequelize.col("postDetailData.name"), {
               [Op.like]: `%${data.searchKey}%`,
             }),
-            {
-              id: {
-                [Op.like]: `%${data.searchKey}%`,
-              },
-            },
+            db.Sequelize.where(
+              db.Sequelize.col("postDetailData.categoryJobCode"),
+              {
+                [Op.eq]: data.searchKey,
+              }
+            ),
+            db.Sequelize.where(
+              db.Sequelize.col("postDetailData.salaryJobCode"),
+              {
+                [Op.eq]: data.searchKey,
+              }
+            ),
+            db.Sequelize.where(
+              db.Sequelize.col("postDetailData.experienceJobCode"),
+              {
+                [Op.eq]: data.searchKey,
+              }
+            ),
+            db.Sequelize.where(db.Sequelize.col("postDetailData.addressCode"), {
+              [Op.eq]: data.searchKey,
+            }),
+            db.Sequelize.where(
+              db.Sequelize.col("postDetailData.jobLevelCode"),
+              {
+                [Op.eq]: data.searchKey,
+              }
+            ),
+            db.Sequelize.where(
+              db.Sequelize.col("postDetailData.workTypeCode"),
+              {
+                [Op.eq]: data.searchKey,
+              }
+            ),
+            db.Sequelize.where(
+              db.Sequelize.col("postDetailData.genderPostCode"),
+              {
+                [Op.eq]: data.searchKey,
+              }
+            ),
           ],
         };
       }
