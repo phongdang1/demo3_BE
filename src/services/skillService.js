@@ -21,8 +21,8 @@ let handleCreateNewSkill = (data) => {
           });
         } else {
           await db.Skill.create({
-            skillName: data.skillName,
-            skillDescription: data.skillDescription,
+            name: data.name,
+            categoryJobCode: data.categoryJobCode,
           });
           resolve({
             errCode: 0,
@@ -36,17 +36,17 @@ let handleCreateNewSkill = (data) => {
   });
 };
 
-let handleDeleteSkill = (skillId) => {
+let handleDeleteSkill = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!skillId) {
+      if (!data.skillId) {
         resolve({
           errCode: 1,
           errMessage: "Missing required parameter",
         });
       } else {
         let skill = await db.Skill.findOne({
-          where: { id: skillId },
+          where: { id: data.skillId },
         });
         if (!skill) {
           resolve({
@@ -55,7 +55,7 @@ let handleDeleteSkill = (skillId) => {
           });
         } else {
           let isSkillUser = await db.UserSkill.findOne({
-            where: { skillId: skillId },
+            where: { skillId: data.skillId },
           });
           if (isSkillUser) {
             resolve({
@@ -65,7 +65,7 @@ let handleDeleteSkill = (skillId) => {
             });
           } else {
             await db.Skill.destroy({
-              where: { id: skillId },
+              where: { id: data.skillId },
             });
             resolve({
               errCode: 0,

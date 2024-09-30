@@ -14,7 +14,7 @@ let handleCreateNewSkill = async (req, res) => {
 };
 let handleDeleteSkill = async (req, res) => {
   try {
-    let data = await skillService.handleDeleteSkill(req.query.id);
+    let data = await skillService.handleDeleteSkill(req.body);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
