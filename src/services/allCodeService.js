@@ -1,3 +1,4 @@
+import { raw } from "body-parser";
 import db from "../models/index";
 const { Op } = require("sequelize");
 
@@ -82,6 +83,7 @@ let handleUpdateAllCode = (data) => {
       } else {
         let allCodeRes = await db.Allcode.findOne({
           where: { code: data.code },
+          raw: false,
         });
         if (allCodeRes) {
           allCodeRes.value = data.value;
