@@ -41,6 +41,7 @@ let handleApplyJob = (data) => {
           file: data.file,
           description: data.description,
           isChecked: 0,
+          statusCode: "PENDING",
         });
         if (cvApply) {
           resolve({
