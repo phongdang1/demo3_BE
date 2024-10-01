@@ -138,11 +138,12 @@ let getAllCompanies = (data) => {
           ],
         };
       }
-      let result = await db.Company.findAll(objectQuery);
+      let result = await db.Company.findAndCountAll(objectQuery);
       resolve({
         errCode: 0,
         errMessage: "Get all companies succeed",
-        data: result ? result : [],
+        data: result.rows ? result.rows : [],
+        count: result.count ? result.count : 0,
       });
     } catch (error) {
       reject(error);
