@@ -234,6 +234,17 @@ let getAllUsers = (data) => {
         raw: true,
         nest: true,
       };
+      if (result.UserDetailData.file) {
+        try {
+          result.UserDetailData.file = Buffer.from(
+            result.UserDetailData.file,
+            "base64"
+          ).toString("binary");
+        } catch (error) {
+          console.log("Error decoding base64 file: ", error);
+          result.UserDetailData.file = null;
+        }
+      }
       if (data.searchKey) {
         objectQuery.where = {
           ...objectQuery.where,
@@ -244,6 +255,7 @@ let getAllUsers = (data) => {
           ],
         };
       }
+
       let result = await db.User.findAll(objectQuery);
       resolve({
         errCode: 0,
