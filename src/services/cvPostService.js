@@ -64,7 +64,7 @@ let handleApplyJob = (data) => {
 let getAllListCvByPost = (postId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!postId) {
+      if (!data.postId || !data.limit || !data.offset) {
         resolve({
           errCode: 1,
           errMessage: "Missing required parameter",
@@ -72,6 +72,10 @@ let getAllListCvByPost = (postId) => {
       } else {
         let listCv = await db.CvPost.findAll({
           where: { postId: postId },
+          limit: +data.limit,
+          offset: +data.offset,
+          nest: true,
+          raw: true,
           include: [
             {
               model: db.User,
@@ -82,6 +86,7 @@ let getAllListCvByPost = (postId) => {
             },
           ],
         });
+
         resolve({
           errCode: 0,
           data: listCv,
@@ -119,7 +124,7 @@ let getDetailCvPostById = (data) => {
         let user = await db.User.findOne({
           where: { id: data.userId },
         });
-        if (user.roleCode !== "CANDIDATE") {
+        if (user.roleCode !== "USER") {
           cvDetail.isChecked = 1;
           await cvDetail.save();
         }

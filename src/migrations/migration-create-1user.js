@@ -35,7 +35,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       dob: {
-        type: Sequelize.STRING,
+        type: Sequelize.DATE,
       },
       roleCode: {
         type: Sequelize.STRING,
