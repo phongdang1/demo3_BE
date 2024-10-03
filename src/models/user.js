@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "userCompanyData",
       });
       //Cv_post - Post
-      User.belongsToMany(models.Post, { through: models.CvPost });
+      // User.belongsToMany(models.Post, { through: models.CvPost });
       //UserDetail
       User.hasOne(models.UserDetail, {
         foreignKey: "userId",
