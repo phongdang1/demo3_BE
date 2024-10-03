@@ -19,7 +19,7 @@ module.exports = {
         isVerify: 1,
         isUpdate: 1,
         isVip: 0,
-        companyId: null,
+        companyId: 1,
       },
       {
         firstName: "Jane",
@@ -37,7 +37,7 @@ module.exports = {
         typeLogin: "LOCAL",
         isVerify: 1,
         isVip: 1,
-        companyId: null,
+        companyId: 2,
       },
       {
         firstName: "Bob",
@@ -55,7 +55,7 @@ module.exports = {
         isVerify: 1,
         isUpdate: 0,
         isVip: 0,
-        companyId: null,
+        companyId: 3,
       },
       {
         firstName: "Alice",
