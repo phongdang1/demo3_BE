@@ -498,6 +498,23 @@ let handleSetDataUserDetail = (data) => {
       };
 
       if (userDetail) {
+        let userDetailData = {
+          addressCode: data.data.addressCode || userDetail.addressCode || null,
+          salaryJobCode:
+            data.data.salaryJobCode || userDetail.salaryJobCode || null,
+          experienceJobCode:
+            data.data.experienceJobCode || userDetail.experienceJobCode || null,
+          genderCode: data.data.genderCode || userDetail.genderCode || null,
+          categoryJobCode:
+            data.data.categoryJobCode || userDetail.categoryJobCode || null,
+          jobLevelCode:
+            data.data.jobLevelCode || userDetail.jobLevelCode || null,
+          workTypeCode:
+            data.data.workTypeCode || userDetail.workTypeCode || null,
+          isTakeMail: data.data.isTakeMail || userDetail.isTakeMail || 0,
+          isFindJob: data.data.isFindJob || userDetail.isFindJob || 0,
+          file: data.data.file || userDetail.file || null,
+        };
         Object.assign(userDetail, userDetailData);
         await userDetail.save();
       } else {
