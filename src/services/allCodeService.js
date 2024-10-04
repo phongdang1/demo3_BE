@@ -36,6 +36,29 @@ let handleCreateNewAllCode = (data) => {
     }
   });
 };
+let getValueByCode = (code) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!code) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let allcode = await db.Allcode.findOne({
+          where: { code: code },
+        });
+        resolve({
+          errCode: 0,
+          data: allcode,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 let getAllCodeByType = (typeInput) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -118,4 +141,5 @@ module.exports = {
   getAllCodeByType: getAllCodeByType,
   getAllCode: getAllCode,
   handleUpdateAllCode: handleUpdateAllCode,
+  getValueByCode: getValueByCode,
 };

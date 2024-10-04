@@ -23,6 +23,7 @@ let initWebRoutes = (app) => {
   //===================API AllCode========================//
   router.get("/getAllCodeByType", allCodeController.getAllCodeByType);
   router.get("/getAllCode", allCodeController.getAllCode);
+  router.get("/getValueByCode", allCodeController.getValueByCode);
   router.post("/createNewCode", allCodeController.handleCreateNewAllCode);
   router.post("/updateCode", allCodeController.handleUpdateAllCode);
 
