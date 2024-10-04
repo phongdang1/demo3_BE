@@ -23,8 +23,14 @@ module.exports = (sequelize, DataTypes) => {
   }
   UserSkill.init(
     {
-      userId: DataTypes.INTEGER,
-      skillId: DataTypes.INTEGER,
+      userId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+      },
+      skillId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+      },
     },
     {
       sequelize,

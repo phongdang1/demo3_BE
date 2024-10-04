@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "UserDetailData",
       });
       //UserSkill - Skill
-      User.belongsToMany(models.Skill, { through: models.UserSkill });
+      //User.belongsToMany(models.Skill, { through: models.UserSkill });
     }
   }
   User.init(

@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "jobTypeSkillData",
       });
       //UserSkill - User
-      Skill.belongsToMany(models.User, { through: models.UserSkill });
+      //Skill.belongsToMany(models.User, { through: models.UserSkill });
     }
   }
   Skill.init(

@@ -59,26 +59,26 @@ module.exports = {
           onUpdate: "CASCADE",
         });
         //UserSkills
-        queryInterface.addConstraint("UserSkills", {
-          type: "foreign key",
-          fields: ["userId"],
-          name: "FK_UserSkills_Users",
-          references: {
-            table: "Users",
-            field: "id",
-          },
-          onUpdate: "CASCADE",
-        });
-        queryInterface.addConstraint("UserSkills", {
-          type: "foreign key",
-          fields: ["skillId"],
-          name: "FK_UserSkills_Skills",
-          references: {
-            table: "Skills",
-            field: "id",
-          },
-          onUpdate: "CASCADE",
-        });
+        //     queryInterface.addConstraint("UserSkills", {
+        //       type: "foreign key",
+        //       fields: ["userId"],
+        //       name: "FK_UserSkills_Users",
+        //       references: {
+        //         table: "Users",
+        //         field: "id",
+        //       },
+        //       onUpdate: "CASCADE",
+        //     });
+        //     queryInterface.addConstraint("UserSkills", {
+        //       type: "foreign key",
+        //       fields: ["skillId"],
+        //       name: "FK_UserSkills_Skills",
+        //       references: {
+        //         table: "Skills",
+        //         field: "id",
+        //       },
+        //       onUpdate: "CASCADE",
+        //     });
       }
     }),
 

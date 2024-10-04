@@ -523,7 +523,7 @@ let handleSetDataUserDetail = (data) => {
       if (data.data.listSkills && Array.isArray(data.data.listSkills)) {
         await db.UserSkill.destroy({ where: { userId: user.id } });
         let objUserSkill = data.data.listSkills.map((item) => {
-          return { UserId: user.id, SkillId: item };
+          return { userId: user.id, skillId: item };
         });
         await db.UserSkill.bulkCreate(objUserSkill);
       }
