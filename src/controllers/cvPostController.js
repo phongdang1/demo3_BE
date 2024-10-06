@@ -38,6 +38,19 @@ let getDetailCvPostById = async (req, res) => {
     });
   }
 };
+let getAllCvPostByUserId = async (req, res) => {
+  try {
+    let data = await cvPostService.getAllCvPostByUserId(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get detail cv failed",
+      errorCode: -1,
+    });
+  }
+};
+
 let testCommon = async (req, res) => {
   try {
     let data = await cvPostService.testCommon();
@@ -55,5 +68,6 @@ module.exports = {
   handleApplyJob: handleApplyJob,
   getAllListCvByPost: getAllListCvByPost,
   getDetailCvPostById: getDetailCvPostById,
+  getAllCvPostByUserId: getAllCvPostByUserId,
   testCommon: testCommon,
 };

@@ -2,7 +2,7 @@ import e from "express";
 import db from "../models/index";
 import CommonUtils from "../utils/CommonUtils";
 import { raw } from "body-parser";
-const { Op, and } = require("sequelize");
+const { Op, and, where } = require("sequelize");
 
 let caculateMatchCv = async (file, mapRequired) => {
   try {
@@ -292,16 +292,111 @@ let getDetailCvPostById = (data) => {
           cvDetail.isChecked = 1;
           await cvDetail.save();
         }
-        if (cvDetail.file) {
-          cvDetail.file = Buffer.from(cvDetail.file, "base64").toString(
-            "binary"
-          );
-        }
         resolve({
           errCode: 0,
           data: cvDetail,
         });
       }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let getAllCvPostByUserId = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.userId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let listCv = await db.CvPost.findAndCountAll({
+          where: { userId: data.userId },
+          include: [
+            {
+              model: db.Post,
+              as: "postCvData",
+              include: [
+                {
+                  model: db.DetailPost,
+                  as: "postDetailData",
+                  attributes: [
+                    "id",
+                    "name",
+                    "description",
+                    "amount",
+                    "requirement",
+                    "benefit",
+                  ],
+                  include: [
+                    {
+                      model: db.Allcode,
+                      as: "jobTypePostData",
+                      attributes: ["value", "code"],
+                    },
+                    {
+                      model: db.Allcode,
+                      as: "workTypePostData",
+                      attributes: ["value", "code"],
+                    },
+                    {
+                      model: db.Allcode,
+                      as: "salaryTypePostData",
+                      attributes: ["value", "code"],
+                    },
+                    {
+                      model: db.Allcode,
+                      as: "jobLevelPostData",
+                      attributes: ["value", "code"],
+                    },
+                    {
+                      model: db.Allcode,
+                      as: "expTypePostData",
+                      attributes: ["value", "code"],
+                    },
+                    {
+                      model: db.Allcode,
+                      as: "genderPostData",
+                      attributes: ["value", "code"],
+                    },
+                    {
+                      model: db.Allcode,
+                      as: "provincePostData",
+                      attributes: ["value", "code"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          raw: true,
+          nest: true,
+        });
+        resolve({
+          errCode: 0,
+          data: listCv.rows,
+          count: listCv.count,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let handleFindCv = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let objectQuery = {
+        where: {
+          isFindJob: 1,
+          file: {
+            [Op.ne]: null,
+          },
+        },
+      };
     } catch (error) {
       reject(error);
     }
@@ -330,4 +425,5 @@ module.exports = {
   getAllListCvByPost: getAllListCvByPost,
   getDetailCvPostById: getDetailCvPostById,
   testCommon: testCommon,
+  getAllCvPostByUserId: getAllCvPostByUserId,
 };

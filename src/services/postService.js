@@ -407,7 +407,7 @@ let getDetailPostById = (id) => {
             {
               model: db.DetailPost,
               as: "postDetailData",
-              attributes: ["id", "name", "description", "amount"],
+
               include: [
                 {
                   model: db.Allcode,
