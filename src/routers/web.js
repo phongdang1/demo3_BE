@@ -33,6 +33,7 @@ let initWebRoutes = (app) => {
   router.post("/deleteSkill", skillController.handleDeleteSkill);
   router.get("/getAllSkillByCategory", skillController.getAllSkillByCategory);
   router.get("/getAllSkillWithLimit", skillController.getAllSkillWithLimit);
+  router.get("/getAllSkill", skillController.getAllSkill);
   router.get("/getSkillById", skillController.getSkillById);
   router.post("/updateSkill", skillController.handleUpdateSkill);
 

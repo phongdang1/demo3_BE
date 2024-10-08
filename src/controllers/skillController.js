@@ -76,6 +76,18 @@ let getAllSkillWithLimit = async (req, res) => {
     });
   }
 };
+let getAllSkill = async (req, res) => {
+  try {
+    let data = await skillService.getAllSkill(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get all skill failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   handleCreateNewSkill: handleCreateNewSkill,
@@ -84,4 +96,5 @@ module.exports = {
   getSkillById: getSkillById,
   handleUpdateSkill: handleUpdateSkill,
   getAllSkillWithLimit: getAllSkillWithLimit,
+  getAllSkill: getAllSkill,
 };

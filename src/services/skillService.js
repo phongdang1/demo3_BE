@@ -204,6 +204,34 @@ let getAllSkillWithLimit = (data) => {
     }
   });
 };
+let getAllSkill = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let objectQuery = {
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+        raw: true,
+        nest: true,
+      };
+      console.log(objectQuery);
+      if (data.searchKey) {
+        objectQuery.where = {
+          ...objectQuery.where,
+          name: { [Op.like]: `%${data.searchKey}%` },
+        };
+      }
+      let skills = await db.Skill.findAndCountAll(objectQuery);
+      resolve({
+        errCode: 0,
+        data: skills.rows,
+        count: skills.count,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 module.exports = {
   handleCreateNewSkill: handleCreateNewSkill,
@@ -212,4 +240,5 @@ module.exports = {
   getSkillById: getSkillById,
   handleUpdateSkill: handleUpdateSkill,
   getAllSkillWithLimit: getAllSkillWithLimit,
+  getAllSkill: getAllSkill,
 };
