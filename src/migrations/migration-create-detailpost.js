@@ -18,13 +18,15 @@ module.exports = {
       requirement: {
         type: Sequelize.TEXT("long"),
       },
+      skillRequirement: {
+        type: Sequelize.TEXT("long"),
+      },
       benefit: {
         type: Sequelize.TEXT("long"),
       },
       amount: {
         type: Sequelize.INTEGER,
       },
-
       categoryJobCode: {
         type: Sequelize.STRING,
         references: {

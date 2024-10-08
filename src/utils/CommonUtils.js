@@ -25,45 +25,15 @@ let pdfToString = async (file) => {
     let buffer = Buffer.from(file, "base64");
     const pdfData = await pdfParse(buffer);
     const text = pdfData.text;
+
     let words = text
-      .replace(/[\n\r]+/g, " ") // Thay thế dấu xuống dòng bằng khoảng trắng
+      .replace(/[\n\r]+/g, "\n") // Giữ lại dấu xuống dòng
       .toLowerCase()
-      .split(/\s+/) // Tách văn bản thành mảng từ
-      .map((word) => word.replace(/[.,;!?]+$/, "")) // Loại bỏ dấu câu ở cuối từ
-      .filter((word) => /^[\p{L}]+$/u.test(word)); // Lọc chỉ lấy từ có ký tự là chữ cái (bao gồm cả ký tự Unicode)
+      .split(/,|\n|:/) // Tách văn bản dựa trên dấu phẩy, dấu xuống dòng và dấu hai chấm
+      .map((word) => word.trim()) // Loại bỏ khoảng trắng thừa ở đầu và cuối cụm từ
+      .filter((word) => /^[\p{L}\s]+$/u.test(word)); // Lọc chỉ lấy từ có ký tự là chữ cái (bao gồm cả ký tự Unicode)
 
-    let uniqueWords = [...new Set(words)];
-    let twoWordCombinations = [];
-    let threeWordCombinations = [];
-    let fourWordCombinations = [];
-
-    for (let i = 0; i < uniqueWords.length; i++) {
-      // Ghép 2 từ
-      if (i < uniqueWords.length - 1) {
-        twoWordCombinations.push(`${uniqueWords[i]} ${uniqueWords[i + 1]}`);
-      }
-      // Ghép 3 từ
-      if (i < uniqueWords.length - 2) {
-        threeWordCombinations.push(
-          `${uniqueWords[i]} ${uniqueWords[i + 1]} ${uniqueWords[i + 2]}`
-        );
-      }
-      // Ghép 4 từ
-      if (i < uniqueWords.length - 3) {
-        fourWordCombinations.push(
-          `${uniqueWords[i]} ${uniqueWords[i + 1]} ${uniqueWords[i + 2]} ${
-            uniqueWords[i + 3]
-          }`
-        );
-      }
-    }
-
-    // Kết hợp các chuỗi mới vào mảng uniqueWords
-    uniqueWords = uniqueWords.concat(
-      twoWordCombinations,
-      threeWordCombinations,
-      fourWordCombinations
-    );
+    let uniqueWords = [...new Set(words)]; // Lọc ra các từ duy nhất
 
     return uniqueWords;
   } catch (err) {
@@ -90,60 +60,27 @@ let getAllKeyWords = (text) => {
 let flatAllString = (string) => {
   try {
     let output = string
-      .toLocaleLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
+      .toLocaleLowerCase() // Chuyển chuỗi thành chữ thường
+      .normalize("NFD") // Chuẩn hóa chuỗi để loại bỏ dấu
+      .replace(/[\u0300-\u036f]/g, ""); // Loại bỏ dấu tiếng Việt
 
+    // Thay thế các ký tự có dấu thành không dấu (tiếng Việt)
     output = output
-      .replace(/[áàảãạ]/g, "a")
-      .replace(/[ÁÀẢÃẠ]/g, "A")
-      .replace(/[éèẻẽẹ]/g, "e")
-      .replace(/[ÉÈẺẼẸ]/g, "E")
+      .replace(/[áàảãạâấầẩẫậăắằẳẵặ]/g, "a")
+      .replace(/[éèẻẽẹêếềểễệ]/g, "e")
       .replace(/[iíìỉĩị]/g, "i")
-      .replace(/[ÍÌỈĨỊ]/g, "I")
-      .replace(/[óòỏõọ]/g, "o")
-      .replace(/[ÓÒỎÕỌ]/g, "O")
-      .replace(/[ôồốổỗộ]/g, "o")
-      .replace(/[ÔỒỐỔỖỘ]/g, "O")
-      .replace(/[ơờớởỡợ]/g, "o")
-      .replace(/[ƠỜỚỞỠỢ]/g, "O")
-      .replace(/[úùủũụ]/g, "u")
-      .replace(/[ÚÙỦŨỤ]/g, "U")
-      .replace(/[ưừứửữự]/g, "u")
-      .replace(/[ƯỪỨỬỮỰ]/g, "U")
+      .replace(/[óòỏõọôốồổỗộơớờởỡợ]/g, "o")
+      .replace(/[úùủũụưứừửữự]/g, "u")
       .replace(/[ýỳỷỹỵ]/g, "y")
-      .replace(/[ÝỳỶỸỴ]/g, "Y")
-      .replace(/[đ]/g, "d")
-      .replace(/[Đ]/g, "D");
+      .replace(/[đ]/g, "d");
 
-    // Thay thế các ký tự không phải chữ cái hoặc khoảng trắng
-    output = output.replace(/[^a-zA-Z\s]/g, " ");
-    // Tách các từ thành mảng và loại bỏ phần tử trống
-    const wordsArray = output.split(/\s+/).filter((word) => word.length > 0);
+    // Loại bỏ các dấu câu không cần thiết (dấu phẩy, dấu hai chấm) và tách từ
+    const wordsArray = output
+      .split(/,|:/) // Tách chuỗi dựa trên dấu phẩy và dấu hai chấm
+      .map((word) => word.trim()) // Loại bỏ khoảng trắng thừa
+      .filter((word) => word.length > 0); // Loại bỏ phần tử trống
 
-    // Tạo ra các tổ hợp từ
-    const combine = (start, depth, combination, combinations) => {
-      if (depth === 0) {
-        combinations.push(combination.join(" "));
-        return;
-      }
-      for (let i = start; i <= wordsArray.length - depth; i++) {
-        combination.push(wordsArray[i]);
-        combine(i + 1, depth - 1, combination, combinations);
-        combination.pop();
-      }
-    };
-
-    // Tạo các chuỗi từ 2, 3 và 4 từ
-    const resultCombinations = [];
-    for (let depth = 2; depth <= 4; depth++) {
-      combine(0, depth, [], resultCombinations);
-    }
-
-    const allCombinations = [...new Set(resultCombinations)];
-    const uniqueWords = [...new Set([...wordsArray, ...allCombinations])];
-
-    return uniqueWords;
+    return wordsArray; // Trả về mảng từ đã tách
   } catch (err) {
     console.error("Error processing string:", err);
     return null;

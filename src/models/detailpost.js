@@ -57,6 +57,7 @@ module.exports = (sequelize, DataTypes) => {
       amount: DataTypes.INTEGER,
       description: DataTypes.TEXT("long"),
       requirement: DataTypes.TEXT("long"),
+      skillRequirement: DataTypes.TEXT("long"),
       benefit: DataTypes.TEXT("long"),
       categoryJobCode: DataTypes.STRING,
       addressCode: DataTypes.STRING,

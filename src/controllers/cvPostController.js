@@ -20,7 +20,7 @@ let getAllListCvByPost = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(200).json({
-      errMessage: "Get list cv failed",
+      errMessage: "Get all list cv by post failed",
       errorCode: -1,
     });
   }
@@ -45,7 +45,32 @@ let getAllCvPostByUserId = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(200).json({
-      errMessage: "Get detail cv failed",
+      errMessage: "Get all cv post by user id failed",
+      errorCode: -1,
+    });
+  }
+};
+let handleFindCv = async (req, res) => {
+  try {
+    let data = await cvPostService.handleFindCv(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "handleFindCv failed",
+      errorCode: -1,
+    });
+  }
+};
+
+let checkViewCompany = async (req, res) => {
+  try {
+    let data = await cvPostService.checkViewCompany(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Check view company failed",
       errorCode: -1,
     });
   }
@@ -69,5 +94,7 @@ module.exports = {
   getAllListCvByPost: getAllListCvByPost,
   getDetailCvPostById: getDetailCvPostById,
   getAllCvPostByUserId: getAllCvPostByUserId,
+  handleFindCv: handleFindCv,
+  checkViewCompany: checkViewCompany,
   testCommon: testCommon,
 };
