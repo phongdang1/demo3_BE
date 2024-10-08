@@ -6,6 +6,7 @@ import authController from "../controllers/authController";
 import allCodeController from "../controllers/allCodeController";
 import skillController from "../controllers/skillController";
 import cvPostController from "../controllers/cvPostController";
+import packageController from "../controllers/packageController";
 
 const router = express.Router();
 
@@ -51,6 +52,8 @@ let initWebRoutes = (app) => {
   router.get("/getAllListCvByPost", cvPostController.getAllListCvByPost);
   router.get("/getDetailCvPostById", cvPostController.getDetailCvPostById);
   router.get("/getAllCvPostByUserId", cvPostController.getAllCvPostByUserId);
+  router.get("/handleFindCv", cvPostController.handleFindCv);
+  router.get("/checkViewCompany", cvPostController.checkViewCompany);
   router.get("/testCommon", cvPostController.testCommon);
 
   //==================API COMPANY==========================//
@@ -67,6 +70,13 @@ let initWebRoutes = (app) => {
   router.post("/unBanCompany", companyController.handleUnBanCompany);
   router.get("/getCompanyByUserId", companyController.getCompanyByUserId);
   router.get("/getAllUserOfCompany", companyController.getAllUserOfCompany);
+
+  //===================API PACKAGE========================//
+  router.post("/createNewPackage", packageController.handleCreateNewPackage);
+  router.post("/updatePackage", packageController.handleUpdatePackage);
+  router.post("/activePackage", packageController.handleActivePackage);
+  router.post("/deactivePackage", packageController.handleDeactivePackage);
+  router.get("/getAllPackage", packageController.getAllPackage);
 
   //===================API GOOGLE========================//
   router.get("/auth/google", authController.googleAuthenticate);

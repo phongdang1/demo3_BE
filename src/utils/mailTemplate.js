@@ -120,8 +120,8 @@ const getHead = () => {
       }
     </style>
   </head>
-  `
-}
+  `;
+};
 
 const getHeadMailTemplate = (userInfo) => {
   return `
@@ -194,7 +194,9 @@ const getHeadMailTemplate = (userInfo) => {
                                         <tbody>
                                           <tr>
                                             <td style="width:40px;">
-                                              <img height="40" src=${userInfo.userSettingData.image} style="border:0;border-radius:50%;display:block;outline:none;text-decoration:none;height:40px;width:100%;font-size:13px;" width="40" />
+                                              <img height="40" src=${
+                                                userInfo.UserDetailData.image
+                                              } style="border:0;border-radius:50%;display:block;outline:none;text-decoration:none;height:40px;width:100%;font-size:13px;" width="40" />
                                             </td>
                                           </tr>
                                         </tbody>
@@ -212,7 +214,11 @@ const getHeadMailTemplate = (userInfo) => {
                                     <td align="left" style="font-size:0px;padding:10px 25px;padding-top:20px;word-break:break-word;">
                                       <div style="font-family:SF Pro Display;font-size:16px;font-style:normal;font-weight:600;line-height:20px;text-align:left;color:#000000;">
                                         <div>
-                                          <span>${userInfo.userSettingData.firstName+ " " + userInfo.userSettingData.lastName}</span>
+                                          <span>${
+                                            userInfo.UserDetailData.firstName +
+                                            " " +
+                                            userInfo.UserDetailData.lastName
+                                          }</span>
                                         </div>
                                       </div>
                                     </td>
@@ -227,12 +233,12 @@ const getHeadMailTemplate = (userInfo) => {
                       </tr>
                     </tbody>
                   </table>
-                </div>`
-}
+                </div>`;
+};
 
 const getPostTemplate = (postInfo) => {
   return `<!--[if mso | IE]></td></tr></table></td></tr><tr><td class="" width="600px" ><table align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:550px;" width="550" bgcolor="#ffffff" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-  <a href=${process.env.URL_REACT+`/detail-job/`+postInfo.id}/>
+  <a href=${process.env.URL_REACT + `/detail-job/` + postInfo.id}/>
   <div style="background:#ffffff;background-color:#ffffff;margin:0px auto;max-width:550px;">
     <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;background-color:#ffffff;width:100%;">
       <tbody>
@@ -248,7 +254,9 @@ const getPostTemplate = (postInfo) => {
                         <tbody>
                           <tr>
                             <td style="width:102px;">
-                              <img height="60" src=${postInfo.companyData.thumbnail} style="border:0;display:block;outline:none;text-decoration:none;height:60px;width:100%;font-size:13px;" width="102" />
+                              <img height="60" src=${
+                                postInfo.companyData.thumbnail
+                              } style="border:0;display:block;outline:none;text-decoration:none;height:60px;width:100%;font-size:13px;" width="102" />
                             </td>
                           </tr>
                         </tbody>
@@ -266,11 +274,19 @@ const getPostTemplate = (postInfo) => {
                     <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                       <div style="font-family:SF Pro Display;font-size:16px;font-style:normal;line-height:1;text-align:left;color:#000000;">
                         <div>
-                          <h3 style="color: blue">${postInfo.postDetailData.name}</h3>
+                          <h3 style="color: blue">${
+                            postInfo.postDetailData.name
+                          }</h3>
                           <h4>${postInfo.companyData.name}</h4>
-                          <div>Địa điểm: ${postInfo.postDetailData.provincePostData.value}</div>
-                          <div>Hình thức làm việc: ${postInfo.postDetailData.workTypePostData.value} </div>
-                          <div>Lương: ${postInfo.postDetailData.salaryTypePostData.value}</div>
+                          <div>Địa điểm: ${
+                            postInfo.postDetailData.provincePostData.value
+                          }</div>
+                          <div>Hình thức làm việc: ${
+                            postInfo.postDetailData.workTypePostData.value
+                          } </div>
+                          <div>Lương: ${
+                            postInfo.postDetailData.salaryTypePostData.value
+                          }</div>
                         </div>
                       </div>
                     </td>
@@ -283,8 +299,8 @@ const getPostTemplate = (postInfo) => {
         </tr>
       </tbody>
     </table>
-  </div></a>`
-}
+  </div></a>`;
+};
 
 const getTailMailTemplate = () => {
   return ` <!--[if mso | IE]></td></tr></table></td></tr><tr><td class="" width="600px" ><table align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:550px;" width="550" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
@@ -302,7 +318,9 @@ const getTailMailTemplate = () => {
                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;">
                         <tr>
                           <td align="center" bgcolor="red" role="presentation" style="border:none;border-radius:3px;cursor:auto;mso-padding-alt:10px 25px;background:red;" valign="middle">
-                            <a href=${process.env.URL_REACT+'/job'} style="display:inline-block;background:red;color:white;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:3px;" target="_blank"> Xem thêm công việc </a>
+                            <a href=${
+                              process.env.URL_REACT + "/job"
+                            } style="display:inline-block;background:red;color:white;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:3px;" target="_blank"> Xem thêm công việc </a>
                           </td>
                         </tr>
                       </table>
@@ -331,8 +349,6 @@ const getTailMailTemplate = () => {
                     <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                       <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;">
                         <div style="text-align: center">
-                          <h3>Get more job</h3>
-                          <span>Get your dream job at website </span>
                           <div style="margin-top: 10px">
                             <img src="https://s3.ap-southeast-1.amazonaws.com/vng-ep-app/5d75e879-166b-41ff-87d3-9aa04895da94.png"></img>
                           </div>
@@ -341,11 +357,6 @@ const getTailMailTemplate = () => {
                             margin-top: 30px;
                             text-align: center;
                           ">
-                              <span style="
-                              width: 100%;
-                              display: inline-block;
-                            ">Tấn Tài © 2022</span>
-                              <span>Find what you want to do &amp; Do what thing you love.</span>
                             </div>
                           </div>
                         </div>
@@ -371,15 +382,20 @@ const getTailMailTemplate = () => {
 </div>
 </body>
 
-</html>`
-}
+</html>`;
+};
 
-const getStringMailTemplate = (listPostInfo,userInfo) => {
-  let allPostTemplate = ''
-  listPostInfo.forEach(item => {
-    allPostTemplate += getPostTemplate(item)
-  })
-  return getHead() + getHeadMailTemplate(userInfo) + allPostTemplate + getTailMailTemplate()
-}
+const getStringMailTemplate = (listPostInfo, userInfo) => {
+  let allPostTemplate = "";
+  listPostInfo.forEach((item) => {
+    allPostTemplate += getPostTemplate(item);
+  });
+  return (
+    getHead() +
+    getHeadMailTemplate(userInfo) +
+    allPostTemplate +
+    getTailMailTemplate()
+  );
+};
 
-module.exports = getStringMailTemplate
+module.exports = getStringMailTemplate;
