@@ -62,6 +62,10 @@ let initWebRoutes = (app) => {
     companyController.getAllCompaniesWithLimit
   );
   router.get("/getAllCompanies", companyController.getAllCompanies);
+  router.get(
+    "/getAllCompaniesWithLimitInactive",
+    companyController.getAllCompaniesWithLimitInactive
+  );
   router.post("/createNewCompany", companyController.handleCreateNewCompany);
   router.post("/addUserToCompany", companyController.handleAddUserToCompany);
   router.get("/getCompanyById", companyController.getCompanyById);
