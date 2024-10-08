@@ -184,7 +184,7 @@ let handleDeactivePackage = async (data) => {
   });
 };
 
-let getAllPackage = async () => {
+let getAllPackage = async (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let objectQuery = {};

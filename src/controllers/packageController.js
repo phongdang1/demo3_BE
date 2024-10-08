@@ -54,7 +54,7 @@ let handleDeactivePackage = async (req, res) => {
 
 let getAllPackage = async (req, res) => {
   try {
-    let data = await packageService.getAllPackage();
+    let data = await packageService.getAllPackage(req.query);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
