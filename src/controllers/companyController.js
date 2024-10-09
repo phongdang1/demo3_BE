@@ -150,6 +150,32 @@ let getAllCompaniesWithLimitInactive = async (req, res) => {
     });
   }
 };
+let handleRejectCompany = async (req, res) => {
+  try {
+    let data = await companyService.handleRejectCompany(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Reject company failed",
+      errorCode: -1,
+    });
+  }
+};
+
+let getAllCompaniesInactive = async (req, res) => {
+  try {
+    let data = await companyService.getAllCompaniesInactive(req.query);
+    console.log(data);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get all companys failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   getAllCompaniesWithLimit: getAllCompaniesWithLimit,
@@ -164,4 +190,6 @@ module.exports = {
   getAllUserOfCompany: getAllUserOfCompany,
   handleApproveCompany: handleApproveCompany,
   getAllCompaniesWithLimitInactive: getAllCompaniesWithLimitInactive,
+  handleRejectCompany: handleRejectCompany,
+  getAllCompaniesInactive: getAllCompaniesInactive,
 };

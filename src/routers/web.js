@@ -67,6 +67,10 @@ let initWebRoutes = (app) => {
     "/getAllCompaniesWithLimitInactive",
     companyController.getAllCompaniesWithLimitInactive
   );
+  router.get(
+    "/getAllCompaniesInactive",
+    companyController.getAllCompaniesInactive
+  );
   router.post("/createNewCompany", companyController.handleCreateNewCompany);
   router.post("/addUserToCompany", companyController.handleAddUserToCompany);
   router.get("/getCompanyById", companyController.getCompanyById);
@@ -75,6 +79,8 @@ let initWebRoutes = (app) => {
   router.post("/unBanCompany", companyController.handleUnBanCompany);
   router.get("/getCompanyByUserId", companyController.getCompanyByUserId);
   router.get("/getAllUserOfCompany", companyController.getAllUserOfCompany);
+  router.post("/approveCompany", companyController.handleApproveCompany);
+  router.post("/rejectCompany", companyController.handleRejectCompany);
 
   //===================API PACKAGE========================//
   router.post("/createNewPackage", packageController.handleCreateNewPackage);
@@ -82,6 +88,9 @@ let initWebRoutes = (app) => {
   router.post("/activePackage", packageController.handleActivePackage);
   router.post("/deactivePackage", packageController.handleDeactivePackage);
   router.get("/getAllPackage", packageController.getAllPackage);
+  router.get("/getPackageById", packageController.getPackageById);
+  router.post("/createPayment", packageController.createPayment);
+  router.post("/executePayment", packageController.executePayment);
 
   //===================API GOOGLE========================//
   router.get("/auth/google", authController.googleAuthenticate);

@@ -158,6 +158,31 @@ let getAllCompaniesWithLimitInactive = (data) => {
     }
   });
 };
+let getAllCompaniesInactive = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let objectQuery = {};
+      if (data.searchKey) {
+        objectQuery.where = {
+          ...objectQuery.where,
+          [Op.or]: [
+            { name: { [Op.like]: `%${data.searchKey}%` } },
+            { address: { [Op.like]: `%${data.searchKey}%` } },
+          ],
+        };
+      }
+      let result = await db.Company.findAndCountAll(objectQuery);
+      resolve({
+        errCode: 0,
+        errMessage: "Get all companies succeed",
+        data: result.rows ? result.rows : [],
+        count: result.count ? result.count : 0,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 let getAllCompanies = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -696,59 +721,83 @@ let getAllUserOfCompany = (companyId) => {
 let handleApproveCompany = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.companyId || !data.userId || !data.statusCode) {
+      if (!data.companyId) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
         });
-      }
-      let company = await db.Company.findOne({
-        where: { id: data.companyId },
-      });
-      if (!company) {
-        resolve({
-          errCode: 2,
-          errMessage: "Cannot find company",
-        });
-      }
-      if (data.statusCode === "ACTIVE") {
-        company.statusCode = "ACTIVE";
-        await company.save({ silent: true });
-        let user = await db.User.findOne({
-          where: { id: company.userId },
+      } else {
+        let foundCompany = await db.Company.findOne({
+          where: { id: data.companyId },
           raw: false,
-          attributes: {
-            exclude: ["password", "image", "userId"],
-          },
         });
-        sendmail(
-          "Công ty của bạn đã được duyệt. Mời bạn sử dụng dịch vụ",
-          user.email,
-          `company/${company.id}`
-        );
+        if (!foundCompany) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          foundCompany.statusCode = "ACTIVE";
+          await foundCompany.save();
+          let user = await db.User.findOne({
+            where: { id: foundCompany.userId },
+            raw: false,
+            attributes: {
+              exclude: ["password", "image", "userId", "file"],
+            },
+          });
+          let note =
+            "Công ty của bạn đã được duyệt. Hãy đăng nhập và sử dụng dịch vụ của chúng tôi";
+          sendmail(note, user.email, `company/${foundCompany.id}`);
+
+          resolve({
+            errCode: 0,
+            errMessage: "Approve company succeed",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let handleRejectCompany = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.companyId) {
         resolve({
-          errCode: 0,
-          errMessage: "Approve company succeed",
+          errCode: 1,
+          errMessage: "Missing required fields",
         });
       } else {
-        company.statusCode = "INACTIVE";
-        await company.save({ silent: true });
-        let user = await db.User.findOne({
-          where: { id: company.userId },
+        let foundCompany = await db.Company.findOne({
+          where: { id: data.companyId },
           raw: false,
-          attributes: {
-            exclude: ["password", "image", "userId"],
-          },
         });
-        sendmail(
-          "Công ty của bạn hiện tại không đủ điều kiện sử dụng dịch vụ. Vui lòng liên hệ với quản trị viên để biết thêm chi tiết",
-          user.email,
-          `company/${company.id}`
-        );
-        resolve({
-          errCode: 0,
-          errMessage: "Reject company succeed",
-        });
+        if (!foundCompany) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          foundCompany.statusCode = "INACTIVE";
+          await foundCompany.save();
+          let user = await db.User.findOne({
+            where: { id: foundCompany.userId },
+            raw: false,
+            attributes: {
+              exclude: ["password", "image", "userId", "file"],
+            },
+          });
+          let note =
+            "Công ty của bạn đã bị từ chối. Vui lòng liên hệ với quản trị viên để biết thêm chi tiết";
+          sendmail(note, user.email, `company/${foundCompany.id}`);
+          resolve({
+            errCode: 0,
+            errMessage: "Reject company succeed",
+          });
+        }
       }
     } catch (error) {
       reject(error);
@@ -769,4 +818,6 @@ module.exports = {
   getAllUserOfCompany: getAllUserOfCompany,
   handleApproveCompany: handleApproveCompany,
   getAllCompaniesWithLimitInactive: getAllCompaniesWithLimitInactive,
+  handleRejectCompany: handleRejectCompany,
+  getAllCompaniesInactive: getAllCompaniesInactive,
 };
