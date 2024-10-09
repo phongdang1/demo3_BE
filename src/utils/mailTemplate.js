@@ -151,7 +151,7 @@ const getHeadMailTemplate = (userInfo) => {
                                         <tbody>
                                           <tr>
                                             <td style="width:100px;">
-                                              <img height="auto" src="https://s3.ap-southeast-1.amazonaws.com/vng-ep-app/5d75e879-166b-41ff-87d3-9aa04895da94.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="100" />
+                                              <img height="auto" src="https://res.cloudinary.com/doxkyqfte/image/upload/v1728394270/jmxvvo8diyyqghhqkzlg.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="100" />
                                             </td>
                                           </tr>
                                         </tbody>
@@ -350,7 +350,7 @@ const getTailMailTemplate = () => {
                       <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;">
                         <div style="text-align: center">
                           <div style="margin-top: 10px">
-                            <img src="https://s3.ap-southeast-1.amazonaws.com/vng-ep-app/5d75e879-166b-41ff-87d3-9aa04895da94.png"></img>
+                            <img src="https://res.cloudinary.com/doxkyqfte/image/upload/v1728394270/jmxvvo8diyyqghhqkzlg.png" style="width : 300px"></img>
                           </div>
                           <div style="margin-top: 30px">
                             <div style="

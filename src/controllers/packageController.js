@@ -64,6 +64,43 @@ let getAllPackage = async (req, res) => {
     });
   }
 };
+let getPackageById = async (req, res) => {
+  try {
+    let data = await packageService.getPackageById(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get package by id failed",
+      errorCode: -1,
+    });
+  }
+};
+let createPayment = async (req, res) => {
+  try {
+    let data = await packageService.createPayment(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Create payment failed",
+      errorCode: -1,
+    });
+  }
+};
+
+let executePayment = async (req, res) => {
+  try {
+    let data = await packageService.executePayment(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Execute payment failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   handleCreateNewPackage: handleCreateNewPackage,
@@ -71,4 +108,7 @@ module.exports = {
   handleActivePackage: handleActivePackage,
   handleDeactivePackage: handleDeactivePackage,
   getAllPackage: getAllPackage,
+  getPackageById: getPackageById,
+  createPayment: createPayment,
+  executePayment: executePayment,
 };

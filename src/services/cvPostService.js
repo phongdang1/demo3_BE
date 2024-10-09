@@ -235,11 +235,14 @@ let getAllListCvByPost = (data) => {
         requirement.forEach((item) => {
           mapRequired.set(item, item);
         });
+        console.log("mapRequired ", mapRequired);
 
         for (let i = 0; i < listCv.rows.length; i++) {
           let cv = listCv.rows[i];
           let match = await caculateMatchCv(cv.file, mapRequired);
           let matchSkill = await getMapRequiredSkill(cv.userId, requirement);
+          console.log("match", match);
+          console.log("matchSkill", matchSkill);
           if (match > matchSkill) {
             cv.file = match + "%";
           } else {
@@ -556,86 +559,16 @@ let checkViewCompany = (data) => {
 let testCommon = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const timeStampOfTenDaysAgo = 10 * 24 * 60 * 60 * 1000;
-      const currentDateString = new Date(
-        Date.now() - timeStampOfTenDaysAgo
-      ).toISOString();
-
-      let listpost = await db.Post.findAll({
-        limit: 5,
-        // offset: 0,
-        where: {
-          timeEnd: {
-            [Op.gt]: currentDateString,
-          },
-          statusCode: "active",
-          [Op.or]: [
-            db.Sequelize.where(
-              db.sequelize.col("postDetailData.jobTypePostData.code"),
-              {
-                [Op.like]: `%congNghe%`,
-              }
-            ),
-            db.Sequelize.where(
-              db.sequelize.col("postDetailData.provincePostData.code"),
-              {
-                [Op.like]: `%KonTum%`,
-              }
-            ),
-          ],
-        },
-        include: [
-          {
-            model: db.DetailPost,
-            as: "postDetailData",
-            attributes: {
-              exclude: ["statusCode"],
-            },
-            include: [
-              {
-                model: db.Allcode,
-                as: "jobTypePostData",
-                attributes: ["value", "code"],
-              },
-              {
-                model: db.Allcode,
-                as: "workTypePostData",
-                attributes: ["value", "code"],
-              },
-              {
-                model: db.Allcode,
-                as: "salaryTypePostData",
-                attributes: ["value", "code"],
-              },
-              {
-                model: db.Allcode,
-                as: "jobLevelPostData",
-                attributes: ["value", "code"],
-              },
-              {
-                model: db.Allcode,
-                as: "genderPostData",
-                attributes: ["value", "code"],
-              },
-              {
-                model: db.Allcode,
-                as: "provincePostData",
-                attributes: ["value", "code"],
-              },
-              {
-                model: db.Allcode,
-                as: "expTypePostData",
-                attributes: ["value", "code"],
-              },
-            ],
-          },
-        ],
-        order: db.sequelize.literal("rand()"),
-        raw: true,
-        nest: true,
+      let user = await db.UserDetail.findOne({
+        where: { userId: 11 },
+        attributes: ["file"],
       });
-      console.log("listpost", listpost);
-      return resolve("oke");
+      let cvData = await CommonUtils.pdfToString(user.file);
+
+      return resolve({
+        errCode: 0,
+        data: cvData,
+      });
     } catch (error) {
       reject(error);
     }

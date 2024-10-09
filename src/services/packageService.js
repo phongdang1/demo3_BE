@@ -1,6 +1,155 @@
 import { name } from "ejs";
 import db from "../models/index";
 const { Op } = require("sequelize");
+import paypal from "paypal-rest-sdk";
+import { raw } from "body-parser";
+
+paypal.configure({
+  mode: "sandbox", //sandbox or live
+  client_id: process.env.CLIENT_ID_PAYPAL,
+  client_secret: process.env.CLIENT_SECRET_PAYPAL,
+});
+
+let createPayment = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.id) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let packageInfo = await db.Package.findOne({
+          where: { id: data.id },
+        });
+        if (!packageInfo) {
+          resolve({
+            errCode: 2,
+            errMessage: "Can not find package",
+          });
+        } else {
+          var create_payment_json = {
+            intent: "sale",
+            payer: {
+              payment_method: "paypal",
+            },
+            redirect_urls: {
+              return_url: "http://localhost:3000/success",
+              cancel_url: "http://localhost:3000/cancel",
+            },
+            transactions: [
+              {
+                item_list: {
+                  items: [
+                    {
+                      name: packageInfo.name,
+                      sku: "001",
+                      price: packageInfo.price,
+                      currency: "USD",
+                      quantity: 1,
+                    },
+                  ],
+                },
+                amount: {
+                  currency: "USD",
+                  total: packageInfo.price,
+                },
+                description: "This is the payment description.",
+              },
+            ],
+          };
+          paypal.payment.create(create_payment_json, function (error, payment) {
+            if (error) {
+              throw error;
+            } else {
+              for (let i = 0; i < payment.links.length; i++) {
+                if (payment.links[i].rel === "approval_url") {
+                  resolve(payment.links[i].href);
+                }
+              }
+            }
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let executePayment = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.paymentId || !data.token || !data.PayerID) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let packageInfo = await db.Package.findOne({
+          where: { id: data.packageId },
+        });
+        if (!packageInfo) {
+          return resolve({
+            errCode: 2,
+            errMessage: "Can not find package",
+          });
+        }
+        let execute_payment_json = {
+          payer_id: data.PayerID,
+          transactions: [
+            {
+              amount: {
+                currency: "USD",
+                total: packageInfo.price,
+              },
+            },
+          ],
+        };
+        let paymentId = data.paymentId;
+        paypal.payment.execute(
+          paymentId,
+          execute_payment_json,
+          async function (error, payment) {
+            if (error) {
+              throw error;
+            } else {
+              let inforUserPackage = await db.UserPackage.create({
+                userId: data.userId,
+                packageId: data.packageId,
+                poinEarned: packageInfo.point,
+                amount: packageInfo.price,
+                remainingViews: 10,
+                price: packageInfo.price,
+                statusCode: "PAID",
+              });
+              if (inforUserPackage) {
+                let inforUser = await db.User.findOne({
+                  where: { id: data.userId },
+                  raw: false,
+                });
+                inforUser.point += inforUserPackage.poinEarned;
+                await inforUser.save({ silent: true });
+                let company = await db.Company.findOne({
+                  where: { id: inforUser.companyId },
+                  raw: false,
+                });
+                company.allowCv += inforUserPackage.remainingViews;
+                await company.save({ silent: true });
+              }
+              resolve({
+                errCode: 0,
+                errMessage: "Payment success",
+              });
+            }
+          }
+        );
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 let checkPackageNameExist = async (data) => {
   return new Promise(async (resolve, reject) => {
@@ -204,10 +353,43 @@ let getAllPackage = async (data) => {
   });
 };
 
+let getPackageById = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.id) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let packageData = await db.Package.findOne({
+          where: { id: data.id },
+        });
+        if (packageData) {
+          resolve({
+            errCode: 0,
+            data: packageData,
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: "Can not find package",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   handleCreateNewPackage: handleCreateNewPackage,
   handleUpdatePackage: handleUpdatePackage,
   handleActivePackage: handleActivePackage,
   handleDeactivePackage: handleDeactivePackage,
   getAllPackage: getAllPackage,
+  getPackageById: getPackageById,
+  createPayment: createPayment,
+  executePayment: executePayment,
 };

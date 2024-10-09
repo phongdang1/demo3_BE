@@ -358,7 +358,7 @@ let handleCreateNewPost = (data) => {
                 isHot: data.isHot,
                 timePost: new Date().getTime(),
                 timeEnd: data.timeEnd,
-                statusCode: "Active",
+                statusCode: "PENDING",
               });
               if (post) {
                 resolve({
