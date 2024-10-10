@@ -301,7 +301,10 @@ let handleCreateNewPost = (data) => {
         !data.workTypeCode ||
         !data.experienceJobCode ||
         !data.genderPostCode ||
-        !data.description
+        !data.description ||
+        !data.benefit ||
+        !data.requirement ||
+        !data.skillRequirement
       ) {
         resolve({
           errCode: 1,
@@ -350,13 +353,16 @@ let handleCreateNewPost = (data) => {
               experienceJobCode: data.experienceJobCode,
               genderPostCode: data.genderPostCode,
               description: data.description,
+              requirement: data.requirement,
+              skillRequirement: data.skillRequirement,
+              benefit: data.benefit,
             });
             if (detailPost) {
               let post = await db.Post.create({
                 detailPostId: detailPost.id,
                 userId: data.userId,
                 isHot: data.isHot,
-                timePost: new Date().getTime(),
+                timePost: new Date(),
                 timeEnd: data.timeEnd,
                 statusCode: "PENDING",
               });
