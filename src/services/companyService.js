@@ -1,6 +1,7 @@
 import e from "express";
 import db from "../models/index";
 import { Op, where } from "sequelize";
+import { raw } from "body-parser";
 const cloudinary = require("../utils/cloudinary");
 var nodemailer = require("nodemailer");
 let sendmail = (note, userMail, link = null) => {
@@ -485,6 +486,7 @@ let handleUpdateCompany = (data) => {
       } else {
         let company = await db.Company.findOne({
           where: { id: data.id },
+          raw: false,
         });
         if (!company) {
           resolve({
