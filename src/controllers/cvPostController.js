@@ -15,7 +15,7 @@ let handleApplyJob = async (req, res) => {
 
 let getAllListCvByPost = async (req, res) => {
   try {
-    let data = await cvPostService.getAllListCvByPost(req.body);
+    let data = await cvPostService.getAllListCvByPost(req.query);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -28,7 +28,7 @@ let getAllListCvByPost = async (req, res) => {
 
 let getDetailCvPostById = async (req, res) => {
   try {
-    let data = await cvPostService.getDetailCvPostById(req.body);
+    let data = await cvPostService.getDetailCvPostById(req.query);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -40,7 +40,7 @@ let getDetailCvPostById = async (req, res) => {
 };
 let getAllCvPostByUserId = async (req, res) => {
   try {
-    let data = await cvPostService.getAllCvPostByUserId(req.body);
+    let data = await cvPostService.getAllCvPostByUserId(req.query);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);

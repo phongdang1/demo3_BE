@@ -362,7 +362,7 @@ let handleCreateNewPost = (data) => {
                 detailPostId: detailPost.id,
                 userId: data.userId,
                 isHot: data.isHot,
-                timePost: new Date(),
+                timePost: new Date().getTime(),
                 timeEnd: data.timeEnd,
                 statusCode: "PENDING",
               });
