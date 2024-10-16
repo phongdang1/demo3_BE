@@ -16,19 +16,42 @@ let sendmail = (note, userMail, link = null) => {
   var mailOptions = {
     from: process.env.EMAIL_APP,
     to: userMail,
-    subject: "Thông báo từ trang Job Finder",
-    html: note,
+    subject: "Thông báo từ Job Finder",
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Thông báo từ Job Finder</title>
+      </head>
+      <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
+        <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
+          <div style="background-color: #0056b3; color: #ffffff; padding: 20px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
+          </div>
+          <div style="padding: 20px; line-height: 1.6;">
+            <p>Xin chào,</p>
+            <p>${note}</p>
+            ${
+              link
+                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">Xem chi tiết</a>`
+                : ""
+            }
+          </div>
+          <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
+            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
+            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
   };
-  if (link) {
-    mailOptions.html =
-      note +
-      ` <br>
-        xem thông tin bài viết <a href='${process.env.URL_REACT}/${link}'>Tại đây</a> `;
-  }
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-    } else {
+      console.log(error);
     }
   });
 };
@@ -571,7 +594,7 @@ let handleUpdatePost = (data) => {
 let handleBanPost = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.id || !data.note || !data.userId) {
+      if (!data.id || !data.note) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
@@ -581,16 +604,19 @@ let handleBanPost = (data) => {
           where: { id: data.id },
           raw: false,
         });
+
         if (foundPost) {
-          post.statusCode = "BANNED";
-          post.note = data.note;
-          await post.save({ silent: true });
+          foundPost.statusCode = "BANNED";
+          foundPost.note = data.note;
+          await foundPost.save({ silent: true });
           let user = await db.User.findOne({
             where: { id: foundPost.userId },
             raw: false,
           });
+          console.log(user);
+
           sendmail(
-            `Bài viết #${foundPost.id} của bạn đã bị chặn vì ${data.note}`,
+            `Bài viết của bạn đã bị chặn vì ${data.note}`,
             user.email,
             `admin/list-post/${foundPost.id}`
           );
@@ -657,7 +683,7 @@ let handleUnBanPost = (data) => {
 let handleApprovePost = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.id || !data.statusCode) {
+      if (!data.id) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
@@ -668,36 +694,20 @@ let handleApprovePost = (data) => {
           raw: false,
         });
         if (foundPost) {
-          foundPost.statusCode = data.statusCode;
-
-          if (data.statusCode === "ACTIVE") {
-            foundPost.timePost = new Date().getTime();
-            foundPost.note = "Approve post success by admin";
-          }
+          foundPost.statusCode = "ACTIVE";
           await foundPost.save({ silent: true });
           let user = await db.User.findOne({
             where: { id: foundPost.userId },
             raw: false,
           });
-          if (data.statusCode === "ACTIVE") {
-            sendmail(
-              `Bài viết #${foundPost.id} của bạn đã được duyệt và được hiển thị trên trang chủ`,
-              user.email,
-              `admin/list-post/${foundPost.id}`
-            );
-          } else {
-            sendmail(
-              `Bài viết #${foundPost.id} của bạn đã bị từ chối`,
-              user.email,
-              `admin/list-post/${foundPost.id}`
-            );
-          }
+          sendmail(
+            `Bài viết của bạn đã được duyệt và được hiển thị trên hệ thống`,
+            user.email,
+            `admin/list-post/${foundPost.id}`
+          );
           resolve({
             errCode: 0,
-            errMessage:
-              data.statusCode === "ACTIVE"
-                ? "Approve post success"
-                : "Reject post success",
+            errMessage: "Approve post success",
           });
         } else {
           resolve({
@@ -708,6 +718,49 @@ let handleApprovePost = (data) => {
       }
     } catch (error) {
       reject(error);
+    }
+  });
+};
+
+let handleRejectPost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.id || !data.note) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let foundPost = await db.Post.findOne({
+          where: { id: data.id },
+          raw: false,
+        });
+        if (foundPost) {
+          foundPost.statusCode = "INACTIVE";
+          foundPost.note = data.note;
+          await foundPost.save({ silent: true });
+          let user = await db.User.findOne({
+            where: { id: foundPost.userId },
+            raw: false,
+          });
+          sendmail(
+            `Bài viết của bạn đã bị từ chối với lý do ${data.note}`,
+            user.email,
+            `admin/list-post/${foundPost.id}`
+          );
+          resolve({
+            errCode: 0,
+            errMessage: "Reject post success",
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: "Can not find post by id",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error.message);
     }
   });
 };
@@ -782,5 +835,6 @@ module.exports = {
   handleBanPost: handleBanPost,
   handleUnBanPost: handleUnBanPost,
   handleApprovePost: handleApprovePost,
+  handleRejectPost: handleRejectPost,
   handleReupPost: handleReupPost,
 };

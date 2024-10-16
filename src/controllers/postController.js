@@ -99,6 +99,19 @@ let handleApprovePost = async (req, res) => {
   }
 };
 
+let handleRejectPost = async (req, res) => {
+  try {
+    let data = await postService.handleRejectPost(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server",
+    });
+  }
+};
+
 let handleReupPost = async (req, res) => {
   try {
     let data = await postService.handleReupPost(req.body);
@@ -122,4 +135,5 @@ module.exports = {
   handleUnBanPost: handleUnBanPost,
   handleApprovePost: handleApprovePost,
   handleReupPost: handleReupPost,
+  handleRejectPost: handleRejectPost,
 };

@@ -47,6 +47,7 @@ let initWebRoutes = (app) => {
   router.post("unBanPost", postController.handleUnBanPost);
   router.post("/approvePost", postController.handleApprovePost);
   router.post("/reupPost", postController.handleReupPost);
+  router.post("/rejectPost", postController.handleRejectPost);
 
   //==================API CV_POST==========================//
   router.post("/applyJob", cvPostController.handleApplyJob);
