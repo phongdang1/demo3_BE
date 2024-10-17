@@ -386,6 +386,123 @@ let getAllCvPostByUserId = (data) => {
   });
 };
 
+const getAllCvPostByCompanyId = async (data) => {
+  try {
+    if (!data.companyId) {
+      return {
+        errCode: 1,
+        errMessage: "Missing required parameter",
+      };
+    }
+    const listUserOfCompany = await db.User.findAll({
+      where: { companyId: data.companyId },
+      attributes: ["id"],
+    });
+    if (!listUserOfCompany || listUserOfCompany.length === 0) {
+      return {
+        errCode: 2,
+        errMessage: "List user of company not found",
+      };
+    }
+    const userIds = listUserOfCompany.map((user) => user.id);
+    const listPosts = await db.Post.findAll({
+      where: {
+        userId: {
+          [Op.in]: userIds,
+        },
+      },
+      attributes: ["id"],
+    });
+
+    if (!listPosts || listPosts.length === 0) {
+      return {
+        errCode: 3,
+        errMessage: "No posts found for the company's users",
+      };
+    }
+    const postIds = listPosts.map((post) => post.id);
+    const listCv = await db.CvPost.findAndCountAll({
+      where: {
+        postId: {
+          [Op.in]: postIds,
+        },
+      },
+      attributes: ["id", "userId", "postId", "description", "isChecked"],
+      include: [
+        {
+          model: db.Post,
+          as: "postCvData",
+          include: [
+            {
+              model: db.DetailPost,
+              as: "postDetailData",
+              attributes: [
+                "id",
+                "name",
+                "description",
+                "amount",
+                "requirement",
+                "benefit",
+              ],
+              include: [
+                {
+                  model: db.Allcode,
+                  as: "jobTypePostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "workTypePostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "salaryTypePostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "jobLevelPostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "expTypePostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "genderPostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "provincePostData",
+                  attributes: ["value", "code"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+
+    return {
+      errCode: 0,
+      data: listCv.rows,
+      count: listCv.count,
+    };
+  } catch (error) {
+    console.error("Error fetching CVs: ", error);
+    return {
+      errCode: 500,
+      errMessage: "An error occurred while fetching CVs",
+    };
+  }
+};
+
 let handleFindCv = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -583,4 +700,5 @@ module.exports = {
   checkViewCompany: checkViewCompany,
   testCommon: testCommon,
   getAllCvPostByUserId: getAllCvPostByUserId,
+  getAllCvPostByCompanyId: getAllCvPostByCompanyId,
 };

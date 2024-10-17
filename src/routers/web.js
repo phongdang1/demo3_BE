@@ -56,6 +56,10 @@ let initWebRoutes = (app) => {
   router.get("/getAllCvPostByUserId", cvPostController.getAllCvPostByUserId);
   router.post("/handleFindCv", cvPostController.handleFindCv);
   router.get("/checkViewCompany", cvPostController.checkViewCompany);
+  router.get(
+    "/getAllCvPostByCompanyId",
+    cvPostController.getAllCvPostByCompanyId
+  );
   router.get("/testCommon", cvPostController.testCommon);
 
   //==================API COMPANY==========================//
