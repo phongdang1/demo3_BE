@@ -393,10 +393,7 @@ let getCompanyById = (id) => {
 
           company.postData = await db.Post.findAll({
             where: {
-              [Op.and]: [
-                { statusCode: "ACTIVE" },
-                { [Op.or]: listUserOfCompany },
-              ],
+              [Op.and]: [{ [Op.or]: listUserOfCompany }],
             },
             order: [["timePost", "DESC"]],
             limit: 5,
