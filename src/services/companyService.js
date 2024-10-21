@@ -238,7 +238,6 @@ let handleCreateNewCompany = (data) => {
           let thumbnailUrl = "";
           let coverImageUrl = "";
 
-          console.log(createAt1);
           if (data.thumbnail) {
             const uploadedThumbnailResponse = await cloudinary.uploader.upload(
               data.thumbnail,
@@ -271,10 +270,8 @@ let handleCreateNewCompany = (data) => {
             statusCode: "ACTIVE",
             typeCompany: data.typeCompany,
             file: data.file ? data.file : null,
-            allowHotPost: data.allowHotPost,
-            allowCv: data.allowCv,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            allowHotPost: 0,
+            allowCv: 0,
           });
           let user = await db.User.findOne({
             where: { id: data.userId },
