@@ -3,60 +3,8 @@ import db from "../models/index";
 import { Op, where } from "sequelize";
 import { raw } from "body-parser";
 const cloudinary = require("../utils/cloudinary");
-var nodemailer = require("nodemailer");
-let sendmail = (note, userMail, link = null) => {
-  var transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_APP,
-      pass: process.env.EMAIL_APP_PASSWORD,
-    },
-  });
 
-  var mailOptions = {
-    from: process.env.EMAIL_APP,
-    to: userMail,
-    subject: "Thông báo từ Job Finder",
-    html: `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Thông báo từ Job Finder</title>
-      </head>
-      <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
-        <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
-          <div style="background-color: #0056b3; color: #ffffff; padding: 20px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-            <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
-          </div>
-          <div style="padding: 20px; line-height: 1.6;">
-            <p>Xin chào,</p>
-            <p>${note}</p>
-            ${
-              link
-                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">Xem chi tiết</a>`
-                : ""
-            }
-          </div>
-          <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
-            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
-            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `,
-  };
-
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-    }
-  });
-};
-
-let checkCompany = (name, id) => {
+let checkCompany = (name) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!name) {
@@ -65,16 +13,10 @@ let checkCompany = (name, id) => {
           errMessage: "Missing required fields",
         });
       } else {
-        let company = "";
-        if (id) {
-          company = await db.Company.findOne({
-            where: { name: name, id: { [Op.ne]: id } },
-          });
-        } else {
-          company = await db.Company.findOne({
-            where: { name: name },
-          });
-        }
+        let company = await db.Company.findOne({
+          where: { name: name },
+        });
+
         if (company) {
           resolve(true);
         } else {
@@ -464,22 +406,14 @@ let getCompanyById = (id) => {
 let handleUpdateCompany = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (
-        !data.id ||
-        !data.name ||
-        !data.address ||
-        !data.description ||
-        !data.phonenumber ||
-        !data.amountEmployer ||
-        !data.userId
-      ) {
+      if (!data.companyId) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
         });
       } else {
         let company = await db.Company.findOne({
-          where: { id: data.id },
+          where: { id: data.companyId },
           raw: false,
         });
         if (!company) {
@@ -488,7 +422,7 @@ let handleUpdateCompany = (data) => {
             errMessage: "Cannot find company",
           });
         } else {
-          if (await checkCompany(data.name, data.id)) {
+          if (await checkCompany(data.name)) {
             resolve({
               errCode: 3,
               errMessage: "Company is exist",
@@ -511,21 +445,31 @@ let handleUpdateCompany = (data) => {
                   });
                 coverImageUrl = uploadedCoverImageResponse.url;
               }
-              company.name = data.name;
-              company.thumbnail = thumbnailUrl;
-              company.coverimage = coverImageUrl;
-              company.description = data.description;
-              company.website = data.website;
-              company.address = data.address;
-              company.phonenumber = data.phonenumber;
-              company.amountEmployer = data.amountEmployer;
-              company.taxnumber = data.taxnumber;
-              company.typeCompany = data.typeCompany;
-              company.file = data.file ? data.file : null;
-
-              company.allowHotPost = data.allowHotPost;
-
-              company.allowCv = data.allowCv;
+              company.name = data.name ? data.name : company.name;
+              company.thumbnail = thumbnailUrl
+                ? thumbnailUrl
+                : company.thumbnail;
+              company.coverimage = coverImageUrl
+                ? coverImageUrl
+                : company.coverimage;
+              company.description = data.description
+                ? data.description
+                : company.description;
+              company.website = data.website ? data.website : company.website;
+              company.address = data.address ? data.address : company.address;
+              company.phonenumber = data.phonenumber
+                ? data.phonenumber
+                : company.phonenumber;
+              company.amountEmployer = data.amountEmployer
+                ? data.amountEmployer
+                : company.amountEmployer;
+              company.taxnumber = data.taxnumber
+                ? data.taxnumber
+                : company.taxnumber;
+              company.typeCompany = data.typeCompany
+                ? data.typeCompany
+                : company.typeCompany;
+              company.file = data.file ? data.file : company.file;
               company.updatedAt = new Date();
               await company.save({ silent: true });
               resolve({
