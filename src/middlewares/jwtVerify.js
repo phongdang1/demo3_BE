@@ -85,6 +85,51 @@ const middlewareControllers = {
       });
     }
   },
+  verifyTokenCompany: (req, res, next) => {
+    const token = req.headers.authorization;
+    if (token) {
+      const accessToken = token.split(" ")[1];
+      jwt.verify(accessToken, secretString, async (err, payload) => {
+        if (err) {
+          return res.status(403).json({
+            status: false,
+            errMessage: "Token is not valid!",
+            refresh: true,
+          });
+        }
+        const user = await db.User.findOne({
+          where: { id: payload.sub },
+          attributes: {
+            exclude: ["userId"],
+          },
+          raw: true,
+          nest: true,
+        });
+        if (!user) {
+          return res.status(404).json({
+            status: false,
+            errMessage: "User is not exits",
+            refresh: true,
+          });
+        }
+        if (user && user.roleCode !== "COMPANY") {
+          return res.status(404).json({
+            status: false,
+            errMessage: "Permission denied",
+            refresh: true,
+          });
+        }
+        req.user = user;
+        next();
+      });
+    } else {
+      return res.status(401).json({
+        status: false,
+        errMessage: "You're not authentication!",
+        refresh: true,
+      });
+    }
+  },
 };
 
 module.exports = middlewareControllers;
