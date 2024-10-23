@@ -717,7 +717,8 @@ let checkViewCompany = (data) => {
             await company.save();
             resolve({
               errCode: 0,
-              message: "OK",
+              message: "Check view company success",
+              allowCv: company.allowCv,
             });
           } else {
             resolve({

@@ -45,7 +45,7 @@ let initWebRoutes = (app) => {
   router.get("/getDetailPostById", postController.getDetailPostById);
   router.post("/updatePost", postController.handleUpdatePost);
   router.post("/banPost", postController.handleBanPost);
-  router.post("unBanPost", postController.handleUnBanPost);
+  router.post("/unBanPost", postController.handleUnBanPost);
   router.post("/approvePost", postController.handleApprovePost);
   router.post("/reupPost", postController.handleReupPost);
   router.post("/rejectPost", postController.handleRejectPost);

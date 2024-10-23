@@ -65,7 +65,7 @@ let handleFindCv = async (req, res) => {
 
 let checkViewCompany = async (req, res) => {
   try {
-    let data = await cvPostService.checkViewCompany(req.body);
+    let data = await cvPostService.checkViewCompany(req.query);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);

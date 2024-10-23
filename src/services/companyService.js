@@ -4,6 +4,32 @@ import { Op, where } from "sequelize";
 import { raw } from "body-parser";
 const cloudinary = require("../utils/cloudinary");
 
+let checkCompanyUpdate = (name, companyId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!name || !companyId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let company = await db.Company.findOne({
+          where: {
+            name: name,
+            id: { [Op.ne]: companyId },
+          },
+        });
+        if (company) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 let checkCompany = (name) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -14,9 +40,10 @@ let checkCompany = (name) => {
         });
       } else {
         let company = await db.Company.findOne({
-          where: { name: name },
+          where: {
+            name: name,
+          },
         });
-
         if (company) {
           resolve(true);
         } else {
@@ -422,7 +449,7 @@ let handleUpdateCompany = (data) => {
             errMessage: "Cannot find company",
           });
         } else {
-          if (await checkCompany(data.name)) {
+          if (await checkCompanyUpdate(data.name, data.companyId)) {
             resolve({
               errCode: 3,
               errMessage: "Company is exist",
