@@ -4,20 +4,71 @@ import CommonUtils from "../utils/CommonUtils";
 import { raw } from "body-parser";
 const { Op, and, where } = require("sequelize");
 
+var nodemailer = require("nodemailer");
+let sendmail = (note, userMail, link = null) => {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
+
+  var mailOptions = {
+    from: process.env.EMAIL_APP,
+    to: userMail,
+    subject: "Thông báo từ Job Finder",
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Thông báo từ Job Finder</title>
+      </head>
+      <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
+        <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
+          <div style="background-color: #0056b3; color: #ffffff; padding: 20px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
+          </div>
+          <div style="padding: 20px; line-height: 1.6;">
+            <p>Xin chào,</p>
+            <p>${note}</p>
+            ${
+              link
+                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">Xem chi tiết</a>`
+                : ""
+            }
+          </div>
+          <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
+            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
+            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    }
+  });
+};
+
 let caculateMatchCv = async (file, mapRequired) => {
   try {
     let match = 0;
-    // thuật toán OCR
     let words = await CommonUtils.pdfToString(file);
-
     for (let key of mapRequired.keys()) {
       let requiredKeyword = mapRequired.get(key).toLowerCase().trim();
       if (words.includes(requiredKeyword)) {
         match++;
       }
     }
-    let totalRequiredKeywords = mapRequired.size; // Tổng số từ yêu cầu
-    let matchRatio = (match / totalRequiredKeywords) * 100; // Tỷ lệ phần trăm
+    let totalRequiredKeywords = mapRequired.size;
+    let matchRatio = (match / totalRequiredKeywords) * 100;
 
     return matchRatio;
   } catch (err) {
@@ -35,6 +86,7 @@ let caculateMatchUserWithFilter = async (userData, listSkillRequired) => {
   let userskill = await db.UserSkill.findAll({
     where: { userId: userData.userId },
   });
+  let totalUserSkill = userskill.length;
   for (let key of myListSkillRequired.keys()) {
     let temp = [...userskill];
     temp.forEach((item, index) => {
@@ -45,7 +97,10 @@ let caculateMatchUserWithFilter = async (userData, listSkillRequired) => {
     });
   }
 
-  return match;
+  return {
+    match: match,
+    totalUserSkill: totalUserSkill,
+  };
 };
 let getMapRequiredSkill = async (userId, requirement) => {
   try {
@@ -239,8 +294,10 @@ let getAllListCvByPost = (data) => {
 
         for (let i = 0; i < listCv.rows.length; i++) {
           let cv = listCv.rows[i];
-          let match = await caculateMatchCv(cv.file, mapRequired);
-          let matchSkill = await getMapRequiredSkill(cv.userId, requirement);
+          let match = Math.ceil(await caculateMatchCv(cv.file, mapRequired)); // lấy phần nguyên
+          let matchSkill = Math.ceil(
+            await getMapRequiredSkill(cv.userId, requirement)
+          ); // lấy phần nguyên
           console.log("match", match);
           console.log("matchSkill", matchSkill);
           if (match > matchSkill) {
@@ -537,7 +594,7 @@ let handleFindCv = (data) => {
       let isHiddenPercent = false;
       let listUser = await db.UserDetail.findAndCountAll(objectQuery);
       let listSkillRequired = [];
-      let numberCriteria = 0;
+      let numberCriteria = 0; // số lượng tiêu chí của nhà tuyển dụng cần tìm kiếm
       if (data.experienceJobCode) {
         numberCriteria++;
       }
@@ -556,8 +613,11 @@ let handleFindCv = (data) => {
       if (data.workTypeCode) {
         numberCriteria++;
       }
+      //nếu có tiêu chí thì thực hiện tính số tiêu chí của user
       if (numberCriteria > 0) {
         listUser.rows.forEach((item) => {
+          // số tiêu chí của user
+          // nếu user có trùng với tiêu chí của nhà tuyển dụng thì tăng số tiêu chí của user lên
           item.numberCriteriaOfUser = 0;
           if (item.salaryJobCode === data.salaryJobCode) {
             item.numberCriteriaOfUser++;
@@ -581,6 +641,7 @@ let handleFindCv = (data) => {
       }
       let lengthSkill = 0;
       if (data.listSkills) {
+        // số lượng skill của nhà tuyển dụng cần tìm kiếm
         lengthSkill = data.listSkills.length;
         listSkillRequired = await db.Skill.findAll({
           where: {
@@ -589,27 +650,26 @@ let handleFindCv = (data) => {
           attributes: ["id", "name"],
         });
       }
-      console.log("listUser", listUser);
       if (listSkillRequired.length > 0 || numberCriteria > 0) {
         for (let item of listUser.rows) {
           let match = await caculateMatchUserWithFilter(
             item,
             listSkillRequired
           );
-          console.log("match", match);
-
           if (numberCriteria > 0) {
             item.file =
               Math.round(
-                ((match + item.numberCriteriaOfUser) /
+                ((match.match + item.numberCriteriaOfUser) /
                   (lengthSkill + numberCriteria) +
                   Number.EPSILON) *
                   100
               ) + "%";
-            console.log("item.file", item.file);
+            item.totalUserSkill = match.totalUserSkill;
           } else {
             item.file =
-              Math.round((match / lengthSkill + Number.EPSILON) * 100) + "%";
+              Math.round((match.match / lengthSkill + Number.EPSILON) * 100) +
+              "%";
+            item.totalUserSkill = match.totalUserSkill;
           }
         }
       } else {
@@ -673,6 +733,76 @@ let checkViewCompany = (data) => {
   });
 };
 
+let createInterviewSchedule = (data) => {
+  return new Promise(async (resolve, reject) => {
+    if (
+      !data.interviewDate ||
+      !data.interviewLocation ||
+      !data.interviewNote ||
+      !data.cvPostId
+    ) {
+      resolve({
+        errCode: 1,
+        errMessage: "Missing required parameter",
+      });
+    } else {
+      try {
+        let interview = await db.Interview.create({
+          interviewDate: data.interviewDate,
+          interviewLocation: data.interviewLocation,
+          interviewNote: data.interviewNote,
+          cvPostId: data.cvPostId,
+          statusCode: "PENDING",
+        });
+        if (interview) {
+          let cvPost = await db.CvPost.findOne({
+            where: { id: data.cvPostId },
+            raw: false,
+          });
+          cvPost.statusCode = "INTERVIEW";
+          await cvPost.save();
+          resolve({
+            errCode: 0,
+            errMessage: "Create interview schedule success",
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: "Create interview schedule failed",
+          });
+        }
+      } catch (error) {
+        reject(error);
+      }
+    }
+  });
+};
+let handleApproveCvPost = (data) => {
+  return Promise(async (resolve, reject) => {
+    if (!data.cvPostId) {
+      resolve({
+        errCode: 1,
+        errMessage: "Missing required parameter",
+      });
+    } else {
+      try {
+        let cvPost = await db.CvPost.findOne({
+          where: { id: data.cvPostId },
+          raw: false,
+        });
+        cvPost.statusCode = "APPROVED";
+        await cvPost.save();
+        resolve({
+          errCode: 0,
+          errMessage: "Approve cv post success",
+        });
+      } catch (error) {
+        reject(error);
+      }
+    }
+  });
+};
+
 let testCommon = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -701,4 +831,5 @@ module.exports = {
   testCommon: testCommon,
   getAllCvPostByUserId: getAllCvPostByUserId,
   getAllCvPostByCompanyId: getAllCvPostByCompanyId,
+  createInterviewSchedule: createInterviewSchedule,
 };
