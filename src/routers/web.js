@@ -7,6 +7,7 @@ import allCodeController from "../controllers/allCodeController";
 import skillController from "../controllers/skillController";
 import cvPostController from "../controllers/cvPostController";
 import packageController from "../controllers/packageController";
+const passport = require("passport");
 
 const router = express.Router();
 
@@ -60,6 +61,10 @@ let initWebRoutes = (app) => {
     "/getAllCvPostByCompanyId",
     cvPostController.getAllCvPostByCompanyId
   );
+  router.post(
+    "/createInterviewSchedule",
+    cvPostController.createInterviewSchedule
+  );
   router.get("/testCommon", cvPostController.testCommon);
 
   //==================API COMPANY==========================//
@@ -98,11 +103,17 @@ let initWebRoutes = (app) => {
   router.post("/executePayment", packageController.executePayment);
 
   //===================API GOOGLE========================//
-  router.get("/auth/google", authController.googleAuthenticate);
+  router.get(
+    "/auth/google",
+    passport.authenticate("google", { scope: ["email"] })
+  );
 
   router.get(
     "/auth/google/callback",
-    authController.googleAuthenticateCallback
+    passport.authenticate("google", { failureRedirect: "/login" }),
+    function (req, res) {
+      console.log("req.user");
+    }
   );
   //===================API OTP========================//
   router.post("/sendOtp", authController.handleSendOtp);

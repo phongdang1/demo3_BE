@@ -1,7 +1,6 @@
 require("dotenv").config();
 import passport from "passport";
 import db from "../models/index";
-
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 passport.serializeUser((user, done) => {
@@ -21,21 +20,22 @@ passport.use(
       callbackURL: process.env.REDIRECT_URL,
     },
     async function (accessToken, refreshToken, profile, cb) {
+      console.log("profile", profile);
       let dataRaw = {
         email: profile.emails[0].value,
-        firstName: profile.name.givenName,
-        lastName: profile.name.familyName,
       };
+
       let user = await db.User.findOne({
         where: { email: dataRaw.email },
         raw: true,
       });
+      console.log("user", user);
       if (!user) {
         user = await db.User.create({
           email: dataRaw.email,
           password: "",
-          firstName: dataRaw.firstName,
-          lastName: dataRaw.lastName,
+          firstName: "",
+          lastName: "",
           address: "",
         });
       }
@@ -43,3 +43,5 @@ passport.use(
     }
   )
 );
+
+module.exports = passport;

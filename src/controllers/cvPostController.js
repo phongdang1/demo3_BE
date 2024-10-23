@@ -87,7 +87,18 @@ let getAllCvPostByCompanyId = async (req, res) => {
     });
   }
 };
-
+let createInterviewSchedule = async (req, res) => {
+  try {
+    let data = await cvPostService.createInterviewSchedule(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Create interview schedule failed",
+      errorCode: -1,
+    });
+  }
+};
 let testCommon = async (req, res) => {
   try {
     let data = await cvPostService.testCommon();
@@ -109,5 +120,6 @@ module.exports = {
   handleFindCv: handleFindCv,
   checkViewCompany: checkViewCompany,
   getAllCvPostByCompanyId: getAllCvPostByCompanyId,
+  createInterviewSchedule: createInterviewSchedule,
   testCommon: testCommon,
 };

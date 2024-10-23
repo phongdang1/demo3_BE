@@ -6,14 +6,34 @@ const sendJobMail = require("./utils/schedule");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpecs = require("./utils/swaggerConfig");
 const initWebRoutes = require("./routers/web");
-const passport = require("passport");
+const passport = require("./utils/passportConfig");
 const cookieSession = require("cookie-session");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const socketIo = require("socket.io");
+const session = require("express-session");
 
 require("dotenv").config();
 
 let app = express();
+const server = require("http").createServer(app);
+const io = socketIo(server);
+
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(
   cors({
