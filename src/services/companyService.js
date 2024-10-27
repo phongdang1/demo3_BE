@@ -4,6 +4,59 @@ import { Op, where } from "sequelize";
 import { raw } from "body-parser";
 const cloudinary = require("../utils/cloudinary");
 
+var nodemailer = require("nodemailer");
+let sendmail = (note, userMail, link = null) => {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
+
+  var mailOptions = {
+    from: process.env.EMAIL_APP,
+    to: userMail,
+    subject: "Thông báo từ Job Finder",
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Thông báo từ Job Finder</title>
+      </head>
+      <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
+        <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
+          <div style="background-color: #0056b3; color: #ffffff; padding: 20px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
+          </div>
+          <div style="padding: 20px; line-height: 1.6;">
+            <p>Xin chào,</p>
+            <p>${note}</p>
+            ${
+              link
+                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">Xem chi tiết</a>`
+                : ""
+            }
+          </div>
+          <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
+            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
+            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    }
+  });
+};
+
 let checkCompanyUpdate = (name, companyId) => {
   return new Promise(async (resolve, reject) => {
     try {
