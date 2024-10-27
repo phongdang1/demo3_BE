@@ -23,10 +23,10 @@ module.exports = {
         type: Sequelize.DATE,
       },
       interviewLocation: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT("long"),
       },
       interviewNote: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.TEXT("long"),
       },
       statusCode: {
         type: Sequelize.STRING,

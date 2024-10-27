@@ -23,10 +23,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
       },
       interviewLocation: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT("long"),
       },
       interviewNote: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT("long"),
       },
       statusCode: {
         type: DataTypes.STRING,

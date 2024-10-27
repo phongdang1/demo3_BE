@@ -65,6 +65,8 @@ let initWebRoutes = (app) => {
     "/createInterviewSchedule",
     cvPostController.createInterviewSchedule
   );
+  router.post("/handleApproveCvPost", cvPostController.handleApproveCvPost);
+  router.post("/handleRejectCvPost", cvPostController.handleRejectCvPost);
   router.get("/testCommon", cvPostController.testCommon);
 
   //==================API COMPANY==========================//

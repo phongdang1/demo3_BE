@@ -5,7 +5,15 @@ import { raw } from "body-parser";
 const { Op, and, where } = require("sequelize");
 
 var nodemailer = require("nodemailer");
-let sendmail = (note, userMail, link = null) => {
+let sendmail = (
+  interviewDate,
+  interviewLocation,
+  interviewNote,
+  user,
+  company,
+  detailPost,
+  link = null
+) => {
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -16,15 +24,15 @@ let sendmail = (note, userMail, link = null) => {
 
   var mailOptions = {
     from: process.env.EMAIL_APP,
-    to: userMail,
-    subject: "Thông báo từ Job Finder",
+    to: user.email,
+    subject: `Thư mời phỏng vấn từ Job Finder`,
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Thông báo từ Job Finder</title>
+        <title>Thư mời phỏng vấn từ công ty ${company.name}</title>
       </head>
       <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
         <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
@@ -32,8 +40,12 @@ let sendmail = (note, userMail, link = null) => {
             <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
           </div>
           <div style="padding: 20px; line-height: 1.6;">
-            <p>Xin chào,</p>
-            <p>${note}</p>
+            <p>Xin chào, ${user.lastName}</p>
+            <p>Bạn đã nhận được lời mời phỏng vấn từ ${company.name}.</p>
+            <p><strong>Vị trí:</strong> ${detailPost.name}</p>
+            <p><strong>Thời gian phỏng vấn:</strong> ${interviewDate}</p>
+            <p><strong>Địa điểm phỏng vấn:</strong> ${interviewLocation}</p>
+            <p><strong>Ghi chú:</strong> ${interviewNote}</p>
             ${
               link
                 ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">Xem chi tiết</a>`
@@ -740,7 +752,8 @@ let createInterviewSchedule = (data) => {
       !data.interviewDate ||
       !data.interviewLocation ||
       !data.interviewNote ||
-      !data.cvPostId
+      !data.cvPostId ||
+      !data.companyId
     ) {
       resolve({
         errCode: 1,
@@ -762,6 +775,31 @@ let createInterviewSchedule = (data) => {
           });
           cvPost.statusCode = "INTERVIEW";
           await cvPost.save();
+          let user = await db.User.findOne({
+            where: { id: cvPost.userId },
+            raw: false,
+          });
+          let company = await db.Company.findOne({
+            where: { id: data.companyId },
+            raw: false,
+          });
+          let post = await db.Post.findOne({
+            where: { id: cvPost.postId },
+            raw: false,
+          });
+          let detailPost = await db.DetailPost.findOne({
+            where: { id: post.detailPostId },
+            raw: false,
+          });
+          sendmail(
+            data.interviewDate,
+            data.interviewLocation,
+            data.interviewNote,
+            user,
+            company,
+            detailPost,
+            "user/cvpost"
+          );
           resolve({
             errCode: 0,
             errMessage: "Create interview schedule success",
@@ -779,7 +817,7 @@ let createInterviewSchedule = (data) => {
   });
 };
 let handleApproveCvPost = (data) => {
-  return Promise(async (resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if (!data.cvPostId) {
       resolve({
         errCode: 1,
@@ -796,6 +834,32 @@ let handleApproveCvPost = (data) => {
         resolve({
           errCode: 0,
           errMessage: "Approve cv post success",
+        });
+      } catch (error) {
+        reject(error);
+      }
+    }
+  });
+};
+
+let handleRejectCvPost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    if (!data.cvPostId) {
+      resolve({
+        errCode: 1,
+        errMessage: "Missing required parameter",
+      });
+    } else {
+      try {
+        let cvPost = await db.CvPost.findOne({
+          where: { id: data.cvPostId },
+          raw: false,
+        });
+        cvPost.statusCode = "REJECTED";
+        await cvPost.save();
+        resolve({
+          errCode: 0,
+          errMessage: "Reject cv post success",
         });
       } catch (error) {
         reject(error);
@@ -833,4 +897,6 @@ module.exports = {
   getAllCvPostByUserId: getAllCvPostByUserId,
   getAllCvPostByCompanyId: getAllCvPostByCompanyId,
   createInterviewSchedule: createInterviewSchedule,
+  handleApproveCvPost: handleApproveCvPost,
+  handleRejectCvPost: handleRejectCvPost,
 };

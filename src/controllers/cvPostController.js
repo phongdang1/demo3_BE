@@ -99,6 +99,31 @@ let createInterviewSchedule = async (req, res) => {
     });
   }
 };
+let handleApproveCvPost = async (req, res) => {
+  try {
+    let data = await cvPostService.handleApproveCvPost(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Approve cv post failed",
+      errorCode: -1,
+    });
+  }
+};
+let handleRejectCvPost = async (req, res) => {
+  try {
+    let data = await cvPostService.handleRejectCvPost(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Reject cv post failed",
+      errorCode: -1,
+    });
+  }
+};
+
 let testCommon = async (req, res) => {
   try {
     let data = await cvPostService.testCommon();
@@ -121,5 +146,8 @@ module.exports = {
   checkViewCompany: checkViewCompany,
   getAllCvPostByCompanyId: getAllCvPostByCompanyId,
   createInterviewSchedule: createInterviewSchedule,
+  handleApproveCvPost: handleApproveCvPost,
+  handleRejectCvPost: handleRejectCvPost,
+
   testCommon: testCommon,
 };
