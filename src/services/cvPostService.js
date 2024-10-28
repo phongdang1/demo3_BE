@@ -176,7 +176,23 @@ let handleApplyJob = (data) => {
           where: { userId: data.userId },
           attributes: ["file"],
         });
-
+        let isVerify = await db.User.findOne({
+          where: { id: user.userId },
+          attributes: ["isVerify"],
+        });
+        if (!user || !user.file) {
+          return resolve({
+            errCode: 2,
+            errMessage: "Please upload your CV before applying for a job",
+          });
+        }
+        if (isVerify.isVerify === 0) {
+          return resolve({
+            errCode: 4,
+            errMessage:
+              "Your account is not verified. Please verify your account before applying for a job",
+          });
+        }
         let cvApply = await db.CvPost.create({
           userId: data.userId,
           postId: data.postId,
