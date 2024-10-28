@@ -174,7 +174,7 @@ let handleApplyJob = (data) => {
         }
         let user = await db.UserDetail.findOne({
           where: { userId: data.userId },
-          attributes: ["file"],
+          attributes: ["file", "userId"],
         });
         let isVerify = await db.User.findOne({
           where: { id: user.userId },
