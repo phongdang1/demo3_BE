@@ -257,6 +257,7 @@ let getAllListCvByPost = (data) => {
                 "amount",
                 "requirement",
                 "benefit",
+                "skillRequirement",
               ],
               include: [
                 {
@@ -311,14 +312,15 @@ let getAllListCvByPost = (data) => {
             },
           ],
         });
+        //console.log("postInfo ", postInfo.postDetailData.skillRequirement);
         let skillRequirement = CommonUtils.flatAllString(
           postInfo.postDetailData.skillRequirement
         );
+        //console.log("mapRequired ", skillRequirement);
         let mapRequired = new Map();
         skillRequirement.forEach((item) => {
           mapRequired.set(item, item);
         });
-        console.log("mapRequired ", mapRequired);
 
         for (let i = 0; i < listCv.rows.length; i++) {
           let cv = listCv.rows[i];
@@ -326,8 +328,8 @@ let getAllListCvByPost = (data) => {
           let matchSkill = Math.ceil(
             await getMapRequiredSkill(cv.userId, skillRequirement)
           ); // lấy phần nguyên
-          console.log("match", match);
-          console.log("matchSkill", matchSkill);
+          // console.log("match", match);
+          // console.log("matchSkill", matchSkill);
           if (match > matchSkill) {
             cv.file = match + "%";
           } else {
