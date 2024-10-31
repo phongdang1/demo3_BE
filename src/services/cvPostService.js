@@ -114,7 +114,7 @@ let caculateMatchUserWithFilter = async (userData, listSkillRequired) => {
     totalUserSkill: totalUserSkill,
   };
 };
-let getMapRequiredSkill = async (userId, requirement) => {
+let getMapRequiredSkill = async (userId, skillRequirement) => {
   try {
     let match = 0;
     let listSkillRequired = await db.UserSkill.findAll({
@@ -137,12 +137,12 @@ let getMapRequiredSkill = async (userId, requirement) => {
         item.skillData.name.toLowerCase()
       );
     });
-    requirement.forEach((item) => {
+    skillRequirement.forEach((item) => {
       if (mapListSkill.has(item.toLowerCase())) {
         match++;
       }
     });
-    let totalRequiredSkills = requirement.length;
+    let totalRequiredSkills = skillRequirement.length;
     let matchRatio = (match / totalRequiredSkills) * 100;
     return matchRatio;
   } catch (err) {
@@ -311,11 +311,11 @@ let getAllListCvByPost = (data) => {
             },
           ],
         });
-        let requirement = CommonUtils.flatAllString(
-          postInfo.postDetailData.requirement
+        let skillRequirement = CommonUtils.flatAllString(
+          postInfo.postDetailData.skillRequirement
         );
         let mapRequired = new Map();
-        requirement.forEach((item) => {
+        skillRequirement.forEach((item) => {
           mapRequired.set(item, item);
         });
         console.log("mapRequired ", mapRequired);
@@ -324,7 +324,7 @@ let getAllListCvByPost = (data) => {
           let cv = listCv.rows[i];
           let match = Math.ceil(await caculateMatchCv(cv.file, mapRequired)); // lấy phần nguyên
           let matchSkill = Math.ceil(
-            await getMapRequiredSkill(cv.userId, requirement)
+            await getMapRequiredSkill(cv.userId, skillRequirement)
           ); // lấy phần nguyên
           console.log("match", match);
           console.log("matchSkill", matchSkill);
@@ -777,6 +777,17 @@ let createInterviewSchedule = (data) => {
       });
     } else {
       try {
+        let checkInterview = await db.Interview.findOne({
+          where: { cvPostId: data.cvPostId },
+          raw: false,
+        });
+        if (checkInterview) {
+          return resolve({
+            errCode: 2,
+            errMessage:
+              "This cv post has already been scheduled for an interview",
+          });
+        }
         let interview = await db.Interview.create({
           interviewDate: data.interviewDate,
           interviewLocation: data.interviewLocation,
@@ -841,6 +852,12 @@ let handleApproveCvPost = (data) => {
       });
     } else {
       try {
+        let interview = await db.Interview.findOne({
+          where: { cvPostId: data.cvPostId },
+          raw: false,
+        });
+        interview.statusCode = "APPROVED";
+        await interview.save();
         let cvPost = await db.CvPost.findOne({
           where: { id: data.cvPostId },
           raw: false,
@@ -873,6 +890,14 @@ let handleRejectCvPost = (data) => {
         });
         cvPost.statusCode = "REJECTED";
         await cvPost.save();
+        let interview = await db.Interview.findOne({
+          where: { cvPostId: data.cvPostId },
+          raw: false,
+        });
+        if (interview) {
+          interview.statusCode = "REJECTED";
+          await interview.save();
+        }
         resolve({
           errCode: 0,
           errMessage: "Reject cv post success",
@@ -880,6 +905,54 @@ let handleRejectCvPost = (data) => {
       } catch (error) {
         reject(error);
       }
+    }
+  });
+};
+
+let getAllInterViewSchedule = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let listInterview = await db.Interview.findAndCountAll({
+        include: [
+          {
+            model: db.CvPost,
+            as: "cvPostData",
+            attributes: ["id", "postId", "description"],
+            include: [
+              {
+                model: db.User,
+                as: "userCvData",
+                attributes: ["id", "email", "firstName", "lastName"],
+              },
+            ],
+          },
+        ],
+        raw: true,
+        nest: true,
+      });
+      resolve({
+        errCode: 0,
+        data: listInterview.rows,
+        count: listInterview.count,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let getInterviewScheduleByCvPost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let interview = await db.Interview.findOne({
+        where: { cvPostId: data.cvPostId },
+      });
+      resolve({
+        errCode: 0,
+        data: interview,
+      });
+    } catch (error) {
+      reject(error);
     }
   });
 };
@@ -915,4 +988,6 @@ module.exports = {
   createInterviewSchedule: createInterviewSchedule,
   handleApproveCvPost: handleApproveCvPost,
   handleRejectCvPost: handleRejectCvPost,
+  getAllInterViewSchedule: getAllInterViewSchedule,
+  getInterviewScheduleByCvPost: getInterviewScheduleByCvPost,
 };

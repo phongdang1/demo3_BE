@@ -124,6 +124,30 @@ let handleRejectCvPost = async (req, res) => {
   }
 };
 
+let getAllInterViewSchedule = async (req, res) => {
+  try {
+    let data = await cvPostService.getAllInterViewSchedule();
+    return res.status(200).json(data);
+  } catch {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get all interview fail",
+      errorCode: -1,
+    });
+  }
+};
+let getInterviewScheduleByCvPost = async (req, res) => {
+  try {
+    let data = await cvPostService.getInterviewScheduleByCvPost(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(200).json({
+      errMessage: "Get interview by CvPost fail",
+      errorCode: -1,
+    });
+  }
+};
+
 let testCommon = async (req, res) => {
   try {
     let data = await cvPostService.testCommon();
@@ -148,6 +172,8 @@ module.exports = {
   createInterviewSchedule: createInterviewSchedule,
   handleApproveCvPost: handleApproveCvPost,
   handleRejectCvPost: handleRejectCvPost,
+  getAllInterViewSchedule: getAllInterViewSchedule,
+  getInterviewScheduleByCvPost: getInterviewScheduleByCvPost,
 
   testCommon: testCommon,
 };

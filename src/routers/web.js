@@ -61,12 +61,21 @@ let initWebRoutes = (app) => {
     "/getAllCvPostByCompanyId",
     cvPostController.getAllCvPostByCompanyId
   );
+  router.get(
+    "/getAllInterViewSchedule",
+    cvPostController.getAllInterViewSchedule
+  );
+  router.get(
+    "/getInterviewScheduleByCvPost",
+    cvPostController.getInterviewScheduleByCvPost
+  );
   router.post(
     "/createInterviewSchedule",
     cvPostController.createInterviewSchedule
   );
   router.post("/handleApproveCvPost", cvPostController.handleApproveCvPost);
   router.post("/handleRejectCvPost", cvPostController.handleRejectCvPost);
+
   router.get("/testCommon", cvPostController.testCommon);
 
   //==================API COMPANY==========================//
