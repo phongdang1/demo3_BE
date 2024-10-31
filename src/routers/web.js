@@ -112,6 +112,7 @@ let initWebRoutes = (app) => {
   router.get("/getPackageById", packageController.getPackageById);
   router.post("/createPayment", packageController.createPayment);
   router.post("/executePayment", packageController.executePayment);
+  router.get("/getPackageByType", packageController.getPackageByType);
 
   //===================API GOOGLE========================//
   router.get(

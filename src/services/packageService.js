@@ -383,6 +383,37 @@ let getPackageById = async (data) => {
   });
 };
 
+let getPackageByType = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.type) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let packageData = await db.Package.findAll({
+          where: { type: data.type },
+        });
+        if (packageData) {
+          resolve({
+            errCode: 0,
+            message: "Get package success",
+            data: packageData,
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: "Can not find package",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   handleCreateNewPackage: handleCreateNewPackage,
   handleUpdatePackage: handleUpdatePackage,
@@ -392,4 +423,5 @@ module.exports = {
   getPackageById: getPackageById,
   createPayment: createPayment,
   executePayment: executePayment,
+  getPackageByType: getPackageByType,
 };

@@ -101,6 +101,18 @@ let executePayment = async (req, res) => {
     });
   }
 };
+let getPackageByType = async (req, res) => {
+  try {
+    let data = await packageService.getPackageByType(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get package by type failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   handleCreateNewPackage: handleCreateNewPackage,
@@ -111,4 +123,5 @@ module.exports = {
   getPackageById: getPackageById,
   createPayment: createPayment,
   executePayment: executePayment,
+  getPackageByType: getPackageByType,
 };
