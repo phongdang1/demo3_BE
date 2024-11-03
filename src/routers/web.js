@@ -7,71 +7,163 @@ import allCodeController from "../controllers/allCodeController";
 import skillController from "../controllers/skillController";
 import cvPostController from "../controllers/cvPostController";
 import packageController from "../controllers/packageController";
+import middlewareControllers from "../middlewares/jwtVerify";
 const passport = require("passport");
 
 const router = express.Router();
 
 let initWebRoutes = (app) => {
   //===================API USER========================//
-  router.get("/getAllUsers", userController.getAllUsers);
-  router.get("/getAllUsersWithLimit", userController.getAllUsersWithLimit);
-  router.get("/getUserById", userController.getUsersById);
+  router.get(
+    "/getAllUsers",
+    middlewareControllers.verifyTokenUser,
+    userController.getAllUsers
+  );
+  router.get(
+    "/getAllUsersWithLimit",
+    middlewareControllers.verifyTokenUser,
+    userController.getAllUsersWithLimit
+  );
+  router.get(
+    "/getUserById",
+    middlewareControllers.verifyTokenUser,
+    userController.getUsersById
+  );
   router.post("/createNewUser", userController.handleCreateNewUser);
   router.post("/login", userController.handleLogin);
-  router.post("/setDataUserDetail", userController.handleSetDataUserDetail);
+  router.post(
+    "/setDataUserDetail",
+    middlewareControllers.verifyTokenUser,
+    userController.handleSetDataUserDetail
+  );
   router.post("/forgotPassword", userController.handleForgotPassword);
-  router.post("/changePassword", userController.handleChangePassword);
+  router.post(
+    "/changePassword",
+    middlewareControllers.verifyTokenUser,
+    userController.handleChangePassword
+  );
 
   //===================API AllCode========================//
   router.get("/getAllCodeByType", allCodeController.getAllCodeByType);
   router.get("/getAllCode", allCodeController.getAllCode);
   router.get("/getValueByCode", allCodeController.getValueByCode);
-  router.post("/createNewCode", allCodeController.handleCreateNewAllCode);
-  router.post("/updateCode", allCodeController.handleUpdateAllCode);
-  router.post("/deleteCode", allCodeController.handleDeleteAllCode);
+  router.post(
+    "/createNewCode",
+    middlewareControllers.verifyTokenAdmin,
+    allCodeController.handleCreateNewAllCode
+  );
+  router.post(
+    "/updateCode",
+    middlewareControllers.verifyTokenAdmin,
+    allCodeController.handleUpdateAllCode
+  );
+  router.post(
+    "/deleteCode",
+    middlewareControllers.verifyTokenAdmin,
+    allCodeController.handleDeleteAllCode
+  );
 
   //===================API SKILL========================//
-  router.post("/createNewSkill", skillController.handleCreateNewSkill);
-  router.post("/deleteSkill", skillController.handleDeleteSkill);
+  router.post(
+    "/createNewSkill",
+    middlewareControllers.verifyTokenAdmin,
+    skillController.handleCreateNewSkill
+  );
+  router.post(
+    "/deleteSkill",
+    middlewareControllers.verifyTokenAdmin,
+    skillController.handleDeleteSkill
+  );
   router.get("/getAllSkillByCategory", skillController.getAllSkillByCategory);
   router.get("/getAllSkillWithLimit", skillController.getAllSkillWithLimit);
   router.get("/getAllSkill", skillController.getAllSkill);
   router.get("/getSkillById", skillController.getSkillById);
-  router.post("/updateSkill", skillController.handleUpdateSkill);
+  router.post(
+    "/updateSkill",
+    middlewareControllers.verifyTokenAdmin,
+    skillController.handleUpdateSkill
+  );
 
   //==================API POST==========================//
   router.get("/getAllPostWithLimit", postController.getAllPostWithLimit);
   router.get("/getAllPost", postController.getAllPost);
-  router.post("/createNewPost", postController.handleCreateNewPost);
+  router.post(
+    "/createNewPost",
+    middlewareControllers.verifyTokenCompany,
+    postController.handleCreateNewPost
+  );
   router.get("/getDetailPostById", postController.getDetailPostById);
-  router.post("/updatePost", postController.handleUpdatePost);
-  router.post("/banPost", postController.handleBanPost);
-  router.post("/unBanPost", postController.handleUnBanPost);
-  router.post("/approvePost", postController.handleApprovePost);
-  router.post("/reupPost", postController.handleReupPost);
-  router.post("/rejectPost", postController.handleRejectPost);
+  router.post(
+    "/updatePost",
+    middlewareControllers.verifyTokenCompany,
+    postController.handleUpdatePost
+  );
+  router.post(
+    "/banPost",
+    middlewareControllers.verifyTokenAdmin,
+    postController.handleBanPost
+  );
+  router.post(
+    "/unBanPost",
+    middlewareControllers.verifyTokenAdmin,
+    postController.handleUnBanPost
+  );
+  router.post(
+    "/approvePost",
+    middlewareControllers.verifyTokenAdmin,
+    postController.handleApprovePost
+  );
+  router.post(
+    "/reupPost",
+    middlewareControllers.verifyTokenCompany,
+    postController.handleReupPost
+  );
+  router.post(
+    "/rejectPost",
+    middlewareControllers.verifyTokenAdmin,
+    postController.handleRejectPost
+  );
 
   //==================API CV_POST==========================//
-  router.post("/applyJob", cvPostController.handleApplyJob);
-  router.get("/getAllListCvByPost", cvPostController.getAllListCvByPost);
+  router.post(
+    "/applyJob",
+    middlewareControllers.verifyTokenUser,
+    cvPostController.handleApplyJob
+  );
+  router.get(
+    "/getAllListCvByPost",
+    middlewareControllers.verifyTokenCompany,
+    cvPostController.getAllListCvByPost
+  );
   router.get("/getDetailCvPostById", cvPostController.getDetailCvPostById);
   router.get("/getAllCvPostByUserId", cvPostController.getAllCvPostByUserId);
-  router.post("/handleFindCv", cvPostController.handleFindCv);
-  router.get("/checkViewCompany", cvPostController.checkViewCompany);
+  router.post(
+    "/handleFindCv",
+    middlewareControllers.verifyTokenCompany,
+    cvPostController.handleFindCv
+  );
+  router.get(
+    "/checkViewCompany",
+    middlewareControllers.verifyTokenCompany,
+    cvPostController.checkViewCompany
+  );
   router.get(
     "/getAllCvPostByCompanyId",
     cvPostController.getAllCvPostByCompanyId
   );
   router.get(
     "/getAllInterViewSchedule",
+    middlewareControllers.verifyTokenCompany,
     cvPostController.getAllInterViewSchedule
   );
   router.get(
     "/getInterviewScheduleByCvPost",
+    middlewareControllers.verifyTokenCompany,
     cvPostController.getInterviewScheduleByCvPost
   );
   router.post(
     "/createInterviewSchedule",
+    middlewareControllers.verifyTokenCompany,
     cvPostController.createInterviewSchedule
   );
   router.post("/handleApproveCvPost", cvPostController.handleApproveCvPost);
@@ -93,26 +185,78 @@ let initWebRoutes = (app) => {
     "/getAllCompaniesInactive",
     companyController.getAllCompaniesInactive
   );
-  router.post("/createNewCompany", companyController.handleCreateNewCompany);
-  router.post("/addUserToCompany", companyController.handleAddUserToCompany);
+  router.post(
+    "/createNewCompany",
+    middlewareControllers.verifyTokenCompany,
+    companyController.handleCreateNewCompany
+  );
+  router.post(
+    "/addUserToCompany",
+    middlewareControllers.verifyTokenCompany,
+    companyController.handleAddUserToCompany
+  );
   router.get("/getCompanyById", companyController.getCompanyById);
-  router.post("/updateCompany", companyController.handleUpdateCompany);
-  router.post("/banCompany", companyController.handleBanCompany);
-  router.post("/unBanCompany", companyController.handleUnBanCompany);
+  router.post(
+    "/updateCompany",
+    middlewareControllers.verifyTokenCompany,
+    companyController.handleUpdateCompany
+  );
+  router.post(
+    "/banCompany",
+    middlewareControllers.verifyTokenAdmin,
+    companyController.handleBanCompany
+  );
+  router.post(
+    "/unBanCompany",
+    middlewareControllers.verifyTokenAdmin,
+    companyController.handleUnBanCompany
+  );
   router.get("/getCompanyByUserId", companyController.getCompanyByUserId);
   router.get("/getAllUserOfCompany", companyController.getAllUserOfCompany);
-  router.post("/approveCompany", companyController.handleApproveCompany);
-  router.post("/rejectCompany", companyController.handleRejectCompany);
+  router.post(
+    "/approveCompany",
+    middlewareControllers.verifyTokenAdmin,
+    companyController.handleApproveCompany
+  );
+  router.post(
+    "/rejectCompany",
+    middlewareControllers.verifyTokenAdmin,
+    companyController.handleRejectCompany
+  );
 
   //===================API PACKAGE========================//
-  router.post("/createNewPackage", packageController.handleCreateNewPackage);
-  router.post("/updatePackage", packageController.handleUpdatePackage);
-  router.post("/activePackage", packageController.handleActivePackage);
-  router.post("/deactivePackage", packageController.handleDeactivePackage);
+  router.post(
+    "/createNewPackage",
+    middlewareControllers.verifyTokenAdmin,
+    packageController.handleCreateNewPackage
+  );
+  router.post(
+    "/updatePackage",
+    middlewareControllers.verifyTokenAdmin,
+    packageController.handleUpdatePackage
+  );
+  router.post(
+    "/activePackage",
+    middlewareControllers.verifyTokenAdmin,
+    packageController.handleActivePackage
+  );
+  router.post(
+    "/deactivePackage",
+    middlewareControllers.verifyTokenAdmin,
+    packageController.handleDeactivePackage
+  );
   router.get("/getAllPackage", packageController.getAllPackage);
   router.get("/getPackageById", packageController.getPackageById);
-  router.post("/createPayment", packageController.createPayment);
-  router.post("/executePayment", packageController.executePayment);
+  router.post(
+    "/createPayment",
+    middlewareControllers.verifyTokenUser,
+    packageController.createPayment
+  );
+  router.post(
+    "/executePayment",
+    middlewareControllers.verifyTokenUser,
+    packageController.executePayment
+  );
   router.get("/getPackageByType", packageController.getPackageByType);
 
   //===================API GOOGLE========================//
@@ -129,8 +273,16 @@ let initWebRoutes = (app) => {
     }
   );
   //===================API OTP========================//
-  router.post("/sendOtp", authController.handleSendOtp);
-  router.post("/verifyOtp", authController.handleVerifyOtp);
+  router.post(
+    "/sendOtp",
+    middlewareControllers.verifyTokenUser,
+    authController.handleSendOtp
+  );
+  router.post(
+    "/verifyOtp",
+    middlewareControllers.verifyTokenUser,
+    authController.handleVerifyOtp
+  );
 
   return app.use("/", router);
 };

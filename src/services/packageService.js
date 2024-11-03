@@ -119,7 +119,6 @@ let executePayment = (data) => {
                 packageId: data.packageId,
                 poinEarned: packageInfo.point,
                 amount: packageInfo.price,
-                remainingViews: 10,
                 price: packageInfo.price,
                 statusCode: "PAID",
               });
@@ -130,11 +129,15 @@ let executePayment = (data) => {
                 });
                 inforUser.point += inforUserPackage.poinEarned;
                 await inforUser.save({ silent: true });
+                let packageInfo = await db.Package.findOne({
+                  where: { id: data.packageId },
+                  raw: false,
+                });
                 let company = await db.Company.findOne({
                   where: { id: inforUser.companyId },
                   raw: false,
                 });
-                company.allowCv += inforUserPackage.remainingViews;
+                company.allowCv += packageInfo.value;
                 await company.save({ silent: true });
               }
               resolve({
