@@ -248,12 +248,12 @@ let initWebRoutes = (app) => {
   router.get("/getAllPackage", packageController.getAllPackage);
   router.get("/getPackageById", packageController.getPackageById);
   router.post(
-    "/createPayment",
+    "/createPaymentViewCv",
 
-    packageController.createPayment
+    packageController.createPaymentViewCv
   );
   router.post(
-    "/executePayment",
+    "/executePaymentViewCv",
 
     packageController.executePaymentViewCV
   );

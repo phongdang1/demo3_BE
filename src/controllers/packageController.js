@@ -76,9 +76,9 @@ let getPackageById = async (req, res) => {
     });
   }
 };
-let createPayment = async (req, res) => {
+let createPaymentViewCv = async (req, res) => {
   try {
-    let data = await packageService.createPayment(req.body);
+    let data = await packageService.createPaymentViewCv(req.body);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -121,7 +121,7 @@ module.exports = {
   handleDeactivePackage: handleDeactivePackage,
   getAllPackage: getAllPackage,
   getPackageById: getPackageById,
-  createPayment: createPayment,
+  createPaymentViewCv: createPaymentViewCv,
   executePaymentViewCV: executePaymentViewCV,
   getPackageByType: getPackageByType,
 };

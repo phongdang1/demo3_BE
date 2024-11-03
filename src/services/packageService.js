@@ -3,14 +3,14 @@ import db from "../models/index";
 const { Op } = require("sequelize");
 import paypal from "paypal-rest-sdk";
 import { raw } from "body-parser";
-
+require("dotenv").config();
 paypal.configure({
   mode: "sandbox", //sandbox or live
   client_id: process.env.CLIENT_ID_PAYPAL,
   client_secret: process.env.CLIENT_SECRET_PAYPAL,
 });
 
-let createPayment = (data) => {
+let createPaymentViewCv = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.id) {
@@ -34,8 +34,8 @@ let createPayment = (data) => {
               payment_method: "paypal",
             },
             redirect_urls: {
-              return_url: "http://localhost:3000/success",
-              cancel_url: "http://localhost:3000/cancel",
+              return_url: `${process.env.URL_REACT}/paymentViewCv/success`,
+              cancel_url: `${process.env.URL_REACT}/paymentViewCv/cancel`,
             },
             transactions: [
               {
@@ -423,7 +423,7 @@ module.exports = {
   handleDeactivePackage: handleDeactivePackage,
   getAllPackage: getAllPackage,
   getPackageById: getPackageById,
-  createPayment: createPayment,
+  createPaymentViewCv: createPaymentViewCv,
   executePaymentViewCV: executePaymentViewCV,
   getPackageByType: getPackageByType,
 };
