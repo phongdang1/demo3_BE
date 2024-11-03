@@ -22,19 +22,18 @@ module.exports = (sequelize, DataTypes) => {
     {
       name: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       type: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       price: {
         type: DataTypes.DOUBLE,
-        allowNull: false,
+      },
+      value: {
+        type: DataTypes.INTEGER,
       },
       statusCode: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
     },
     {

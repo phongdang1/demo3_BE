@@ -28,6 +28,7 @@ let initWebRoutes = (app) => {
   router.get("/getValueByCode", allCodeController.getValueByCode);
   router.post("/createNewCode", allCodeController.handleCreateNewAllCode);
   router.post("/updateCode", allCodeController.handleUpdateAllCode);
+  router.post("/deleteCode", allCodeController.handleDeleteAllCode);
 
   //===================API SKILL========================//
   router.post("/createNewSkill", skillController.handleCreateNewSkill);

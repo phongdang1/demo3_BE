@@ -52,18 +52,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      remainingView: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      remainingPost: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      vipExpiryDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
       statusCode: {
         type: DataTypes.STRING,
         allowNull: true,

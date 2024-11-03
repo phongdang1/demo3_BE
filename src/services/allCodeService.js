@@ -136,10 +136,57 @@ let handleUpdateAllCode = (data) => {
   });
 };
 
+let handleDeleteAllCode = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.code) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let allCodeRes = await db.Allcode.findOne({
+          where: { code: data.code },
+          raw: false,
+        });
+        if (allCodeRes) {
+          allCodeRes = await allCodeRes.destroy();
+          if (allCodeRes) {
+            resolve({
+              errCode: 0,
+              errMessage: "Delete allcode success",
+            });
+          } else {
+            resolve({
+              errCode: 2,
+              errMessage: "Delete allcode failed",
+            });
+          }
+        } else {
+          resolve({
+            errCode: 3,
+            errMessage: "Allcode not found",
+          });
+        }
+      }
+    } catch (error) {
+      if (error.message.includes("foreign key constraint fails")) {
+        resolve({
+          errCode: 3,
+          errMessage:
+            "You can't delete this code because it is being used in other tables",
+        });
+      }
+      reject(error.message);
+    }
+  });
+};
+
 module.exports = {
   handleCreateNewAllCode: handleCreateNewAllCode,
   getAllCodeByType: getAllCodeByType,
   getAllCode: getAllCode,
   handleUpdateAllCode: handleUpdateAllCode,
   getValueByCode: getValueByCode,
+  handleDeleteAllCode: handleDeleteAllCode,
 };

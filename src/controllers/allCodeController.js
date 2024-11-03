@@ -61,10 +61,24 @@ let handleUpdateAllCode = async (req, res) => {
   }
 };
 
+let handleDeleteAllCode = async (req, res) => {
+  try {
+    let data = await allCodeService.handleDeleteAllCode(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Delete allcode failed",
+      errorCode: -1,
+    });
+  }
+};
+
 module.exports = {
   getAllCodeByType: getAllCodeByType,
   handleCreateNewAllCode: handleCreateNewAllCode,
   handleUpdateAllCode: handleUpdateAllCode,
   getValueByCode: getValueByCode,
   getAllCode: getAllCode,
+  handleDeleteAllCode: handleDeleteAllCode,
 };
