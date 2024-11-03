@@ -249,13 +249,13 @@ let initWebRoutes = (app) => {
   router.get("/getPackageById", packageController.getPackageById);
   router.post(
     "/createPayment",
-    middlewareControllers.verifyTokenUser,
+
     packageController.createPayment
   );
   router.post(
     "/executePayment",
-    middlewareControllers.verifyTokenUser,
-    packageController.executePayment
+
+    packageController.executePaymentViewCV
   );
   router.get("/getPackageByType", packageController.getPackageByType);
 

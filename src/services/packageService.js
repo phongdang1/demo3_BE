@@ -62,11 +62,10 @@ let createPayment = (data) => {
             if (error) {
               throw error;
             } else {
-              for (let i = 0; i < payment.links.length; i++) {
-                if (payment.links[i].rel === "approval_url") {
-                  resolve(payment.links[i].href);
-                }
-              }
+              resolve({
+                errCode: 0,
+                link: payment.links[1].href,
+              });
             }
           });
         }
@@ -77,7 +76,7 @@ let createPayment = (data) => {
   });
 };
 
-let executePayment = (data) => {
+let executePaymentViewCV = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.paymentId || !data.token || !data.PayerID) {
@@ -117,7 +116,7 @@ let executePayment = (data) => {
               let inforUserPackage = await db.UserPackage.create({
                 userId: data.userId,
                 packageId: data.packageId,
-                poinEarned: packageInfo.point,
+                poinEarned: packageInfo.price,
                 amount: packageInfo.price,
                 price: packageInfo.price,
                 statusCode: "PAID",
@@ -425,6 +424,6 @@ module.exports = {
   getAllPackage: getAllPackage,
   getPackageById: getPackageById,
   createPayment: createPayment,
-  executePayment: executePayment,
+  executePaymentViewCV: executePaymentViewCV,
   getPackageByType: getPackageByType,
 };
