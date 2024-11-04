@@ -117,7 +117,7 @@ let executePaymentViewCV = (data) => {
                 userId: data.userId,
                 packageId: data.packageId,
                 poinEarned: packageInfo.price,
-                amount: packageInfo.price,
+                amount: 1,
                 price: packageInfo.price,
                 statusCode: "PAID",
               });
