@@ -125,6 +125,30 @@ let executePaymentHotPost = async (req, res) => {
     });
   }
 };
+let createPaymentVip = async (req, res) => {
+  try {
+    let data = await packageService.createPaymentVip(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Create payment failed",
+      errorCode: -1,
+    });
+  }
+};
+let executePaymentVip = async (req, res) => {
+  try {
+    let data = await packageService.executePaymentVip(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Execute payment failed",
+      errorCode: -1,
+    });
+  }
+};
 let getPackageByType = async (req, res) => {
   try {
     let data = await packageService.getPackageByType(req.query);
@@ -150,4 +174,6 @@ module.exports = {
   getPackageByType: getPackageByType,
   createPaymentHotPost: createPaymentHotPost,
   executePaymentHotPost: executePaymentHotPost,
+  createPaymentVip: createPaymentVip,
+  executePaymentVip: executePaymentVip,
 };

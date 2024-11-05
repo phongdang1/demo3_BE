@@ -243,26 +243,15 @@ let initWebRoutes = (app) => {
   );
   router.get("/getAllPackage", packageController.getAllPackage);
   router.get("/getPackageById", packageController.getPackageById);
-  router.post(
-    "/createPaymentViewCv",
-
-    packageController.createPaymentViewCv
-  );
-  router.post(
-    "/executePaymentViewCv",
-
-    packageController.executePaymentViewCV
-  );
-  router.post(
-    "/createPaymentHotPost",
-
-    packageController.createPaymentHotPost
-  );
+  router.post("/createPaymentViewCv", packageController.createPaymentViewCv);
+  router.post("/executePaymentViewCv", packageController.executePaymentViewCV);
+  router.post("/createPaymentHotPost", packageController.createPaymentHotPost);
   router.post(
     "/executePaymentHotPost",
-
     packageController.executePaymentHotPost
   );
+  router.post("/createPaymentVip", packageController.createPaymentVip);
+  router.post("/executePaymentVip", packageController.executePaymentVip);
   router.get("/getPackageByType", packageController.getPackageByType);
 
   //===================API GOOGLE========================//
