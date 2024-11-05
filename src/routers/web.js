@@ -213,11 +213,7 @@ let initWebRoutes = (app) => {
   );
   router.get("/getCompanyByUserId", companyController.getCompanyByUserId);
   router.get("/getAllUserOfCompany", companyController.getAllUserOfCompany);
-  router.post(
-    "/approveCompany",
-    middlewareControllers.verifyTokenAdmin,
-    companyController.handleApproveCompany
-  );
+  router.post("/approveCompany", companyController.handleApproveCompany);
   router.post(
     "/rejectCompany",
     middlewareControllers.verifyTokenAdmin,
@@ -256,6 +252,16 @@ let initWebRoutes = (app) => {
     "/executePaymentViewCv",
 
     packageController.executePaymentViewCV
+  );
+  router.post(
+    "/createPaymentHotPost",
+
+    packageController.createPaymentHotPost
+  );
+  router.post(
+    "/executePaymentHotPost",
+
+    packageController.executePaymentHotPost
   );
   router.get("/getPackageByType", packageController.getPackageByType);
 

@@ -153,6 +153,148 @@ let executePaymentViewCV = (data) => {
   });
 };
 
+let createPaymentHotPost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.id) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let packageInfo = await db.Package.findOne({
+          where: { id: data.id },
+        });
+        if (!packageInfo) {
+          resolve({
+            errCode: 2,
+            errMessage: "Can not find package",
+          });
+        } else {
+          var create_payment_json = {
+            intent: "sale",
+            payer: {
+              payment_method: "paypal",
+            },
+            redirect_urls: {
+              return_url: `${process.env.URL_REACT}/paymentViewCv/success`,
+              cancel_url: `${process.env.URL_REACT}/paymentViewCv/cancel`,
+            },
+            transactions: [
+              {
+                item_list: {
+                  items: [
+                    {
+                      name: packageInfo.name,
+                      sku: "001",
+                      price: packageInfo.price,
+                      currency: "USD",
+                      quantity: 1,
+                    },
+                  ],
+                },
+                amount: {
+                  currency: "USD",
+                  total: packageInfo.price,
+                },
+                description: "This is the payment description.",
+              },
+            ],
+          };
+          paypal.payment.create(create_payment_json, function (error, payment) {
+            if (error) {
+              throw error;
+            } else {
+              resolve({
+                errCode: 0,
+                link: payment.links[1].href,
+              });
+            }
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let executePaymentHotPost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.paymentId || !data.token || !data.PayerID) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let packageInfo = await db.Package.findOne({
+          where: { id: data.packageId },
+        });
+        if (!packageInfo) {
+          return resolve({
+            errCode: 2,
+            errMessage: "Can not find package",
+          });
+        }
+        let execute_payment_json = {
+          payer_id: data.PayerID,
+          transactions: [
+            {
+              amount: {
+                currency: "USD",
+                total: packageInfo.price,
+              },
+            },
+          ],
+        };
+        let paymentId = data.paymentId;
+        paypal.payment.execute(
+          paymentId,
+          execute_payment_json,
+          async function (error, payment) {
+            if (error) {
+              throw error;
+            } else {
+              let inforUserPackage = await db.UserPackage.create({
+                userId: data.userId,
+                packageId: data.packageId,
+                poinEarned: packageInfo.price,
+                amount: 1,
+                price: packageInfo.price,
+                statusCode: "PAID",
+              });
+              if (inforUserPackage) {
+                let inforUser = await db.User.findOne({
+                  where: { id: data.userId },
+                  raw: false,
+                });
+                inforUser.point += inforUserPackage.poinEarned;
+                await inforUser.save({ silent: true });
+                let packageInfo = await db.Package.findOne({
+                  where: { id: data.packageId },
+                  raw: false,
+                });
+                let company = await db.Company.findOne({
+                  where: { id: inforUser.companyId },
+                  raw: false,
+                });
+                company.allowHotPost += packageInfo.value;
+                await company.save({ silent: true });
+              }
+              resolve({
+                errCode: 0,
+                errMessage: "Payment success",
+              });
+            }
+          }
+        );
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 let checkPackageNameExist = async (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -425,5 +567,7 @@ module.exports = {
   getPackageById: getPackageById,
   createPaymentViewCv: createPaymentViewCv,
   executePaymentViewCV: executePaymentViewCV,
+  createPaymentHotPost: createPaymentHotPost,
+  executePaymentHotPost: executePaymentHotPost,
   getPackageByType: getPackageByType,
 };
