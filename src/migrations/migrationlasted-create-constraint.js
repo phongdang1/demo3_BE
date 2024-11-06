@@ -24,6 +24,17 @@ module.exports = {
           },
           onUpdate: "CASCADE",
         });
+        //Notifications
+        queryInterface.addConstraint("Notifications", {
+          type: "foreign key",
+          fields: ["userId"],
+          name: "FK_Notifications_Users",
+          references: {
+            table: "Users",
+            field: "id",
+          },
+          onUpdate: "CASCADE",
+        });
 
         //Posts
         queryInterface.addConstraint("Posts", {

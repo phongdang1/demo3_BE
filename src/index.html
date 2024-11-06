@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Test</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Socket.IO Client</h1>
+    <input id="messageInput" type="text" placeholder="Nhập tin nhắn">
+    <button id="sendButton">Gửi</button>
+    <div id="messages"></div>
+
+    <script>
+        // Giả định bạn đã có userId sau khi người dùng đăng nhập
+        const userId = 1;  // Thay thế bằng userId thực tế của người dùng
+
+        // Kết nối tới server với query userId
+        const socket = io("http://localhost:5000", {
+            query: { userId }
+        });
+
+        document.getElementById("sendButton").onclick = () => {
+            const message = document.getElementById("messageInput").value;
+            socket.emit("sendMessage", message);
+        };
+
+        // Lắng nghe sự kiện "companyApproved" từ server
+        socket.on("companyApproved", (msg) => {
+            const messagesDiv = document.getElementById("messages");
+            console.log("Received:", msg);
+            messagesDiv.innerHTML += `<p>${msg.message}</p>`;
+        });
+
+        // Kiểm tra kết nối
+        socket.on("connect", () => {
+            console.log("Đã kết nối với server Socket.IO");
+        });
+        
+        socket.on("disconnect", () => {
+            console.log("Mất kết nối với server");
+        });
+    </script>
+</body>
+</html>

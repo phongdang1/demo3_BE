@@ -2,32 +2,48 @@ import express from "express";
 import bodyParser from "body-parser";
 import viewEngine from "./config/viewEngine";
 import connectDB from "./config/connectDB";
-const sendJobMail = require("./utils/schedule");
-const swaggerUi = require("swagger-ui-express");
-const swaggerSpecs = require("./utils/swaggerConfig");
-const initWebRoutes = require("./routers/web");
-const passport = require("./utils/passportConfig");
-const cookieSession = require("cookie-session");
-const cors = require("cors");
-const jwt = require("jsonwebtoken");
-const socketIo = require("socket.io");
-const session = require("express-session");
-
+import swaggerUi from "swagger-ui-express";
+import swaggerSpecs from "./utils/swaggerConfig";
+import initWebRoutes from "./routers/web";
+import passport from "./utils/passportConfig";
+import cookieSession from "cookie-session";
+import cors from "cors";
+import session from "express-session";
+import http from "http";
+import { Server as SocketServer } from "socket.io";
+const { join } = require("node:path");
 require("dotenv").config();
 
 let app = express();
-const server = require("http").createServer(app);
-const io = socketIo(server);
+const server = http.createServer(app);
+const io = new SocketServer(server, {
+  cors: {
+    origin: process.env.URL_REACT,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+global.ioGlobal = io;
 
-io.on("connection", (socket) => {
-  console.log("a user connected");
+global.ioGlobal.on("connection", (socket) => {
+  const socketId = socket.handshake.query.socketId;
+  if (socketId) {
+    socket.join(socketId);
+    console.log("User connected:", socket.id);
+  }
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log("A user disconnected:", socket.id);
   });
 });
+
+app.get("/", (req, res) => {
+  res.sendFile(join(__dirname, "index.html"));
+});
+
+// Cấu hình session
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: process.env.SESSION_SECRET || "default_secret",
     resave: false,
     saveUninitialized: true,
   })
@@ -37,21 +53,19 @@ app.use(passport.session());
 
 app.use(
   cors({
-    origin: process.env.URL_REACT, // Domain React của bạn
+    origin: process.env.URL_REACT,
     credentials: true,
   })
 );
 
-//limit 50mb
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 viewEngine(app);
-//sendJobMail();
 connectDB();
 initWebRoutes(app);
 
 let port = process.env.PORT || 8080;
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`App is running at the port ${port}`);
 });

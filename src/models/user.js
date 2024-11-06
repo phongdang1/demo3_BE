@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "companyUserData",
       });
+      User.hasMany(models.Notification, {
+        foreignKey: "userId",
+        as: "notificationUserData",
+      });
       User.belongsTo(models.Company, {
         foreignKey: "companyId",
         targetKey: "id",

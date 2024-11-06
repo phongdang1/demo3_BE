@@ -769,7 +769,19 @@ let handleApproveCompany = (data) => {
           let note =
             "Công ty của bạn đã được duyệt. Hãy đăng nhập và sử dụng dịch vụ của chúng tôi";
           sendmail(note, user.email, `company/${foundCompany.id}`);
-
+          let notification = await db.Notification.create({
+            userId: user.id,
+            content: "Công ty của bạn đã được duyệt thành công!",
+            isChecked: 0,
+          });
+          if (notification) {
+            let userSocketId = "11";
+            console.log("userSocket", userSocketId);
+            global.ioGlobal.to(userSocketId).emit("companyApproved", {
+              message: notification.content,
+              companyId: foundCompany.id,
+            });
+          }
           resolve({
             errCode: 0,
             errMessage: "Approve company succeed",
@@ -813,6 +825,20 @@ let handleRejectCompany = (data) => {
           let note =
             "Công ty của bạn đã bị từ chối. Vui lòng liên hệ với quản trị viên để biết thêm chi tiết";
           sendmail(note, user.email, `company/${foundCompany.id}`);
+          let notification = await db.Notification.create({
+            userId: user.id,
+            content: "Công ty của bạn đã được duyệt thành công!",
+            isChecked: 0,
+          });
+          if (notification) {
+            let userSocketId = "11";
+            console.log("userSocket", userSocketId);
+            global.ioGlobal.to(userSocketId).emit("companyReject", {
+              message: notification.content,
+              companyId: foundCompany.id,
+            });
+          }
+
           resolve({
             errCode: 0,
             errMessage: "Reject company succeed",

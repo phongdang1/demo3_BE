@@ -7,6 +7,7 @@ import allCodeController from "../controllers/allCodeController";
 import skillController from "../controllers/skillController";
 import cvPostController from "../controllers/cvPostController";
 import packageController from "../controllers/packageController";
+import notificationController from "../controllers/notificationController";
 import middlewareControllers from "../middlewares/jwtVerify";
 const passport = require("passport");
 
@@ -216,7 +217,7 @@ let initWebRoutes = (app) => {
   router.post("/approveCompany", companyController.handleApproveCompany);
   router.post(
     "/rejectCompany",
-    middlewareControllers.verifyTokenAdmin,
+
     companyController.handleRejectCompany
   );
 
@@ -255,6 +256,7 @@ let initWebRoutes = (app) => {
   router.get("/getPackageByType", packageController.getPackageByType);
 
   //===================API GOOGLE========================//
+
   router.get(
     "/auth/google",
     passport.authenticate("google", { scope: ["email"] })
@@ -266,6 +268,15 @@ let initWebRoutes = (app) => {
     function (req, res) {
       console.log("req.user");
     }
+  );
+  //===================API NOTIFICATION========================//
+  router.get(
+    "/getAllNotificationByUserId",
+    notificationController.getAllNotificationByUserId
+  );
+  router.post(
+    "/handleCheckNotification",
+    notificationController.handleCheckNotification
   );
   //===================API OTP========================//
   router.post(
