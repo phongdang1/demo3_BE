@@ -775,7 +775,7 @@ let handleApproveCompany = (data) => {
             isChecked: 0,
           });
           if (notification) {
-            let userSocketId = "11";
+            let userSocketId = user.id.toString();
             console.log("userSocket", userSocketId);
             global.ioGlobal.to(userSocketId).emit("companyApproved", {
               message: notification.content,
@@ -831,8 +831,8 @@ let handleRejectCompany = (data) => {
             isChecked: 0,
           });
           if (notification) {
-            let userSocketId = "11";
-            console.log("userSocket", userSocketId);
+            let userSocketId = user.id.toString();
+
             global.ioGlobal.to(userSocketId).emit("companyReject", {
               message: notification.content,
               companyId: foundCompany.id,
