@@ -26,9 +26,10 @@ const io = new SocketServer(server, {
 global.ioGlobal = io;
 
 global.ioGlobal.on("connection", (socket) => {
-  const socketId = socket.handshake.query.socketId;
-  if (socketId) {
-    socket.join(socketId);
+  const userId = socket.handshake.query.userId;
+  console.log("userId", userId);
+  if (userId) {
+    socket.join(userId);
     console.log("User connected:", socket.id);
   }
   socket.on("disconnect", () => {

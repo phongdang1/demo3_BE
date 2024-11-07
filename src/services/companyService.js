@@ -771,11 +771,11 @@ let handleApproveCompany = (data) => {
           sendmail(note, user.email, `company/${foundCompany.id}`);
           let notification = await db.Notification.create({
             userId: user.id,
-            content: "Công ty của bạn đã được duyệt thành công!",
+            content: "Thong bao test",
             isChecked: 0,
           });
           if (notification) {
-            let userSocketId = user.id.toString();
+            let userSocketId = "11";
             console.log("userSocket", userSocketId);
             global.ioGlobal.to(userSocketId).emit("companyApproved", {
               message: notification.content,
@@ -827,12 +827,11 @@ let handleRejectCompany = (data) => {
           sendmail(note, user.email, `company/${foundCompany.id}`);
           let notification = await db.Notification.create({
             userId: user.id,
-            content: "Công ty của bạn đã được duyệt thành công!",
+            content: "Thong bao test",
             isChecked: 0,
           });
           if (notification) {
             let userSocketId = user.id.toString();
-
             global.ioGlobal.to(userSocketId).emit("companyReject", {
               message: notification.content,
               companyId: foundCompany.id,
