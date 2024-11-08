@@ -758,11 +758,26 @@ let handleRejectPost = (data) => {
             where: { id: foundPost.userId },
             raw: false,
           });
+          let detailPost = await db.DetailPost.findOne({
+            where: { id: foundPost.detailPostId },
+          });
           sendmail(
             `Bài viết của bạn đã bị từ chối với lý do ${data.note}`,
             user.email,
             `admin/list-post/${foundPost.id}`
           );
+          let notification = await db.Notification.create({
+            userId: user.id,
+            content: `Your post "${detailPost.name}" has been rejected with the reason: ${data.note}`,
+            isChecked: 0,
+          });
+          if (notification) {
+            let userSocketId = user.id.toString();
+            console.log("userSocket", userSocketId);
+            global.ioGlobal.to(userSocketId).emit("postRejected", {
+              message: notification.content,
+            });
+          }
           resolve({
             errCode: 0,
             errMessage: "Reject post success",

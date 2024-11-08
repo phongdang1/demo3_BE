@@ -186,11 +186,7 @@ let initWebRoutes = (app) => {
     "/getAllCompaniesInactive",
     companyController.getAllCompaniesInactive
   );
-  router.post(
-    "/createNewCompany",
-    middlewareControllers.verifyTokenCompany,
-    companyController.handleCreateNewCompany
-  );
+  router.post("/createNewCompany", companyController.handleCreateNewCompany);
   router.post(
     "/addUserToCompany",
     middlewareControllers.verifyTokenCompany,
