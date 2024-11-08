@@ -771,7 +771,7 @@ let handleApproveCompany = (data) => {
           sendmail(note, user.email, `company/${foundCompany.id}`);
           let notification = await db.Notification.create({
             userId: user.id,
-            content: "Thong bao test",
+            content: "Công ty của bạn đã được duyệt!",
             isChecked: 0,
           });
           if (notification) {

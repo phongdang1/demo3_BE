@@ -700,11 +700,26 @@ let handleApprovePost = (data) => {
             where: { id: foundPost.userId },
             raw: false,
           });
+          let detailPost = await db.DetailPost.findOne({
+            where: { id: foundPost.detailPostId },
+          });
           sendmail(
             `Bài viết của bạn đã được duyệt và được hiển thị trên hệ thống`,
             user.email,
             `admin/list-post/${foundPost.id}`
           );
+          let notification = await db.Notification.create({
+            userId: user.id,
+            content: `Your post "${detailPost.name}" has been approved and is now displayed on the system.`,
+            isChecked: 0,
+          });
+          if (notification) {
+            let userSocketId = user.id.toString();
+            console.log("userSocket", userSocketId);
+            global.ioGlobal.to(userSocketId).emit("postApproved", {
+              message: notification.content,
+            });
+          }
           resolve({
             errCode: 0,
             errMessage: "Approve post success",
