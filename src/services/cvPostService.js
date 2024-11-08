@@ -829,6 +829,19 @@ let createInterviewSchedule = (data) => {
             detailPost,
             "user/cvpost"
           );
+          let notification = await db.Notification.create({
+            userId: user.id,
+            content:
+              "Congratulations! You have been selected for the interview. Please check your email for more details",
+            isChecked: 0,
+          });
+          if (notification) {
+            let userSocketId = user.id.toString();
+            console.log("userSocket", userSocketId);
+            global.ioGlobal.to(userSocketId).emit("cvPostInterView", {
+              message: notification.content,
+            });
+          }
           resolve({
             errCode: 0,
             errMessage: "Create interview schedule success",
@@ -866,6 +879,19 @@ let handleApproveCvPost = (data) => {
         });
         cvPost.statusCode = "APPROVED";
         await cvPost.save();
+        let notification = await db.Notification.create({
+          userId: interview.userId,
+          content:
+            "Congratulations! You have been selected for the interview. Please check your email for more details",
+          isChecked: 0,
+        });
+        if (notification) {
+          let userSocketId = interview.userId.toString();
+          console.log("userSocket", userSocketId);
+          global.ioGlobal.to(userSocketId).emit("cvPostApproved", {
+            message: notification.content,
+          });
+        }
         resolve({
           errCode: 0,
           errMessage: "Approve cv post success",
@@ -899,6 +925,19 @@ let handleRejectCvPost = (data) => {
         if (interview) {
           interview.statusCode = "REJECTED";
           await interview.save();
+        }
+        let notification = await db.Notification.create({
+          userId: cvPost.userId,
+          content:
+            "We are sorry to inform you that you have not been selected for the interview",
+          isChecked: 0,
+        });
+        if (notification) {
+          let userSocketId = cvPost.userId.toString();
+          console.log("userSocket", userSocketId);
+          global.ioGlobal.to(userSocketId).emit("cvPostRejected", {
+            message: notification.content,
+          });
         }
         resolve({
           errCode: 0,
