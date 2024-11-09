@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       reason: DataTypes.TEXT("long"),
       discription: DataTypes.TEXT("long"),
       isChecked: DataTypes.TINYINT,
+      isAdminChecked: DataTypes.TINYINT,
     },
     {
       sequelize,

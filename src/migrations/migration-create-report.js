@@ -18,6 +18,9 @@ module.exports = {
       isChecked: {
         type: Sequelize.TINYINT,
       },
+      isAdminChecked: {
+        type: Sequelize.TINYINT,
+      },
       userId: {
         type: Sequelize.INTEGER,
       },

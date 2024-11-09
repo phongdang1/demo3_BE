@@ -50,6 +50,7 @@ let handleCreateNewReport = (data) => {
         reason: data.reason,
         discription: data.discription,
         isChecked: 0,
+        isAdminChecked: 0,
       });
       resolve({
         errMessage: "Create new report successfully",
@@ -96,7 +97,7 @@ let handleCheckReport = (data) => {
           errorCode: -1,
         });
       }
-      report.isChecked = 1;
+      report.isAdminChecked = 1;
       await report.save();
       resolve({
         errMessage: "Check report successfully",
@@ -132,10 +133,34 @@ let getReportByPostId = (data) => {
     }
   });
 };
+let test = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const reports = await db.Report.findAll({
+        attributes: [
+          "postId",
+          [db.Sequelize.fn("COUNT", "postId"), "reportCount"],
+        ],
+        where: { isChecked: 0 }, // Chỉ đếm những report có isCheck = 0
+        group: ["postId"],
+        having: db.Sequelize.literal("reportCount >= 5"),
+        raw: true,
+      });
+      resolve({
+        errMessage: "Get all report successfully",
+        errorCode: 0,
+        data: reports,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 module.exports = {
   handleCreateNewReport: handleCreateNewReport,
   getAllReport: getAllReport,
   handleCheckReport: handleCheckReport,
   getReportByPostId: getReportByPostId,
+  test: test,
 };

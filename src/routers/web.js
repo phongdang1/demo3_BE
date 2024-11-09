@@ -35,7 +35,7 @@ let initWebRoutes = (app) => {
   router.post("/login", userController.handleLogin);
   router.post(
     "/setDataUserDetail",
-    middlewareControllers.verifyTokenUser,
+
     userController.handleSetDataUserDetail
   );
   router.post("/forgotPassword", userController.handleForgotPassword);
@@ -271,6 +271,7 @@ let initWebRoutes = (app) => {
   router.get("/getAllReport", reportController.getAllReport);
   router.post("/checkReport", reportController.handleCheckReport);
   router.get("/getReportByPostId", reportController.getReportByPostId);
+  router.get("/test", reportController.test);
   //===================API NOTIFICATION========================//
   router.get(
     "/getAllNotificationByUserId",

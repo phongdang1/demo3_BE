@@ -170,5 +170,59 @@ const sendJobMail = () => {
     console.log("đã gửi");
   });
 };
+const checkReportPost = () => {
+  schedule.scheduleJob(rule, async function () {
+    try {
+      let reports = await db.Report.findAll({
+        attributes: [
+          "postId",
+          [db.Sequelize.fn("COUNT", "postId"), "reportCount"],
+        ],
+        where: { isChecked: 0 },
+        group: ["postId"],
+        having: db.Sequelize.literal("reportCount >= 10"),
+        raw: true,
+      });
+      if (reports && reports.length > 0) {
+        for (let report of reports) {
+          let post = await db.Post.findOne({
+            where: { id: report.postId },
+            raw: false,
+          });
 
-module.exports = sendJobMail;
+          post.statusCode = "BANNED";
+          await post.save();
+
+          let detailPost = await db.DetailPost.findOne({
+            where: { id: post.detailPostId },
+            raw: false,
+          });
+          console.log("detailPost");
+          let notification = await db.Notification.create({
+            content: `Bài đăng ${detailPost.name} của bạn đã bị ẩn do vi phạm nội quy`,
+            userId: post.userId,
+          });
+          if (notification) {
+            let userSocketId = post.userId.toString();
+            console.log("userSocket", userSocketId);
+            global.ioGlobal.to(userSocketId).emit("autoBanPost", {
+              message: notification.content,
+            });
+          }
+          await db.Report.update(
+            { isChecked: 1 },
+            { where: { postId: report.postId, isChecked: 0 } }
+          );
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    console.log("đã kiểm tra");
+  });
+};
+
+module.exports = {
+  sendJobMail,
+  checkReportPost,
+};
