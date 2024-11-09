@@ -8,6 +8,7 @@ import skillController from "../controllers/skillController";
 import cvPostController from "../controllers/cvPostController";
 import packageController from "../controllers/packageController";
 import notificationController from "../controllers/notificationController";
+import reportController from "../controllers/reportController";
 import middlewareControllers from "../middlewares/jwtVerify";
 const passport = require("passport");
 
@@ -265,6 +266,11 @@ let initWebRoutes = (app) => {
       console.log("req.user");
     }
   );
+  //===================API REPORT========================//
+  router.post("/createNewReport", reportController.handleCreateNewReport);
+  router.get("/getAllReport", reportController.getAllReport);
+  router.post("/checkReport", reportController.handleCheckReport);
+  router.get("/getReportByPostId", reportController.getReportByPostId);
   //===================API NOTIFICATION========================//
   router.get(
     "/getAllNotificationByUserId",

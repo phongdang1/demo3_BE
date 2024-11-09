@@ -20,9 +20,15 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "companyUserData",
       });
+      //Notification
       User.hasMany(models.Notification, {
         foreignKey: "userId",
         as: "notificationUserData",
+      });
+      //Report
+      User.hasMany(models.Report, {
+        foreignKey: "userId",
+        as: "reportUserData",
       });
       User.belongsTo(models.Company, {
         foreignKey: "companyId",

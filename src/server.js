@@ -6,7 +6,6 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpecs from "./utils/swaggerConfig";
 import initWebRoutes from "./routers/web";
 import passport from "./utils/passportConfig";
-import cookieSession from "cookie-session";
 import cors from "cors";
 import session from "express-session";
 import http from "http";

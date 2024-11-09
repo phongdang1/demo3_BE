@@ -19,6 +19,11 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         as: "userPostData",
       });
+      //Report
+      Post.hasMany(models.Report, {
+        foreignKey: "postId",
+        as: "postReportData",
+      });
       //DetailPost
       Post.belongsTo(models.DetailPost, {
         foreignKey: "detailPostId",

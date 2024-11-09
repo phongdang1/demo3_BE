@@ -35,6 +35,27 @@ module.exports = {
           },
           onUpdate: "CASCADE",
         });
+        //Reports
+        queryInterface.addConstraint("Reports", {
+          type: "foreign key",
+          fields: ["userId"],
+          name: "FK_Reports_Users",
+          references: {
+            table: "Users",
+            field: "id",
+          },
+          onUpdate: "CASCADE",
+        });
+        queryInterface.addConstraint("Reports", {
+          type: "foreign key",
+          fields: ["postId"],
+          name: "FK_Reports_Posts",
+          references: {
+            table: "Posts",
+            field: "id",
+          },
+          onUpdate: "CASCADE",
+        });
 
         //Posts
         queryInterface.addConstraint("Posts", {
