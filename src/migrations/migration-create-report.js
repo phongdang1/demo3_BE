@@ -12,7 +12,7 @@ module.exports = {
       reason: {
         type: Sequelize.TEXT("long"),
       },
-      discription: {
+      description: {
         type: Sequelize.TEXT("long"),
       },
       isChecked: {

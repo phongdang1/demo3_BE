@@ -28,7 +28,7 @@ let handleCheckExistReport = (data) => {
 let handleCreateNewReport = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.userId || !data.postId || !data.reason || !data.discription) {
+      if (!data.userId || !data.postId || !data.reason || !data.description) {
         return resolve({
           errMessage: "Missing required parameter",
           errorCode: -1,
@@ -48,7 +48,7 @@ let handleCreateNewReport = (data) => {
         userId: data.userId,
         postId: data.postId,
         reason: data.reason,
-        discription: data.discription,
+        description: data.description,
         isChecked: 0,
         isAdminChecked: 0,
       });

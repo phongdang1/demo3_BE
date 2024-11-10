@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       userId: DataTypes.INTEGER,
       postId: DataTypes.INTEGER,
       reason: DataTypes.TEXT("long"),
-      discription: DataTypes.TEXT("long"),
+      description: DataTypes.TEXT("long"),
       isChecked: DataTypes.TINYINT,
       isAdminChecked: DataTypes.TINYINT,
     },

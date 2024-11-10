@@ -91,7 +91,7 @@ let initWebRoutes = (app) => {
   router.get("/getAllPost", postController.getAllPost);
   router.post(
     "/createNewPost",
-    middlewareControllers.verifyTokenCompany,
+
     postController.handleCreateNewPost
   );
   router.get("/getDetailPostById", postController.getDetailPostById);
