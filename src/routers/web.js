@@ -115,7 +115,7 @@ let initWebRoutes = (app) => {
   );
   router.post(
     "/approvePost",
-    middlewareControllers.verifyTokenAdmin,
+    // middlewareControllers.verifyTokenAdmin,
     postController.handleApprovePost
   );
   router.post(

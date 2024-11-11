@@ -653,7 +653,7 @@ let handleBanUser = (data) => {
   });
 };
 
-let handleUnbanUser = (data) => {
+let handleUnBanUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.userId) {
@@ -731,6 +731,6 @@ module.exports = {
   handleForgotPassword: handleForgotPassword,
   handleChangePassword: handleChangePassword,
   handleBanUser: handleBanUser,
-  handleUnbanUser: handleUnbanUser,
+  handleUnBanUser: handleUnBanUser,
   handleSetUserToAdmin: handleSetUserToAdmin,
 };
