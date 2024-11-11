@@ -202,6 +202,25 @@ let handleApplyJob = (data) => {
           statusCode: "PENDING",
         });
         if (cvApply) {
+          let post = await db.Post.findOne({
+            where: { id: data.postId },
+          });
+          let detailPost = await db.DetailPost.findOne({
+            where: { id: post.detailPostId },
+          });
+
+          let notification = await db.Notification.create({
+            userId: post.userId,
+            content: `Your post ${detailPost.name} has a new application.`,
+            isChecked: 0,
+          });
+          if (notification) {
+            let userSocketId = post.userId.toString();
+            console.log("userSocket", userSocketId);
+            global.ioGlobal.to(userSocketId).emit("applyJob", {
+              message: notification.content,
+            });
+          }
           resolve({
             errCode: 0,
             errMessage: "Apply job success",
