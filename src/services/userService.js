@@ -56,7 +56,7 @@ let sendMailToUser = (note, userMail = null) => {
   });
 };
 
-let sendMailBanUser = (note, userMail = null) => {
+let sendMailBanUser = (note, userMail, userName = null) => {
   let transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -84,8 +84,8 @@ let sendMailBanUser = (note, userMail = null) => {
             <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
           </div>
           <div style="padding: 20px; line-height: 1.6;">
-            <p>Xin chào,</p>
-            <p>${note}</p>
+            <p>Xin chào, ${userName}</p>
+            <p>Tài khoản của bạn đã bị chặn vì lí do : ${note}</p>
             <p>Vui lòng liên hệ với chúng tôi để biết thêm chi tiết.</p>
           </div>
           <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
@@ -622,7 +622,7 @@ let handleChangePassword = (data) => {
 let handleBanUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.userId) {
+      if (!data.userId || !data.note) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
@@ -640,9 +640,7 @@ let handleBanUser = (data) => {
         } else {
           user.statusCode = "BANNED";
           await user.save();
-          let note =
-            "Tài khoản của bạn đã vi phạm chính sách của chúng tôi và đã bị khóa";
-          sendMailBanUser(note, user.email);
+          sendMailBanUser(data.note, user.email, user.lastName);
           resolve({
             errCode: 0,
             errMessage: "Ban user succeed",
@@ -678,10 +676,42 @@ let handleUnbanUser = (data) => {
           await user.save();
           let note =
             "Tài khoản của bạn đã được mở khóa. Bạn có thể sử dụng lại tài khoản của mình tại Job Finder";
-          sendMailBanUser(note, user.email);
+          sendMailBanUser(note, user.email, user.lastName);
           resolve({
             errCode: 0,
             errMessage: "Unban user succeed",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let handleSetUserToAdmin = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.userId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let user = await db.User.findOne({
+          where: { id: data.userId },
+          raw: false,
+        });
+        if (!user) {
+          resolve({
+            errCode: 2,
+            errMessage: "User does not exist",
+          });
+        } else {
+          user.roleCode = "ADMIN";
+          await user.save();
+          resolve({
+            errCode: 0,
+            errMessage: "Set user to admin succeed",
           });
         }
       }
@@ -702,4 +732,5 @@ module.exports = {
   handleChangePassword: handleChangePassword,
   handleBanUser: handleBanUser,
   handleUnbanUser: handleUnbanUser,
+  handleSetUserToAdmin: handleSetUserToAdmin,
 };

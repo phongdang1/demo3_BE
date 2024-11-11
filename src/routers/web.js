@@ -44,6 +44,9 @@ let initWebRoutes = (app) => {
     middlewareControllers.verifyTokenUser,
     userController.handleChangePassword
   );
+  router.post("/banUser", userController.handleBanUser);
+  router.post("/unBanUser", userController.handleUnBanUser);
+  router.post("/setUserToAdmin", userController.handleSetUserToAdmin);
 
   //===================API AllCode========================//
   router.get("/getAllCodeByType", allCodeController.getAllCodeByType);
