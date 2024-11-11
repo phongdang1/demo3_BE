@@ -30,7 +30,7 @@ let handleCreateNewReport = (data) => {
     try {
       if (!data.userId || !data.postId || !data.reason || !data.description) {
         return resolve({
-          errMessage: "Missing required parameter",
+          errMessage: "Missing reason or description",
           errorCode: -1,
         });
       }
