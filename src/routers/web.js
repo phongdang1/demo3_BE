@@ -135,11 +135,7 @@ let initWebRoutes = (app) => {
     middlewareControllers.verifyTokenUser,
     cvPostController.handleApplyJob
   );
-  router.get(
-    "/getAllListCvByPost",
-    middlewareControllers.verifyTokenCompany,
-    cvPostController.getAllListCvByPost
-  );
+  router.get("/getAllListCvByPost", cvPostController.getAllListCvByPost);
   router.get("/getDetailCvPostById", cvPostController.getDetailCvPostById);
   router.get("/getAllCvPostByUserId", cvPostController.getAllCvPostByUserId);
   router.post(
