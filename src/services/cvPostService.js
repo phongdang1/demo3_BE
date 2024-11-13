@@ -899,9 +899,9 @@ let handleApproveCvPost = (data) => {
         cvPost.statusCode = "APPROVED";
         await cvPost.save();
         let notification = await db.Notification.create({
-          userId: cvPost.userId,
+          userId: interview.userId,
           content:
-            "Congratulations! You have been selected for the interview. Please check your email for more details",
+            "Congratulations! You have completed and passed the interview",
           isChecked: 0,
         });
         if (notification) {
