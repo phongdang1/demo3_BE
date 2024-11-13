@@ -899,13 +899,13 @@ let handleApproveCvPost = (data) => {
         cvPost.statusCode = "APPROVED";
         await cvPost.save();
         let notification = await db.Notification.create({
-          userId: interview.userId,
+          userId: cvPost.userId,
           content:
             "Congratulations! You have been selected for the interview. Please check your email for more details",
           isChecked: 0,
         });
         if (notification) {
-          let userSocketId = interview.userId.toString();
+          let userSocketId = cvPost.userId.toString();
           console.log("userSocket", userSocketId);
           global.ioGlobal.to(userSocketId).emit("cvPostApproved", {
             message: notification.content,

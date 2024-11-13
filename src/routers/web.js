@@ -168,7 +168,7 @@ let initWebRoutes = (app) => {
   );
   router.post(
     "/createInterviewSchedule",
-    middlewareControllers.verifyTokenCompany,
+
     cvPostController.createInterviewSchedule
   );
   router.post("/handleApproveCvPost", cvPostController.handleApproveCvPost);
