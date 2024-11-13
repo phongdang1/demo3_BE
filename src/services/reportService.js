@@ -41,7 +41,7 @@ let handleCreateNewReport = (data) => {
       if (checkExistReport) {
         return resolve({
           errMessage: "You have already reported this post",
-          errorCode: -1,
+          errorCode: -2,
         });
       }
       let report = await db.Report.create({
