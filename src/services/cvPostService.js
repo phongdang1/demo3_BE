@@ -647,6 +647,7 @@ let handleFindCv = (data) => {
       if (data.experienceJobCode) {
         numberCriteria++;
       }
+
       if (data.salaryJobCode) {
         numberCriteria++;
       }

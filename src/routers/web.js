@@ -250,6 +250,9 @@ let initWebRoutes = (app) => {
   router.post("/createPaymentVip", packageController.createPaymentVip);
   router.post("/executePaymentVip", packageController.executePaymentVip);
   router.get("/getPackageByType", packageController.getPackageByType);
+  router.get("/getRevenueViewByMonth", packageController.getRevenueViewByMonth);
+  router.get("/getRevenuePostByMonth", packageController.getRevenuePostByMonth);
+  router.get("/getRevenueVipByMonth", packageController.getRevenueVipByMonth);
 
   //===================API GOOGLE========================//
 

@@ -161,6 +161,43 @@ let getPackageByType = async (req, res) => {
     });
   }
 };
+let getRevenueViewByMonth = async (req, res) => {
+  try {
+    let data = await packageService.getRevenueViewByMonth(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get revenue by month failed",
+      errorCode: -1,
+    });
+  }
+};
+let getRevenuePostByMonth = async (req, res) => {
+  try {
+    let data = await packageService.getRevenuePostByMonth(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get revenue by month failed",
+      errorCode: -1,
+    });
+  }
+};
+
+let getRevenueVipByMonth = async (req, res) => {
+  try {
+    let data = await packageService.getRevenueVipByMonth(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get revenue by month failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   handleCreateNewPackage: handleCreateNewPackage,
@@ -176,4 +213,7 @@ module.exports = {
   executePaymentHotPost: executePaymentHotPost,
   createPaymentVip: createPaymentVip,
   executePaymentVip: executePaymentVip,
+  getRevenueViewByMonth: getRevenueViewByMonth,
+  getRevenuePostByMonth: getRevenuePostByMonth,
+  getRevenueVipByMonth: getRevenueVipByMonth,
 };

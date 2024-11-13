@@ -1,6 +1,6 @@
 import { name } from "ejs";
 import db from "../models/index";
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 import paypal from "paypal-rest-sdk";
 import { raw } from "body-parser";
 require("dotenv").config();
@@ -690,6 +690,116 @@ let getPackageByType = async (data) => {
   });
 };
 
+let getRevenueViewByMonth = async (data) => {
+  try {
+    let packageData = await db.Package.findAll({
+      attributes: ["id", "type"],
+      where: {
+        type: "View",
+      },
+    });
+    console.log("packageData", packageData);
+    let revenue = await db.UserPackage.findOne({
+      attributes: [
+        [db.sequelize.fn("SUM", db.sequelize.col("amount")), "totalRevenue"],
+      ],
+      where: {
+        createdAt: {
+          [Op.gte]: data.startDate,
+          [Op.lte]: data.endDate,
+        },
+        statusCode: "active",
+        packageId: packageData.map((item) => item.id),
+      },
+      raw: true,
+    });
+    console.log("revenue", revenue);
+
+    return {
+      errCode: 0,
+      data: revenue.totalRevenue || 0, // Trả về 0 nếu không có dữ liệu
+    };
+  } catch (error) {
+    return {
+      errCode: 1,
+      errMsg: error.message,
+    };
+  }
+};
+let getRevenuePostByMonth = async (data) => {
+  try {
+    let packageData = await db.Package.findAll({
+      attributes: ["id", "type"],
+      where: {
+        type: "Post",
+      },
+    });
+    console.log("packageData", packageData);
+    let revenue = await db.UserPackage.findOne({
+      attributes: [
+        [db.sequelize.fn("SUM", db.sequelize.col("amount")), "totalRevenue"],
+      ],
+      where: {
+        createdAt: {
+          [Op.gte]: data.startDate,
+          [Op.lte]: data.endDate,
+        },
+        statusCode: "active",
+        packageId: packageData.map((item) => item.id),
+      },
+      raw: true,
+    });
+    console.log("revenue", revenue);
+
+    return {
+      errCode: 0,
+      data: revenue.totalRevenue || 0, // Trả về 0 nếu không có dữ liệu
+    };
+  } catch (error) {
+    return {
+      errCode: 1,
+      errMsg: error.message,
+    };
+  }
+};
+
+let getRevenueVipByMonth = async (data) => {
+  try {
+    let packageData = await db.Package.findAll({
+      attributes: ["id", "type"],
+      where: {
+        type: "Vip",
+      },
+    });
+    console.log("packageData", packageData);
+    let revenue = await db.UserPackage.findOne({
+      attributes: [
+        [db.sequelize.fn("SUM", db.sequelize.col("amount")), "totalRevenue"],
+      ],
+      where: {
+        createdAt: {
+          [Op.gte]: data.startDate,
+          [Op.lte]: data.endDate,
+        },
+        statusCode: "active",
+        packageId: packageData.map((item) => item.id),
+      },
+      raw: true,
+    });
+    console.log("revenue", revenue);
+
+    return {
+      errCode: 0,
+      data: revenue.totalRevenue || 0, // Trả về 0 nếu không có dữ liệu
+    };
+  } catch (error) {
+    return {
+      errCode: 1,
+      errMsg: error.message,
+    };
+  }
+};
+
 module.exports = {
   handleCreateNewPackage: handleCreateNewPackage,
   handleUpdatePackage: handleUpdatePackage,
@@ -704,4 +814,7 @@ module.exports = {
   createPaymentVip: createPaymentVip,
   executePaymentVip: executePaymentVip,
   getPackageByType: getPackageByType,
+  getRevenueViewByMonth: getRevenueViewByMonth,
+  getRevenuePostByMonth: getRevenuePostByMonth,
+  getRevenueVipByMonth: getRevenueVipByMonth,
 };
