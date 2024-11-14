@@ -176,6 +176,44 @@ let getAllCompaniesInactive = async (req, res) => {
     });
   }
 };
+let getPointOfCompany = async (req, res) => {
+  try {
+    let data = await companyService.getPointOfCompany(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get point of company failed",
+      errorCode: -1,
+    });
+  }
+};
+
+let exchangePointToPost = async (req, res) => {
+  try {
+    let data = await companyService.exchangePointToPost(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Exchange point to post failed",
+      errorCode: -1,
+    });
+  }
+};
+
+let exchangePointToView = async (req, res) => {
+  try {
+    let data = await companyService.exchangePointToView(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Exchange point to view failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   getAllCompaniesWithLimit: getAllCompaniesWithLimit,
@@ -192,4 +230,7 @@ module.exports = {
   getAllCompaniesWithLimitInactive: getAllCompaniesWithLimitInactive,
   handleRejectCompany: handleRejectCompany,
   getAllCompaniesInactive: getAllCompaniesInactive,
+  getPointOfCompany: getPointOfCompany,
+  exchangePointToPost: exchangePointToPost,
+  exchangePointToView: exchangePointToView,
 };

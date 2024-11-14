@@ -211,11 +211,10 @@ let initWebRoutes = (app) => {
   router.get("/getCompanyByUserId", companyController.getCompanyByUserId);
   router.get("/getAllUserOfCompany", companyController.getAllUserOfCompany);
   router.post("/approveCompany", companyController.handleApproveCompany);
-  router.post(
-    "/rejectCompany",
-
-    companyController.handleRejectCompany
-  );
+  router.post("/rejectCompany", companyController.handleRejectCompany);
+  router.get("/getPointOfCompany", companyController.getPointOfCompany);
+  router.post("/exchangePointToPost", companyController.exchangePointToPost);
+  router.post("/exchangePointToView", companyController.exchangePointToView);
 
   //===================API PACKAGE========================//
   router.post(

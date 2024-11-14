@@ -850,6 +850,148 @@ let handleRejectCompany = (data) => {
   });
 };
 
+let getPointOfCompany = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.companyId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let company = await db.Company.findOne({
+          where: { id: data.companyId },
+          raw: false,
+        });
+        if (!company) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          let listUserOfCompany = await db.User.findAll({
+            where: { companyId: company.id },
+            attributes: ["id", "point"],
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "Get all user of company succeed",
+            data: listUserOfCompany,
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let exchangePointToPost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.userId || !data.point || !data.value) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let company = await db.Company.findOne({
+          where: { userId: data.userId },
+          raw: false,
+        });
+        if (!company) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          let user = await db.User.findOne({
+            where: { id: data.userId },
+            raw: false,
+          });
+          if (!user) {
+            resolve({
+              errCode: 3,
+              errMessage: "Cannot find user",
+            });
+          } else {
+            if (user.point <= data.point) {
+              resolve({
+                errCode: 4,
+                errMessage: "Not enough point",
+              });
+            } else {
+              user.point -= data.point;
+              company.allowHotPost += data.value;
+              await user.save();
+              await company.save();
+              resolve({
+                errCode: 0,
+                errMessage: "Exchange point succeed",
+              });
+            }
+          }
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let exchangePointToView = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.userId || !data.point || !data.value) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let company = await db.Company.findOne({
+          where: { userId: data.userId },
+          raw: false,
+        });
+        if (!company) {
+          resolve({
+            errCode: 2,
+            errMessage: "Cannot find company",
+          });
+        } else {
+          let user = await db.User.findOne({
+            where: { id: data.userId },
+            raw: false,
+          });
+          if (!user) {
+            resolve({
+              errCode: 3,
+              errMessage: "Cannot find user",
+            });
+          } else {
+            if (user.point <= data.point) {
+              resolve({
+                errCode: 4,
+                errMessage: "Not enough point",
+              });
+            } else {
+              user.point -= data.point;
+              company.allowCv += data.value;
+              await user.save();
+              await company.save();
+              resolve({
+                errCode: 0,
+                errMessage: "Exchange point succeed",
+              });
+            }
+          }
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getAllCompaniesWithLimit: getAllCompaniesWithLimit,
   getAllCompanies: getAllCompanies,
@@ -865,4 +1007,7 @@ module.exports = {
   getAllCompaniesWithLimitInactive: getAllCompaniesWithLimitInactive,
   handleRejectCompany: handleRejectCompany,
   getAllCompaniesInactive: getAllCompaniesInactive,
+  getPointOfCompany: getPointOfCompany,
+  exchangePointToPost: exchangePointToPost,
+  exchangePointToView: exchangePointToView,
 };
