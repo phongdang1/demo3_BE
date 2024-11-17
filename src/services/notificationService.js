@@ -11,12 +11,10 @@ let getAllNotificationByUserId = (data) => {
           errorCode: -1,
         });
       }
-      console.log("aa", data.userId);
       let notification = await db.Notification.findAll({
         where: { userId: data.userId },
         order: [["createdAt", "DESC"]],
       });
-      console.log("bb", notification);
       resolve({
         errMessage: "get all notification successfully",
         errorCode: 0,

@@ -44,23 +44,22 @@ let getTemplateMail = async (infoUser) => {
     ).toISOString();
     let listpost = await db.Post.findAll({
       limit: 5,
-      // offset: 0,
       where: {
         timeEnd: {
           [Op.gt]: currentDateString,
         },
         statusCode: "active",
-        [Op.or]: [
+        [Op.and]: [
           db.Sequelize.where(
             db.sequelize.col("postDetailData.jobTypePostData.code"),
             {
-              [Op.like]: `%congNghe%`,
+              [Op.like]: `${infoUser.categoryJobCode}%`,
             }
           ),
           db.Sequelize.where(
             db.sequelize.col("postDetailData.provincePostData.code"),
             {
-              [Op.like]: `%KonTum%`,
+              [Op.like]: `${infoUser.addressCode}%`,
             }
           ),
         ],
@@ -115,6 +114,82 @@ let getTemplateMail = async (infoUser) => {
       raw: true,
       nest: true,
     });
+    if (listpost.length < 5) {
+      const remainingSlots = 5 - listpost.length;
+      let categoryPosts = await db.Post.findAll({
+        limit: remainingSlots,
+        where: {
+          timeEnd: {
+            [Op.gt]: currentDateString,
+          },
+          statusCode: "active",
+          [Op.or]: [
+            db.Sequelize.where(
+              db.sequelize.col("postDetailData.jobTypePostData.code"),
+              {
+                [Op.like]: `${infoUser.categoryJobCode}%`,
+              }
+            ),
+            db.Sequelize.where(
+              db.sequelize.col("postDetailData.provincePostData.code"),
+              {
+                [Op.like]: `${infoUser.addressCode}%`,
+              }
+            ),
+          ],
+        },
+        include: [
+          {
+            model: db.DetailPost,
+            as: "postDetailData",
+            attributes: {
+              exclude: ["statusCode"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "jobTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "workTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "salaryTypePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "jobLevelPostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "genderPostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "provincePostData",
+                attributes: ["value", "code"],
+              },
+              {
+                model: db.Allcode,
+                as: "expTypePostData",
+                attributes: ["value", "code"],
+              },
+            ],
+          },
+        ],
+        order: db.sequelize.literal("rand()"),
+        raw: true,
+        nest: true,
+      });
+      listpost = [...listpost, ...categoryPosts];
+    }
     if (listpost && listpost.length > 0) {
       for (let post of listpost) {
         let user = await db.User.findOne({
@@ -128,8 +203,6 @@ let getTemplateMail = async (infoUser) => {
         });
         post.companyData = company;
       }
-      console.log(listpost);
-      console.log(infoUser);
       return getStringMailTemplate(listpost, infoUser);
     } else {
       return 0;
@@ -162,6 +235,17 @@ const sendJobMail = () => {
 
         if (mailTemplate !== 0) {
           sendmail(mailTemplate, user.UserDetailData.email);
+          let notification = await db.Notification.create({
+            content: `You have received a job suggestion email. Please check your email for more details`,
+            userId: user.UserDetailData.id,
+          });
+          if (notification) {
+            let userSocketId = user.UserDetailData.id.toString();
+            console.log("userSocket", userSocketId);
+            global.ioGlobal.to(userSocketId).emit("ReceivedMail", {
+              message: notification.content,
+            });
+          }
         }
       }
     } catch (error) {
@@ -191,6 +275,7 @@ const checkReportPost = () => {
           });
 
           post.statusCode = "BANNED";
+          console.log("Đã ẩn bài đăng", post.id);
           await post.save();
 
           let detailPost = await db.DetailPost.findOne({
