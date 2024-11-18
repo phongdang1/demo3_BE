@@ -125,6 +125,19 @@ let handleReupPost = async (req, res) => {
   }
 };
 
+let handleClosePost = async (req, res) => {
+  try {
+    let data = await postService.handleClosePost(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server",
+    });
+  }
+};
+
 module.exports = {
   getAllPost: getAllPost,
   getAllPostWithLimit: getAllPostWithLimit,
@@ -136,4 +149,5 @@ module.exports = {
   handleApprovePost: handleApprovePost,
   handleReupPost: handleReupPost,
   handleRejectPost: handleRejectPost,
+  handleClosePost: handleClosePost,
 };

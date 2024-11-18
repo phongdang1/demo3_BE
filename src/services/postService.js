@@ -694,7 +694,7 @@ let handleApprovePost = (data) => {
           raw: false,
         });
         if (foundPost) {
-          foundPost.statusCode = "ACTIVE";
+          foundPost.statusCode = "APPROVED";
           await foundPost.save({ silent: true });
           let user = await db.User.findOne({
             where: { id: foundPost.userId },
@@ -751,7 +751,7 @@ let handleRejectPost = (data) => {
           raw: false,
         });
         if (foundPost) {
-          foundPost.statusCode = "INACTIVE";
+          foundPost.statusCode = "REJECTED";
           foundPost.note = data.note;
           await foundPost.save({ silent: true });
           let user = await db.User.findOne({
@@ -781,6 +781,40 @@ let handleRejectPost = (data) => {
           resolve({
             errCode: 0,
             errMessage: "Reject post success",
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: "Can not find post by id",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error.message);
+    }
+  });
+};
+
+let handleClosePost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.id) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required fields",
+        });
+      } else {
+        let foundPost = await db.Post.findOne({
+          where: { id: data.id },
+          raw: false,
+        });
+        if (foundPost) {
+          foundPost.statusCode = "CLOSED";
+          await foundPost.save({ silent: true });
+
+          resolve({
+            errCode: 0,
+            errMessage: "Close post success",
           });
         } else {
           resolve({
@@ -867,4 +901,5 @@ module.exports = {
   handleApprovePost: handleApprovePost,
   handleRejectPost: handleRejectPost,
   handleReupPost: handleReupPost,
+  handleClosePost: handleClosePost,
 };

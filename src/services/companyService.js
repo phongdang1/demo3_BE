@@ -757,7 +757,7 @@ let handleApproveCompany = (data) => {
             errMessage: "Cannot find company",
           });
         } else {
-          foundCompany.statusCode = "ACTIVE";
+          foundCompany.statusCode = "APPROVED";
           await foundCompany.save();
           let user = await db.User.findOne({
             where: { id: foundCompany.userId },
@@ -813,7 +813,7 @@ let handleRejectCompany = (data) => {
             errMessage: "Cannot find company",
           });
         } else {
-          foundCompany.statusCode = "INACTIVE";
+          foundCompany.statusCode = "REJECTED";
           await foundCompany.save();
           let user = await db.User.findOne({
             where: { id: foundCompany.userId },

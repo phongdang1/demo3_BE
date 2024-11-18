@@ -123,11 +123,8 @@ let initWebRoutes = (app) => {
     middlewareControllers.verifyTokenCompany,
     postController.handleReupPost
   );
-  router.post(
-    "/rejectPost",
-    middlewareControllers.verifyTokenAdmin,
-    postController.handleRejectPost
-  );
+  router.post("/rejectPost", postController.handleRejectPost);
+  router.post("/closePost", postController.handleClosePost);
 
   //==================API CV_POST==========================//
   router.post(
