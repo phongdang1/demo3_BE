@@ -8,33 +8,42 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      //package
+      User.belongsToMany(models.Package, {
+        through: "UserPackage",
+        foreignKey: "userId",
+        otherKey: "packageId",
+        as: "userPackages",
+      });
+      //company
       User.hasOne(models.Company, {
         foreignKey: "userId",
         as: "companyUserData",
       });
-      // //Cv
-      User.hasMany(models.Cv, { foreignKey: "userId", as: "userCvData" });
-
-      User.hasMany(models.OrderPackagePost, {
+      //Notification
+      User.hasMany(models.Notification, {
         foreignKey: "userId",
-        as: "userOrderPostData",
+        as: "notificationUserData",
       });
-      //OrderPackageCv
-      User.hasMany(models.OrderPackageView, {
+      //Report
+      User.hasMany(models.Report, {
         foreignKey: "userId",
-        as: "userOrderViewData",
+        as: "reportUserData",
       });
-      //Post
-      User.hasMany(models.Post, { foreignKey: "userId", as: "userPostData" });
+      User.belongsTo(models.Company, {
+        foreignKey: "companyId",
+        targetKey: "id",
+        as: "userCompanyData",
+      });
+      //Cv_post - Post
+      // User.belongsToMany(models.Post, { through: models.CvPost });
       //UserDetail
       User.hasOne(models.UserDetail, {
         foreignKey: "userId",
         as: "UserDetailData",
       });
       //UserSkill - Skill
-      User.belongsToMany(models.Skill, { through: models.UserSkill });
-      //Note
-      User.hasMany(models.Note, { foreignKey: "userId", as: "userNoteData" });
+      //User.belongsToMany(models.Skill, { through: models.UserSkill });
     }
   }
   User.init(
@@ -45,11 +54,16 @@ module.exports = (sequelize, DataTypes) => {
       address: DataTypes.STRING,
       phoneNumber: DataTypes.STRING,
       password: DataTypes.STRING,
-      dob: DataTypes.DATE,
       image: DataTypes.STRING,
-      role: DataTypes.STRING,
-      status: DataTypes.STRING,
+      dob: DataTypes.DATE,
+      point: DataTypes.INTEGER,
+      roleCode: DataTypes.STRING,
+      companyId: DataTypes.STRING,
+      statusCode: DataTypes.STRING,
+      typeLogin: DataTypes.STRING,
+      isVerify: DataTypes.TINYINT,
       isUpdate: DataTypes.TINYINT,
+      isVip: DataTypes.TINYINT,
     },
     {
       sequelize,

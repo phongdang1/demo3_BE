@@ -5,23 +5,11 @@ module.exports = {
     await queryInterface.createTable("UserSkills", {
       userId: {
         type: Sequelize.INTEGER,
-        reference: {
-          model: {
-            tableName: "Users",
-          },
-          key: "id",
-        },
-        onUpdate: "CASCADE",
+        primaryKey: true,
       },
       skillId: {
         type: Sequelize.INTEGER,
-        reference: {
-          model: {
-            tableName: "Skills",
-          },
-          key: "id",
-        },
-        onUpdate: "CASCADE",
+        primaryKey: true,
       },
     });
   },

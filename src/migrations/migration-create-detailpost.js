@@ -15,10 +15,16 @@ module.exports = {
       description: {
         type: Sequelize.TEXT("long"),
       },
-      amount: {
-        type: Sequelize.INTEGER,
+      requirement: {
+        type: Sequelize.TEXT("long"),
       },
-      postId: {
+      skillRequirement: {
+        type: Sequelize.TEXT("long"),
+      },
+      benefit: {
+        type: Sequelize.TEXT("long"),
+      },
+      amount: {
         type: Sequelize.INTEGER,
       },
       categoryJobCode: {
@@ -53,7 +59,7 @@ module.exports = {
         onUpdate: "CASCADE",
       },
 
-      joblevelCode: {
+      jobLevelCode: {
         type: Sequelize.STRING,
         references: {
           model: {
@@ -63,7 +69,7 @@ module.exports = {
         },
         onUpdate: "CASCADE",
       },
-      worktypeCode: {
+      workTypeCode: {
         type: Sequelize.STRING,
         references: {
           model: {

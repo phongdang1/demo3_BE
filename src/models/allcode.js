@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "jobTypePostData",
       });
       Allcode.hasMany(models.DetailPost, {
-        foreignKey: "worktypeCode",
+        foreignKey: "workTypeCode",
         as: "workTypePostData",
       });
       Allcode.hasMany(models.DetailPost, {
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "salaryTypePostData",
       });
       Allcode.hasMany(models.DetailPost, {
-        foreignKey: "joblevelCode",
+        foreignKey: "jobLevelCode",
         as: "jobLevelPostData",
       });
       Allcode.hasMany(models.DetailPost, {
@@ -59,11 +59,11 @@ module.exports = (sequelize, DataTypes) => {
         as: "provinceSettingData",
       });
       Allcode.hasMany(models.UserDetail, {
-        foreignKey: "worktypeCode",
+        foreignKey: "workTypeCode",
         as: "workTypeSettingData",
       });
       Allcode.hasMany(models.UserDetail, {
-        foreignKey: "joblevelCode",
+        foreignKey: "jobLevelCode",
         as: "jobLevelSettingData",
       });
       //skill
@@ -81,6 +81,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         primaryKey: true,
       },
+      image: DataTypes.STRING,
     },
     {
       sequelize,

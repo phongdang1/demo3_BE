@@ -8,33 +8,38 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      //Cv_post - Post
+      Post.hasMany(models.CvPost, {
+        foreignKey: "postId",
+        as: "postCvData",
+      });
       //User;
       Post.belongsTo(models.User, {
         foreignKey: "userId",
         targetKey: "id",
         as: "userPostData",
       });
-      //DetailPost
-      Post.hasOne(models.DetailPost, {
+      //Report
+      Post.hasMany(models.Report, {
         foreignKey: "postId",
+        as: "postReportData",
+      });
+      //DetailPost
+      Post.belongsTo(models.DetailPost, {
+        foreignKey: "detailPostId",
+        targetKey: "id",
         as: "postDetailData",
       });
-      //Note
-      Post.hasMany(models.Note, {
-        foreignKey: "postId",
-        as: "postNoteData",
-      });
-      //NopCv
-      Post.belongsToMany(models.Cv, { through: models.NopCv });
     }
   }
   Post.init(
     {
-      status: DataTypes.STRING,
-      timeEnd: DataTypes.STRING,
-      timePost: DataTypes.STRING,
       userId: DataTypes.INTEGER,
+      detailPostId: DataTypes.INTEGER,
+      statusCode: DataTypes.STRING,
+      timeEnd: DataTypes.STRING,
       isHot: DataTypes.TINYINT,
+      timePost: DataTypes.STRING,
       note: DataTypes.STRING,
     },
     {

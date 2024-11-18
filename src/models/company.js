@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         as: "companyUserData",
       });
+      Company.hasMany(models.User, {
+        foreignKey: "companyId",
+        as: "userCompanyData",
+      });
     }
   }
   Company.init(
@@ -28,16 +32,16 @@ module.exports = (sequelize, DataTypes) => {
       phonenumber: DataTypes.STRING,
       amountEmployer: DataTypes.INTEGER,
       taxnumber: DataTypes.STRING,
-      censorCode: DataTypes.STRING,
+      typeCompany: DataTypes.STRING,
+      statusCode: DataTypes.STRING,
       file: DataTypes.BLOB("long"),
-      allowPost: DataTypes.INTEGER,
       allowHotPost: DataTypes.INTEGER,
-      allowCvFree: DataTypes.INTEGER,
       allowCv: DataTypes.INTEGER,
     },
     {
       sequelize,
       modelName: "Company",
+      timestamps: true,
     }
   );
   return Company;

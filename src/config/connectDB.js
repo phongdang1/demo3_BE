@@ -1,11 +1,16 @@
 const { Sequelize } = require("sequelize");
 
 // Option 2: Passing parameters separately (other dialects)
-const sequelize = new Sequelize("jobtest", "springstudent", "springstudent", {
-  host: "localhost",
-  dialect: "mysql",
-  logging: false,
-});
+const sequelize = new Sequelize(
+  "jobfinder2",
+  "springstudent",
+  "springstudent",
+  {
+    host: "localhost",
+    dialect: "mysql",
+    logging: false,
+  }
+);
 
 let connectDB = async () => {
   try {
