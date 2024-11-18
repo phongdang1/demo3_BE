@@ -252,6 +252,7 @@ let initWebRoutes = (app) => {
   router.get("/getRevenueViewByMonth", packageController.getRevenueViewByMonth);
   router.get("/getRevenuePostByMonth", packageController.getRevenuePostByMonth);
   router.get("/getRevenueVipByMonth", packageController.getRevenueVipByMonth);
+  router.get("/getAllUserPackage", packageController.getAllUserPackage);
 
   //===================API GOOGLE========================//
 

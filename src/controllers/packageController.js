@@ -198,6 +198,18 @@ let getRevenueVipByMonth = async (req, res) => {
     });
   }
 };
+let getAllUserPackage = async (req, res) => {
+  try {
+    let data = await packageService.getAllUserPackage();
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get all user package failed",
+      errorCode: -1,
+    });
+  }
+};
 
 module.exports = {
   handleCreateNewPackage: handleCreateNewPackage,
@@ -216,4 +228,5 @@ module.exports = {
   getRevenueViewByMonth: getRevenueViewByMonth,
   getRevenuePostByMonth: getRevenuePostByMonth,
   getRevenueVipByMonth: getRevenueVipByMonth,
+  getAllUserPackage: getAllUserPackage,
 };

@@ -800,6 +800,35 @@ let getRevenueVipByMonth = async (data) => {
   }
 };
 
+let getAllUserPackage = async () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let dataPackage = await db.UserPackage.findAndCountAll({
+        include: [
+          {
+            model: db.User,
+            as: "userPackageData",
+            attributes: ["id", "email", "firstName", "lastName"],
+          },
+          {
+            model: db.Package,
+            as: "PackageData",
+            attributes: ["id", "name", "price", "type"],
+          },
+        ],
+        raw: false,
+      });
+      resolve({
+        errCode: 0,
+        data: dataPackage.rows,
+        count: dataPackage.count,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   handleCreateNewPackage: handleCreateNewPackage,
   handleUpdatePackage: handleUpdatePackage,
@@ -817,4 +846,5 @@ module.exports = {
   getRevenueViewByMonth: getRevenueViewByMonth,
   getRevenuePostByMonth: getRevenuePostByMonth,
   getRevenueVipByMonth: getRevenueVipByMonth,
+  getAllUserPackage: getAllUserPackage,
 };
