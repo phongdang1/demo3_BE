@@ -166,6 +166,10 @@ let initWebRoutes = (app) => {
   );
   router.post("/handleApproveCvPost", cvPostController.handleApproveCvPost);
   router.post("/handleRejectCvPost", cvPostController.handleRejectCvPost);
+  router.get(
+    "/getAllCvPostByCompanyId7Day",
+    cvPostController.getAllCvPostByCompanyId7Day
+  );
 
   router.get("/testCommon", cvPostController.testCommon);
 

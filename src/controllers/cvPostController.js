@@ -147,6 +147,18 @@ let getInterviewScheduleByCvPost = async (req, res) => {
     });
   }
 };
+let getAllCvPostByCompanyId7Day = async (req, res) => {
+  try {
+    let data = await cvPostService.getAllCvPostByCompanyId7Day(req.query);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Get all cv post by company id failed",
+      errorCode: -1,
+    });
+  }
+};
 
 let testCommon = async (req, res) => {
   try {
@@ -174,6 +186,6 @@ module.exports = {
   handleRejectCvPost: handleRejectCvPost,
   getAllInterViewSchedule: getAllInterViewSchedule,
   getInterviewScheduleByCvPost: getInterviewScheduleByCvPost,
-
+  getAllCvPostByCompanyId7Day: getAllCvPostByCompanyId7Day,
   testCommon: testCommon,
 };
