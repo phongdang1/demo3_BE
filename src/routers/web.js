@@ -285,16 +285,8 @@ let initWebRoutes = (app) => {
     notificationController.handleCheckNotification
   );
   //===================API OTP========================//
-  router.post(
-    "/sendOtp",
-    middlewareControllers.verifyTokenUser,
-    authController.handleSendOtp
-  );
-  router.post(
-    "/verifyOtp",
-    middlewareControllers.verifyTokenUser,
-    authController.handleVerifyOtp
-  );
+  router.post("/sendOtp", authController.handleSendOtp);
+  router.post("/verifyOtp", authController.handleVerifyOtp);
 
   return app.use("/", router);
 };
