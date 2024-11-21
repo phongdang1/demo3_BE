@@ -116,7 +116,7 @@ let executePaymentViewCV = (data) => {
               let inforUserPackage = await db.UserPackage.create({
                 userId: data.userId,
                 packageId: data.packageId,
-                poinEarned: packageInfo.price,
+                poinEarned: packageInfo.value,
                 amount: 1,
                 price: packageInfo.price,
                 statusCode: "PAID",
@@ -258,7 +258,7 @@ let executePaymentHotPost = (data) => {
               let inforUserPackage = await db.UserPackage.create({
                 userId: data.userId,
                 packageId: data.packageId,
-                poinEarned: packageInfo.price,
+                poinEarned: packageInfo.value,
                 amount: 1,
                 price: packageInfo.price,
                 statusCode: "PAID",
