@@ -651,7 +651,7 @@ let handleUnBanPost = (data) => {
           raw: false,
         });
         if (foundPost) {
-          foundPost.statusCode = "ACTIVE";
+          foundPost.statusCode = "APPROVED";
           foundPost.note = data.note;
           await foundPost.save({ silent: true });
           let user = await db.User.findOne({

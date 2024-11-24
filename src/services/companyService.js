@@ -639,7 +639,7 @@ let handleUnBanCompany = (data) => {
             errMessage: "Cannot find company",
           });
         } else {
-          foundCompany.statusCode = "ACTIVE";
+          foundCompany.statusCode = "APPROVED";
           await foundCompany.save({ silent: true });
           let user = await db.User.findOne({
             where: { id: foundCompany.userId },
@@ -771,7 +771,7 @@ let handleApproveCompany = (data) => {
           sendmail(note, user.email, `company/${foundCompany.id}`);
           let notification = await db.Notification.create({
             userId: user.id,
-            content: "Công ty của bạn đã được duyệt!",
+            content: "Your company has been approved!",
             isChecked: 0,
           });
           if (notification) {
@@ -827,7 +827,7 @@ let handleRejectCompany = (data) => {
           sendmail(note, user.email, `company/${foundCompany.id}`);
           let notification = await db.Notification.create({
             userId: user.id,
-            content: "Thong bao test",
+            content: "Your company has been rejected!",
             isChecked: 0,
           });
           if (notification) {
