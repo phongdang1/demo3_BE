@@ -73,7 +73,7 @@ let getAllPostWithLimit = (data) => {
           exclude: ["detailPostId"],
         },
         where: {
-          statusCode: "ACTIVE",
+          statusCode: "APPROVED",
         },
         nest: true,
         raw: true,
@@ -353,7 +353,7 @@ let handleCreateNewPost = (data) => {
             errMessage: "User is not company",
           });
         } else {
-          if (company.statusCode === "ACTIVE") {
+          if (company.statusCode === "APPROVED") {
             if (data.isHot === "1") {
               if (company.allowHotPost > 0) {
                 company.allowHotPost -= 1;

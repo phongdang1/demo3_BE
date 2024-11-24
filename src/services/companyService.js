@@ -121,7 +121,7 @@ let getAllCompaniesWithLimit = (data) => {
           limit: +data.limit,
           offset: +data.offset,
           where: {
-            statusCode: "ACTIVE",
+            statusCode: "APPROVED",
           },
         };
         if (data.searchKey) {
@@ -210,7 +210,7 @@ let getAllCompanies = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let objectQuery = {
-        where: { statusCode: "ACTIVE" },
+        where: { statusCode: "APPROVED" },
       };
       if (data.searchKey) {
         objectQuery.where = {
@@ -289,7 +289,7 @@ let handleCreateNewCompany = (data) => {
             phonenumber: data.phonenumber,
             amountEmployer: data.amountEmployer,
             taxnumber: data.taxnumber,
-            statusCode: "ACTIVE",
+            statusCode: "PENDING",
             typeCompany: data.typeCompany,
             file: data.file ? data.file : null,
             allowHotPost: 0,
@@ -508,7 +508,7 @@ let handleUpdateCompany = (data) => {
               errMessage: "Company is exist",
             });
           } else {
-            if (company.statusCode === "ACTIVE") {
+            if (company.statusCode === "APPROVED") {
               let thumbnailUrl = "";
               let coverImageUrl = "";
               if (data.thumbnail) {
