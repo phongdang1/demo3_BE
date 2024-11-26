@@ -5,7 +5,7 @@ import { raw } from "body-parser";
 const cloudinary = require("../utils/cloudinary");
 
 var nodemailer = require("nodemailer");
-let sendmail = (note, userMail, link = null) => {
+let sendmail = (note, reason, userMail, nameCompany, link = null) => {
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -17,14 +17,14 @@ let sendmail = (note, userMail, link = null) => {
   var mailOptions = {
     from: process.env.EMAIL_APP,
     to: userMail,
-    subject: "Thông báo từ Job Finder",
+    subject: "Notification from Job Finder",
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Thông báo từ Job Finder</title>
+        <title>Notification from Job Finder</title>
       </head>
       <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
         <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
@@ -32,17 +32,18 @@ let sendmail = (note, userMail, link = null) => {
             <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
           </div>
           <div style="padding: 20px; line-height: 1.6;">
-            <p>Xin chào,</p>
+            <p>Hello, ${nameCompany}</p>
             <p>${note}</p>
+            <p>Reason: ${reason}</p>
             ${
               link
-                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">Xem chi tiết</a>`
+                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">View Details</a>`
                 : ""
             }
           </div>
           <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
-            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
-            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
+            <p>Thank you for using Job Finder!</p>
+            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Contact Us</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Privacy Policy</a></p>
           </div>
         </div>
       </body>
@@ -575,7 +576,7 @@ let handleUpdateCompany = (data) => {
 let handleBanCompany = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.companyId) {
+      if (!data.companyId || !data.reason) {
         resolve({
           errCode: 1,
           errMessage: "Missing required fields",
@@ -593,7 +594,6 @@ let handleBanCompany = (data) => {
           });
         } else {
           foundCompany.statusCode = "BANNED";
-          console.log(foundCompany);
           await foundCompany.save();
           let user = await db.User.findOne({
             where: { id: foundCompany.userId },
@@ -602,10 +602,11 @@ let handleBanCompany = (data) => {
               exclude: ["password", "image", "userId"],
             },
           });
-          console.log(user);
           sendmail(
-            "Công ty của bạn đã bị khóa. Vui lòng liên hệ với quản trị viên để biết thêm chi tiết",
+            "Company has been banned. Please contact admin for more information",
+            data.reason,
             user.email,
+            foundCompany.name,
             `company/${foundCompany.id}`
           );
           resolve({

@@ -15,14 +15,14 @@ let sendmail = (note, userMail = null) => {
   const mailOptions = {
     from: process.env.EMAIL_APP,
     to: userMail,
-    subject: "Mã xác thực OTP từ Job Finder",
+    subject: "Your OTP Verification Code from Job Finder",
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Mã xác thực OTP</title>
+        <title>OTP Verification Code</title>
       </head>
       <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
         <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
@@ -30,13 +30,13 @@ let sendmail = (note, userMail = null) => {
             <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
           </div>
           <div style="padding: 20px; line-height: 1.6;">
-            <p>Xin chào,</p>
-            <p>Đây là mã xác thực OTP của bạn: <strong>${note}</strong></p>
-            <p>Mã OTP này có hiệu lực trong 5 phút. Vui lòng không chia sẻ mã này với bất kỳ ai khác.</p>
+            <p>Hello,</p>
+            <p>Here is your OTP verification code: <strong>${note}</strong></p>
+            <p>This OTP is valid for 5 minutes. Please do not share this code with anyone else.</p>
           </div>
           <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
-            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
-            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
+            <p>Thank you for using Job Finder!</p>
+            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Contact Us</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Privacy Policy</a></p>
           </div>
         </div>
       </body>

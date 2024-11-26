@@ -27,14 +27,11 @@ global.ioGlobal = io;
 
 global.ioGlobal.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
-  console.log("userId", userId);
+
   if (userId) {
     socket.join(userId);
-    console.log("User connected:", socket.id);
   }
-  socket.on("disconnect", () => {
-    console.log("A user disconnected:", socket.id);
-  });
+  socket.on("disconnect", () => {});
 });
 
 app.get("/", (req, res) => {
