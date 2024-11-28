@@ -26,11 +26,7 @@ let initWebRoutes = (app) => {
     middlewareControllers.verifyTokenUser,
     userController.getAllUsersWithLimit
   );
-  router.get(
-    "/getUserById",
-    middlewareControllers.verifyTokenUser,
-    userController.getUsersById
-  );
+  router.get("/getUserById", userController.getUsersById);
   router.post("/createNewUser", userController.handleCreateNewUser);
   router.post("/login", userController.handleLogin);
   router.post(
