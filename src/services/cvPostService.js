@@ -130,7 +130,7 @@ let getMapRequiredSkill = async (userId, skillRequirement) => {
       raw: true,
       nest: true,
     });
-    console.log("listSkillRequired", listSkillRequired);
+
     let mapListSkill = new Map();
     listSkillRequired.forEach((item) => {
       mapListSkill.set(
@@ -217,7 +217,7 @@ let handleApplyJob = (data) => {
           });
           if (notification) {
             let userSocketId = post.userId.toString();
-            console.log("userSocket", userSocketId);
+
             global.ioGlobal.to(userSocketId).emit("applyJob", {
               message: notification.content,
             });
@@ -650,7 +650,7 @@ let getAllCvPostByCompanyId7Day = async (data) => {
     const sevenDaysAgo = new Date();
 
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    console.log("sevenDaysAgo", sevenDaysAgo);
+    //console.log("sevenDaysAgo", sevenDaysAgo);
 
     const listCv = await db.CvPost.findAndCountAll({
       where: {
@@ -985,7 +985,7 @@ let createInterviewSchedule = (data) => {
           });
           if (notification) {
             let userSocketId = user.id.toString();
-            console.log("userSocket", userSocketId);
+            //console.log("userSocket", userSocketId);
             global.ioGlobal.to(userSocketId).emit("cvPostInterView", {
               message: notification.content,
             });
@@ -1035,7 +1035,7 @@ let handleApproveCvPost = (data) => {
         });
         if (notification) {
           let userSocketId = cvPost.userId.toString();
-          console.log("userSocket", userSocketId);
+          //console.log("userSocket", userSocketId);
           global.ioGlobal.to(userSocketId).emit("cvPostApproved", {
             message: notification.content,
           });
@@ -1082,7 +1082,7 @@ let handleRejectCvPost = (data) => {
         });
         if (notification) {
           let userSocketId = cvPost.userId.toString();
-          console.log("userSocket", userSocketId);
+          //console.log("userSocket", userSocketId);
           global.ioGlobal.to(userSocketId).emit("cvPostRejected", {
             message: notification.content,
           });

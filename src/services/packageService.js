@@ -695,7 +695,7 @@ let getRevenueViewByMonth = async (data) => {
         type: "View",
       },
     });
-    console.log("packageData", packageData);
+    //console.log("packageData", packageData);
     let revenue = await db.UserPackage.findOne({
       attributes: [
         [db.sequelize.fn("SUM", db.sequelize.col("amount")), "totalRevenue"],
@@ -728,7 +728,7 @@ let getRevenuePostByMonth = async (data) => {
         type: "Post",
       },
     });
-    console.log("packageData", packageData);
+    //console.log("packageData", packageData);
     let revenue = await db.UserPackage.findOne({
       attributes: [
         [db.sequelize.fn("SUM", db.sequelize.col("amount")), "totalRevenue"],

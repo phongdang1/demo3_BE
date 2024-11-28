@@ -705,7 +705,6 @@ let getCompanyByUserId = (userId) => {
 let getAllUserOfCompany = (companyId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(companyId);
       if (!companyId) {
         resolve({
           errCode: 1,
@@ -777,7 +776,7 @@ let handleApproveCompany = (data) => {
           });
           if (notification) {
             let userSocketId = user.id.toString();
-            console.log("userSocket", userSocketId);
+
             global.ioGlobal.to(userSocketId).emit("companyApproved", {
               message: notification.content,
               companyId: foundCompany.id,

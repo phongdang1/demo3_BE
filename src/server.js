@@ -6,11 +6,13 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpecs from "./utils/swaggerConfig";
 import initWebRoutes from "./routers/web";
 import passport from "./utils/passportConfig";
+import CommonUtils from "./utils/CommonUtils";
 import cors from "cors";
 import session from "express-session";
 import http from "http";
 import { sendJobMail, checkReportPost } from "./utils/schedule";
 import { Server as SocketServer } from "socket.io";
+
 const { join } = require("node:path");
 require("dotenv").config();
 
@@ -33,28 +35,49 @@ global.ioGlobal.on("connection", (socket) => {
   }
   socket.on("disconnect", () => {});
 });
-
-app.get("/", (req, res) => {
-  res.sendFile(join(__dirname, "index.html"));
-});
-
-// Cấu hình session
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "default_secret",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use(
   cors({
     origin: process.env.URL_REACT,
     credentials: true,
   })
 );
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "default_secret",
+    resave: false, // Không lưu lại session nếu không có thay đổi
+    saveUninitialized: false, // Không lưu session trống
+    cookie: {
+      secure: process.env.NODE_ENV === "development",
+      maxAge: 1000 * 60 * 60 * 24, // Thời gian sống của cookie (1 ngày)
+    },
+  })
+);
+
+app.get("/", (req, res) => {
+  res.sendFile(join(__dirname, "index.html"));
+});
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  }),
+  (req, res) => {
+    let user = req;
+    console.log(user);
+    let token = CommonUtils.encodeToken(user.id);
+
+    res.redirect(`${process.env.URL_REACT}?token=${token}`);
+  }
+);
+
+// Cấu hình session
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));

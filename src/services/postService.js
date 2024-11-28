@@ -480,7 +480,7 @@ let getDetailPostById = (id) => {
               exclude: ["password", "userId", "image"],
             },
           });
-          console.log(user);
+          //console.log(user);
           let company = await db.Company.findOne({
             where: { id: user.companyId },
           });
@@ -609,7 +609,7 @@ let handleBanPost = (data) => {
             where: { id: foundPost.userId },
             raw: false,
           });
-          console.log(user);
+          //console.log(user);
 
           sendmail(
             `Your post has been banned with the reason ${data.note}`,
@@ -711,7 +711,7 @@ let handleApprovePost = (data) => {
           });
           if (notification) {
             let userSocketId = user.id.toString();
-            console.log("userSocket", userSocketId);
+            //console.log("userSocket", userSocketId);
             global.ioGlobal.to(userSocketId).emit("postApproved", {
               message: notification.content,
             });
@@ -769,7 +769,7 @@ let handleRejectPost = (data) => {
           });
           if (notification) {
             let userSocketId = user.id.toString();
-            console.log("userSocket", userSocketId);
+            //console.log("userSocket", userSocketId);
             global.ioGlobal.to(userSocketId).emit("postRejected", {
               message: notification.content,
             });

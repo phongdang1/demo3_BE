@@ -231,7 +231,7 @@ const sendJobMail = () => {
         raw: true,
         nest: true,
       });
-      console.log("listUserGetMail", listUserGetMail);
+      //console.log("listUserGetMail", listUserGetMail);
       for (let user of listUserGetMail) {
         let mailTemplate = await getTemplateMail(user);
 
