@@ -116,9 +116,8 @@ let executePaymentViewCV = (data) => {
               let inforUserPackage = await db.UserPackage.create({
                 userId: data.userId,
                 packageId: data.packageId,
-                poinEarned: packageInfo.price,
-                amount: 1,
-                price: packageInfo.price,
+                poinEarned: packageInfo.value,
+                amount: packageInfo.price,
                 statusCode: "PAID",
               });
               if (inforUserPackage) {
@@ -258,9 +257,8 @@ let executePaymentHotPost = (data) => {
               let inforUserPackage = await db.UserPackage.create({
                 userId: data.userId,
                 packageId: data.packageId,
-                poinEarned: packageInfo.price,
-                amount: 1,
-                price: packageInfo.price,
+                poinEarned: packageInfo.value,
+                amount: packageInfo.price,
                 statusCode: "PAID",
               });
               if (inforUserPackage) {
@@ -400,8 +398,7 @@ let executePaymentVip = (data) => {
                 userId: data.userId,
                 packageId: data.packageId,
                 poinEarned: 200,
-                amount: 1,
-                price: packageInfo.price,
+                amount: packageInfo.price,
                 statusCode: "PAID",
               });
               if (inforUserPackage) {
@@ -698,7 +695,7 @@ let getRevenueViewByMonth = async (data) => {
         type: "View",
       },
     });
-    console.log("packageData", packageData);
+    //console.log("packageData", packageData);
     let revenue = await db.UserPackage.findOne({
       attributes: [
         [db.sequelize.fn("SUM", db.sequelize.col("amount")), "totalRevenue"],
@@ -708,13 +705,10 @@ let getRevenueViewByMonth = async (data) => {
           [Op.gte]: data.startDate,
           [Op.lte]: data.endDate,
         },
-        statusCode: "active",
         packageId: packageData.map((item) => item.id),
       },
       raw: true,
     });
-    console.log("revenue", revenue);
-
     return {
       errCode: 0,
       data: revenue.totalRevenue || 0, // Trả về 0 nếu không có dữ liệu
@@ -734,7 +728,7 @@ let getRevenuePostByMonth = async (data) => {
         type: "Post",
       },
     });
-    console.log("packageData", packageData);
+    //console.log("packageData", packageData);
     let revenue = await db.UserPackage.findOne({
       attributes: [
         [db.sequelize.fn("SUM", db.sequelize.col("amount")), "totalRevenue"],
@@ -744,13 +738,10 @@ let getRevenuePostByMonth = async (data) => {
           [Op.gte]: data.startDate,
           [Op.lte]: data.endDate,
         },
-        statusCode: "active",
         packageId: packageData.map((item) => item.id),
       },
       raw: true,
     });
-    console.log("revenue", revenue);
-
     return {
       errCode: 0,
       data: revenue.totalRevenue || 0, // Trả về 0 nếu không có dữ liệu
@@ -771,7 +762,6 @@ let getRevenueVipByMonth = async (data) => {
         type: "Vip",
       },
     });
-    console.log("packageData", packageData);
     let revenue = await db.UserPackage.findOne({
       attributes: [
         [db.sequelize.fn("SUM", db.sequelize.col("amount")), "totalRevenue"],
@@ -781,13 +771,10 @@ let getRevenueVipByMonth = async (data) => {
           [Op.gte]: data.startDate,
           [Op.lte]: data.endDate,
         },
-        statusCode: "active",
         packageId: packageData.map((item) => item.id),
       },
       raw: true,
     });
-    console.log("revenue", revenue);
-
     return {
       errCode: 0,
       data: revenue.totalRevenue || 0, // Trả về 0 nếu không có dữ liệu

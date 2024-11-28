@@ -11,7 +11,7 @@ let rule = new schedule.RecurrenceRule();
 // rule.second = 0;
 // rule.tz = "Asia/Vientiane";
 rule.second = 0; // Thực hiện vào giây đầu tiên của mỗi phút
-rule.minute = new schedule.Range(0, 59, 1); // Cứ 2 phút một lần
+rule.minute = new schedule.Range(0, 59, 1); // Cứ 1 phút một lần
 
 let sendmail = async (mailTemplate, userMail) => {
   var transporter = nodemailer.createTransport({
@@ -48,7 +48,7 @@ let getTemplateMail = async (infoUser) => {
         timeEnd: {
           [Op.gt]: currentDateString,
         },
-        statusCode: "active",
+        statusCode: "APPROVED",
         [Op.and]: [
           db.Sequelize.where(
             db.sequelize.col("postDetailData.jobTypePostData.code"),
@@ -122,7 +122,7 @@ let getTemplateMail = async (infoUser) => {
           timeEnd: {
             [Op.gt]: currentDateString,
           },
-          statusCode: "active",
+          statusCode: "APPROVED",
           [Op.or]: [
             db.Sequelize.where(
               db.sequelize.col("postDetailData.jobTypePostData.code"),
@@ -203,6 +203,7 @@ let getTemplateMail = async (infoUser) => {
         });
         post.companyData = company;
       }
+
       return getStringMailTemplate(listpost, infoUser);
     } else {
       return 0;
@@ -230,6 +231,7 @@ const sendJobMail = () => {
         raw: true,
         nest: true,
       });
+      //console.log("listUserGetMail", listUserGetMail);
       for (let user of listUserGetMail) {
         let mailTemplate = await getTemplateMail(user);
 
@@ -264,7 +266,7 @@ const checkReportPost = () => {
         ],
         where: { isChecked: 0 },
         group: ["postId"],
-        having: db.Sequelize.literal("reportCount >= 10"),
+        having: db.Sequelize.literal("reportCount >= 1"),
         raw: true,
       });
       if (reports && reports.length > 0) {

@@ -25,14 +25,14 @@ let sendmail = (
   var mailOptions = {
     from: process.env.EMAIL_APP,
     to: user.email,
-    subject: `Thư mời phỏng vấn từ Job Finder`,
+    subject: `Interview Invitation from Job Finder`,
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Thư mời phỏng vấn từ công ty ${company.name}</title>
+        <title>Interview Invitation from ${company.name}</title>
       </head>
       <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
         <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
@@ -40,21 +40,23 @@ let sendmail = (
             <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
           </div>
           <div style="padding: 20px; line-height: 1.6;">
-            <p>Xin chào, ${user.lastName}</p>
-            <p>Bạn đã nhận được lời mời phỏng vấn từ ${company.name}.</p>
-            <p><strong>Vị trí:</strong> ${detailPost.name}</p>
-            <p><strong>Thời gian phỏng vấn:</strong> ${interviewDate}</p>
-            <p><strong>Địa điểm phỏng vấn:</strong> ${interviewLocation}</p>
-            <p><strong>Ghi chú:</strong> ${interviewNote}</p>
+            <p>Hello, ${user.lastName}</p>
+            <p>You have received an interview invitation from ${
+              company.name
+            }.</p>
+            <p><strong>Position:</strong> ${detailPost.name}</p>
+            <p><strong>Interview Date:</strong> ${interviewDate}</p>
+            <p><strong>Interview Location:</strong> ${interviewLocation}</p>
+            <p><strong>Note:</strong> ${interviewNote}</p>
             ${
               link
-                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">Xem chi tiết</a>`
+                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">View Details</a>`
                 : ""
             }
           </div>
           <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
-            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
-            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
+            <p>Thank you for using Job Finder!</p>
+            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Contact Us</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Privacy Policy</a></p>
           </div>
         </div>
       </body>
@@ -68,7 +70,6 @@ let sendmail = (
     }
   });
 };
-
 let caculateMatchCv = async (file, mapRequired) => {
   try {
     let match = 0;
@@ -129,7 +130,7 @@ let getMapRequiredSkill = async (userId, skillRequirement) => {
       raw: true,
       nest: true,
     });
-    console.log("listSkillRequired", listSkillRequired);
+
     let mapListSkill = new Map();
     listSkillRequired.forEach((item) => {
       mapListSkill.set(
@@ -216,7 +217,7 @@ let handleApplyJob = (data) => {
           });
           if (notification) {
             let userSocketId = post.userId.toString();
-            console.log("userSocket", userSocketId);
+
             global.ioGlobal.to(userSocketId).emit("applyJob", {
               message: notification.content,
             });
@@ -609,6 +610,133 @@ const getAllCvPostByCompanyId = async (data) => {
   }
 };
 
+let getAllCvPostByCompanyId7Day = async (data) => {
+  try {
+    if (!data.companyId) {
+      return {
+        errCode: 1,
+        errMessage: "Missing required parameter",
+      };
+    }
+    const listUserOfCompany = await db.User.findAll({
+      where: { companyId: data.companyId },
+      attributes: ["id"],
+    });
+    if (!listUserOfCompany || listUserOfCompany.length === 0) {
+      return {
+        errCode: 2,
+        errMessage: "List user of company not found",
+      };
+    }
+    const userIds = listUserOfCompany.map((user) => user.id);
+    const listPosts = await db.Post.findAll({
+      where: {
+        userId: {
+          [Op.in]: userIds,
+        },
+      },
+      attributes: ["id"],
+    });
+
+    if (!listPosts || listPosts.length === 0) {
+      return {
+        errCode: 3,
+        errMessage: "No posts found for the company's users",
+      };
+    }
+    const postIds = listPosts.map((post) => post.id);
+
+    // Tính ngày 7 ngày trước từ hiện tại
+    const sevenDaysAgo = new Date();
+
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    //console.log("sevenDaysAgo", sevenDaysAgo);
+
+    const listCv = await db.CvPost.findAndCountAll({
+      where: {
+        postId: {
+          [Op.in]: postIds,
+        },
+        createdAt: {
+          [Op.gte]: sevenDaysAgo,
+        },
+      },
+      attributes: ["id", "userId", "postId", "description", "isChecked"],
+      include: [
+        {
+          model: db.Post,
+          as: "postCvData",
+          include: [
+            {
+              model: db.DetailPost,
+              as: "postDetailData",
+              attributes: [
+                "id",
+                "name",
+                "description",
+                "amount",
+                "requirement",
+                "benefit",
+              ],
+              include: [
+                {
+                  model: db.Allcode,
+                  as: "jobTypePostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "workTypePostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "salaryTypePostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "jobLevelPostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "expTypePostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "genderPostData",
+                  attributes: ["value", "code"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "provincePostData",
+                  attributes: ["value", "code"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+
+    return {
+      errCode: 0,
+      data: listCv.rows,
+      count: listCv.count,
+    };
+  } catch (error) {
+    console.error("Error fetching CVs: ", error);
+    return {
+      errCode: 500,
+      errMessage: "An error occurred while fetching CVs",
+    };
+  }
+};
+
 let handleFindCv = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -753,7 +881,7 @@ let checkViewCompany = (data) => {
       } else {
         let company = await db.Company.findOne({
           where: { userId: data.userId },
-          attributes: ["id", "allowCv"],
+          attributes: ["id", "  "],
           raw: false,
         });
         if (!company) {
@@ -773,7 +901,7 @@ let checkViewCompany = (data) => {
           } else {
             resolve({
               errCode: 3,
-              errMessage: "Xin lỗi, Công ty của bạn đã hết lượt xem CV",
+              errMessage: "You have reached the limit of viewing company",
             });
           }
         }
@@ -857,7 +985,7 @@ let createInterviewSchedule = (data) => {
           });
           if (notification) {
             let userSocketId = user.id.toString();
-            console.log("userSocket", userSocketId);
+            //console.log("userSocket", userSocketId);
             global.ioGlobal.to(userSocketId).emit("cvPostInterView", {
               message: notification.content,
             });
@@ -907,7 +1035,7 @@ let handleApproveCvPost = (data) => {
         });
         if (notification) {
           let userSocketId = cvPost.userId.toString();
-          console.log("userSocket", userSocketId);
+          //console.log("userSocket", userSocketId);
           global.ioGlobal.to(userSocketId).emit("cvPostApproved", {
             message: notification.content,
           });
@@ -954,7 +1082,7 @@ let handleRejectCvPost = (data) => {
         });
         if (notification) {
           let userSocketId = cvPost.userId.toString();
-          console.log("userSocket", userSocketId);
+          //console.log("userSocket", userSocketId);
           global.ioGlobal.to(userSocketId).emit("cvPostRejected", {
             message: notification.content,
           });
@@ -1051,4 +1179,5 @@ module.exports = {
   handleRejectCvPost: handleRejectCvPost,
   getAllInterViewSchedule: getAllInterViewSchedule,
   getInterviewScheduleByCvPost: getInterviewScheduleByCvPost,
+  getAllCvPostByCompanyId7Day: getAllCvPostByCompanyId7Day,
 };

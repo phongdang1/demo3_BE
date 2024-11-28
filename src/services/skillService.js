@@ -185,7 +185,7 @@ let getAllSkillWithLimit = (data) => {
           raw: true,
           nest: true,
         };
-        console.log(objectQuery);
+        //console.log(objectQuery);
         if (data.searchKey) {
           objectQuery.where = {
             ...objectQuery.where,
@@ -214,7 +214,7 @@ let getAllSkill = (data) => {
         raw: true,
         nest: true,
       };
-      console.log(objectQuery);
+      //console.log(objectQuery);
       if (data.searchKey) {
         objectQuery.where = {
           ...objectQuery.where,

@@ -16,14 +16,14 @@ let sendmail = (note, userMail, link = null) => {
   var mailOptions = {
     from: process.env.EMAIL_APP,
     to: userMail,
-    subject: "Thông báo từ Job Finder",
+    subject: "Notification from Job Finder",
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Thông báo từ Job Finder</title>
+        <title>Notification from Job Finder</title>
       </head>
       <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
         <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
@@ -31,17 +31,17 @@ let sendmail = (note, userMail, link = null) => {
             <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
           </div>
           <div style="padding: 20px; line-height: 1.6;">
-            <p>Xin chào,</p>
+            <p>Hello,</p>
             <p>${note}</p>
             ${
               link
-                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">Xem chi tiết</a>`
+                ? `<a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">View Details</a>`
                 : ""
             }
           </div>
           <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
-            <p>Cảm ơn bạn đã sử dụng dịch vụ của Job Finder!</p>
-            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Liên hệ với chúng tôi</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a></p>
+            <p>Thank you for using Job Finder!</p>
+            <p><a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Contact Us</a> | <a href="#" style="color: #0056b3; text-decoration: none; font-weight: 600;">Privacy Policy</a></p>
           </div>
         </div>
       </body>
@@ -73,7 +73,7 @@ let getAllPostWithLimit = (data) => {
           exclude: ["detailPostId"],
         },
         where: {
-          statusCode: "ACTIVE",
+          statusCode: "APPROVED",
         },
         nest: true,
         raw: true,
@@ -340,21 +340,18 @@ let handleCreateNewPost = (data) => {
             exclude: ["password", "userId", "image"],
           },
         });
-        console.log(data.isHot);
-        console.log(user);
         let company = await db.Company.findOne({
           where: { id: user.companyId },
-          raw: true,
+          raw: false,
         });
-        console.log(company.allowHotPost);
         if (!company) {
           resolve({
             errCode: 2,
             errMessage: "User is not company",
           });
         } else {
-          if (company.statusCode === "ACTIVE") {
-            if (data.isHot === "1") {
+          if (company.statusCode === "APPROVED") {
+            if (data.isHot === 1) {
               if (company.allowHotPost > 0) {
                 company.allowHotPost -= 1;
                 await company.save({ silent: true });
@@ -424,7 +421,6 @@ let getDetailPostById = (id) => {
           errMessage: "Missing required fields",
         });
       } else {
-        console.log(id);
         let post = await db.Post.findOne({
           where: { id: id },
           attributes: {
@@ -484,7 +480,7 @@ let getDetailPostById = (id) => {
               exclude: ["password", "userId", "image"],
             },
           });
-          console.log(user);
+          //console.log(user);
           let company = await db.Company.findOne({
             where: { id: user.companyId },
           });
@@ -613,10 +609,10 @@ let handleBanPost = (data) => {
             where: { id: foundPost.userId },
             raw: false,
           });
-          console.log(user);
+          //console.log(user);
 
           sendmail(
-            `Bài viết của bạn đã bị chặn vì ${data.note}`,
+            `Your post has been banned with the reason ${data.note}`,
             user.email,
             `admin/list-post/${foundPost.id}`
           );
@@ -651,7 +647,7 @@ let handleUnBanPost = (data) => {
           raw: false,
         });
         if (foundPost) {
-          foundPost.statusCode = "ACTIVE";
+          foundPost.statusCode = "APPROVED";
           foundPost.note = data.note;
           await foundPost.save({ silent: true });
           let user = await db.User.findOne({
@@ -659,7 +655,7 @@ let handleUnBanPost = (data) => {
             raw: false,
           });
           sendmail(
-            `Bài viết #${foundPost.id} của bạn đã được mở lại với lý do ${data.note}`,
+            `Your post has been unbanned with the reason ${data.note}`,
             user.email,
             `admin/list-post/${foundPost.id}`
           );
@@ -704,7 +700,7 @@ let handleApprovePost = (data) => {
             where: { id: foundPost.detailPostId },
           });
           sendmail(
-            `Bài viết của bạn đã được duyệt và được hiển thị trên hệ thống`,
+            `Your post has been approved and is now displayed on the system`,
             user.email,
             `admin/list-post/${foundPost.id}`
           );
@@ -715,7 +711,7 @@ let handleApprovePost = (data) => {
           });
           if (notification) {
             let userSocketId = user.id.toString();
-            console.log("userSocket", userSocketId);
+            //console.log("userSocket", userSocketId);
             global.ioGlobal.to(userSocketId).emit("postApproved", {
               message: notification.content,
             });
@@ -762,7 +758,7 @@ let handleRejectPost = (data) => {
             where: { id: foundPost.detailPostId },
           });
           sendmail(
-            `Bài viết của bạn đã bị từ chối với lý do ${data.note}`,
+            `Your post has been rejected with the reason: ${data.note}`,
             user.email,
             `admin/list-post/${foundPost.id}`
           );
@@ -773,7 +769,7 @@ let handleRejectPost = (data) => {
           });
           if (notification) {
             let userSocketId = user.id.toString();
-            console.log("userSocket", userSocketId);
+            //console.log("userSocket", userSocketId);
             global.ioGlobal.to(userSocketId).emit("postRejected", {
               message: notification.content,
             });

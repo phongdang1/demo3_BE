@@ -166,6 +166,10 @@ let initWebRoutes = (app) => {
   );
   router.post("/handleApproveCvPost", cvPostController.handleApproveCvPost);
   router.post("/handleRejectCvPost", cvPostController.handleRejectCvPost);
+  router.get(
+    "/getAllCvPostByCompanyId7Day",
+    cvPostController.getAllCvPostByCompanyId7Day
+  );
 
   router.get("/testCommon", cvPostController.testCommon);
 
@@ -281,16 +285,8 @@ let initWebRoutes = (app) => {
     notificationController.handleCheckNotification
   );
   //===================API OTP========================//
-  router.post(
-    "/sendOtp",
-    middlewareControllers.verifyTokenUser,
-    authController.handleSendOtp
-  );
-  router.post(
-    "/verifyOtp",
-    middlewareControllers.verifyTokenUser,
-    authController.handleVerifyOtp
-  );
+  router.post("/sendOtp", authController.handleSendOtp);
+  router.post("/verifyOtp", authController.handleVerifyOtp);
 
   return app.use("/", router);
 };

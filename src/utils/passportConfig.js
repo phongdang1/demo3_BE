@@ -20,23 +20,28 @@ passport.use(
       callbackURL: process.env.REDIRECT_URL,
     },
     async function (accessToken, refreshToken, profile, cb) {
-      console.log("profile", profile);
       let dataRaw = {
         email: profile.emails[0].value,
       };
-
       let user = await db.User.findOne({
         where: { email: dataRaw.email },
         raw: true,
       });
-      console.log("user", user);
       if (!user) {
         user = await db.User.create({
           email: dataRaw.email,
-          password: "",
           firstName: "",
           lastName: "",
           address: "",
+          point: 0,
+          image: "",
+          dob: null,
+          roleCode: "USER",
+          statusCode: "ACTIVE",
+          typeLogin: "GOOGLE",
+          isVerify: 1,
+          isUpdate: 0,
+          isVip: 0,
         });
       }
       return cb(null, user);
