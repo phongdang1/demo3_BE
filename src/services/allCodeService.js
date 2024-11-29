@@ -24,7 +24,7 @@ let handleCreateNewAllCode = (data) => {
           let imageCategoryUrl = "";
           if (data.image) {
             const uploadImageResponse = await cloudinary.uploader.upload(
-              data.thumbnail,
+              data.image,
               {
                 upload_preset: "ml_default",
               }
@@ -125,7 +125,7 @@ let handleUpdateAllCode = (data) => {
           let imageCategoryUrl = "";
           if (data.image) {
             const uploadImageResponse = await cloudinary.uploader.upload(
-              data.thumbnail,
+              data.image,
               {
                 upload_preset: "ml_default",
               }
