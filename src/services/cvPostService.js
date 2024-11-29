@@ -806,14 +806,14 @@ let handleFindCv = (data) => {
           },
         },
         attributes: {
-          exclude: ["password", "image"],
+          exclude: ["password"],
         },
         include: [
           {
             model: db.User,
             as: "UserDetailData",
             attributes: {
-              exclude: ["password", "image"],
+              exclude: ["password"],
             },
           },
         ],
