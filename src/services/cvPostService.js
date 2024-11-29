@@ -70,6 +70,64 @@ let sendmail = (
     }
   });
 };
+let sendmailInviteApplyJob = (user, company, detailPost, link = null) => {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
+
+  var mailOptions = {
+    from: process.env.EMAIL_APP,
+    to: user.email,
+    subject: `Invitation to Apply for a Job at ${company.name}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Job Application Invitation</title>
+      </head>
+      <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: #333; text-align: center;">
+        <div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; border: 1px solid #d0d0d0; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); padding: 30px; text-align: center;">
+          <div style="background-color: #0056b3; color: #ffffff; padding: 20px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <h1 style="margin: 0; font-size: 28px;">Job Finder</h1>
+          </div>
+          <div style="padding: 20px; line-height: 1.6;">
+            <p>Hello, ${user.lastName}</p>
+            <p>We are excited to invite you to apply for a position at <strong>${
+              company.name
+            }</strong>.</p>
+            <p><strong>Position:</strong> ${detailPost.name}</p>
+            ${
+              link
+                ? `<p>You can view more details and submit your application by clicking the button below:</p>
+                   <a href="${process.env.URL_REACT}/${link}" style="display: inline-block; margin-top: 20px; padding: 14px 30px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box; width: auto; max-width: 100%;">Apply Now</a>`
+                : `<p>Please visit our website for more details on how to apply.</p>`
+            }
+          </div>
+          <div style="padding: 20px; text-align: center; font-size: 14px; color: #666; border-top: 1px solid #d0d0d0;">
+            <p>Thank you for considering a career at ${
+              company.name
+            }. We look forward to receiving your application!</p>
+            
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    }
+  });
+};
+
 let caculateMatchCv = async (file, mapRequired) => {
   try {
     let match = 0;
@@ -1164,6 +1222,60 @@ let testCommon = () => {
     }
   });
 };
+let handleInviteApplyJob = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.userId || !data.postId || !data.companyId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter",
+        });
+      } else {
+        let user = await db.User.findOne({
+          where: { id: data.userId },
+          attributes: ["id", "email", "firstName", "lastName"],
+        });
+        let company = await db.Company.findOne({
+          where: { id: data.companyId },
+          attributes: ["id", "name"],
+        });
+        let post = await db.Post.findOne({
+          where: { id: data.postId },
+          attributes: ["id", "userId", "detailPostId"],
+        });
+        console.log("post", post);
+        let detailPost = await db.DetailPost.findOne({
+          where: { id: post.detailPostId },
+          attributes: ["id", "name"],
+        });
+        sendmailInviteApplyJob(
+          user,
+          company,
+          detailPost,
+          "user/inviteapplyjob"
+        );
+        let notification = await db.Notification.create({
+          userId: data.userId,
+          content: `You have received an invitation to apply for the position ${detailPost.name} from ${company.name}. Please check your email for more details`,
+          isChecked: 0,
+        });
+        if (notification) {
+          let userSocketId = data.userId.toString();
+          global.ioGlobal.to(userSocketId).emit("inviteApplyJob", {
+            message: notification.content,
+          });
+        }
+
+        resolve({
+          errCode: 0,
+          errMessage: "Invite apply job success",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 module.exports = {
   handleApplyJob: handleApplyJob,
@@ -1180,4 +1292,5 @@ module.exports = {
   getAllInterViewSchedule: getAllInterViewSchedule,
   getInterviewScheduleByCvPost: getInterviewScheduleByCvPost,
   getAllCvPostByCompanyId7Day: getAllCvPostByCompanyId7Day,
+  handleInviteApplyJob: handleInviteApplyJob,
 };

@@ -453,7 +453,7 @@ let checkPackageNameExist = async (data) => {
 let handleCreateNewPackage = async (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.name || !data.price || !data.type) {
+      if (!data.name || !data.price || !data.type || !data.value) {
         resolve({
           errCode: 1,
           errMessage: "Missing required parameter",
@@ -470,6 +470,7 @@ let handleCreateNewPackage = async (data) => {
           name: data.name,
           price: data.price,
           type: data.type,
+          value: data.value,
           statusCode: "Active",
         };
         let newPackage = await db.Package.create(inforPackage);
@@ -512,6 +513,7 @@ let handleUpdatePackage = async (data) => {
           name: data.name,
           price: data.price,
           type: data.type,
+          value: data.value,
         };
         let update = await db.Package.update(inforUpdate, {
           where: {

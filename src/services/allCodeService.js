@@ -1,6 +1,7 @@
 import { raw } from "body-parser";
 import db from "../models/index";
 const { Op } = require("sequelize");
+const cloudinary = require("../utils/cloudinary");
 
 let handleCreateNewAllCode = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -20,10 +21,22 @@ let handleCreateNewAllCode = (data) => {
             errMessage: "Allcode is exist",
           });
         } else {
+          let imageCategoryUrl = "";
+          if (data.image) {
+            const uploadImageResponse = await cloudinary.uploader.upload(
+              data.thumbnail,
+              {
+                upload_preset: "ml_default",
+              }
+            );
+            imageCategoryUrl = uploadImageResponse.url;
+          }
+
           await db.Allcode.create({
             type: data.type,
             code: data.code,
             value: data.value,
+            image: imageCategoryUrl,
           });
           resolve({
             errCode: 0,

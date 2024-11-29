@@ -166,6 +166,11 @@ let initWebRoutes = (app) => {
     "/getAllCvPostByCompanyId7Day",
     cvPostController.getAllCvPostByCompanyId7Day
   );
+  router.post(
+    "/handleInviteApplyJob",
+    // middlewareControllers.verifyTokenCompany,
+    cvPostController.handleInviteApplyJob
+  );
 
   router.get("/testCommon", cvPostController.testCommon);
 
