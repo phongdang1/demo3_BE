@@ -122,8 +122,21 @@ let handleUpdateAllCode = (data) => {
           raw: false,
         });
         if (allCodeRes) {
+          let imageCategoryUrl = "";
+          if (data.image) {
+            const uploadImageResponse = await cloudinary.uploader.upload(
+              data.thumbnail,
+              {
+                upload_preset: "ml_default",
+              }
+            );
+            imageCategoryUrl = uploadImageResponse.url;
+          }
           allCodeRes.value = data.value;
           allCodeRes.code = data.code;
+          allCodeRes.type = data.type;
+          allCodeRes.image = imageCategoryUrl;
+
           allCodeRes = await allCodeRes.save();
           if (allCodeRes) {
             resolve({
