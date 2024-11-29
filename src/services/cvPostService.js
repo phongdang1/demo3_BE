@@ -939,7 +939,7 @@ let checkViewCompany = (data) => {
       } else {
         let company = await db.Company.findOne({
           where: { userId: data.userId },
-          attributes: ["id", "  "],
+          attributes: ["id", "allowCv"],
           raw: false,
         });
         if (!company) {
