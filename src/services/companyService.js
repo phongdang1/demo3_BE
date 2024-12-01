@@ -427,7 +427,15 @@ let getCompanyById = (id) => {
               {
                 model: db.DetailPost,
                 as: "postDetailData",
-                attributes: ["id", "name", "description", "amount"],
+                attributes: [
+                  "id",
+                  "name",
+                  "description",
+                  "amount",
+                  "requirement",
+                  "skillRequirement",
+                  "benefit",
+                ],
                 include: [
                   {
                     model: db.Allcode,

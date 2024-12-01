@@ -69,11 +69,11 @@ app.get(
     failureFlash: true,
   }),
   (req, res) => {
-    let user = req;
-    console.log(user);
+    let user = req.user;
     let token = CommonUtils.encodeToken(user.id);
-
-    res.redirect(`${process.env.URL_REACT}?token=${token}`);
+    res.setHeader("Authorization", `Bearer ${token}`);
+    res.setHeader("X-User-Id", user.id);
+    res.redirect(`${process.env.URL_REACT}?token=${token}&userId=${user.id}`);
   }
 );
 

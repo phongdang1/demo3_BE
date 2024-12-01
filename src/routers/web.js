@@ -26,11 +26,7 @@ let initWebRoutes = (app) => {
     middlewareControllers.verifyTokenUser,
     userController.getAllUsersWithLimit
   );
-  router.get(
-    "/getUserById",
-    middlewareControllers.verifyTokenUser,
-    userController.getUsersById
-  );
+  router.get("/getUserById", userController.getUsersById);
   router.post("/createNewUser", userController.handleCreateNewUser);
   router.post("/login", userController.handleLogin);
   router.post(
@@ -169,6 +165,11 @@ let initWebRoutes = (app) => {
   router.get(
     "/getAllCvPostByCompanyId7Day",
     cvPostController.getAllCvPostByCompanyId7Day
+  );
+  router.post(
+    "/handleInviteApplyJob",
+    // middlewareControllers.verifyTokenCompany,
+    cvPostController.handleInviteApplyJob
   );
 
   router.get("/testCommon", cvPostController.testCommon);

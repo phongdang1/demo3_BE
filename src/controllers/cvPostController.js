@@ -159,6 +159,18 @@ let getAllCvPostByCompanyId7Day = async (req, res) => {
     });
   }
 };
+let handleInviteApplyJob = async (req, res) => {
+  try {
+    let data = await cvPostService.handleInviteApplyJob(req.body);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errMessage: "Invite apply job failed",
+      errorCode: -1,
+    });
+  }
+};
 
 let testCommon = async (req, res) => {
   try {
@@ -187,5 +199,6 @@ module.exports = {
   getAllInterViewSchedule: getAllInterViewSchedule,
   getInterviewScheduleByCvPost: getInterviewScheduleByCvPost,
   getAllCvPostByCompanyId7Day: getAllCvPostByCompanyId7Day,
+  handleInviteApplyJob: handleInviteApplyJob,
   testCommon: testCommon,
 };
